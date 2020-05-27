@@ -1156,8 +1156,8 @@ function initCountryPanel() {
   createFigure(hrpDiv, {className: 'funding-level', title: 'HRP Funding Level', stat: percentFormat(data['#value+funding+hrp+pct']), indicator: '#value+covid+funding+hrp+pct'});
   createFigure(hrpDiv, {className: 'funding-covid-required', title: 'COVID-19 GHRP requirement', stat: shortenNumFormat(data['#value+covid+funding+hrp+required+usd']), indicator: '#value+covid+funding+hrp+required+usd'});
   createFigure(hrpDiv, {className: 'funding-covid-allocation', title: 'COVID-19 GHRP allocation', stat: shortenNumFormat(data['#value+covid+funding+hrp+total+usd']), indicator: '#value+covid+funding+hrp+total+usd'});
-  if (data['#value+covid+funding+cerf+total+usd']!=undefined) createFigure(hrpDiv, {className: 'funding-covid-cerf-allocation', title: 'CERF COVID-19 allocation', stat: shortenNumFormat(data['#value+covid+funding+cerf+total+usd']), indicator: '#value+covid+funding+cerf+total+usd'});
-  if (data['#value+covid+funding+cbpf+total+usd']!=undefined) createFigure(hrpDiv, {className: 'funding-covid-cbpf-allocation', title: 'CBPF COVID allocation', stat: shortenNumFormat(data['#value+covid+funding+cbpf+total+usd']), indicator: '#value+covid+funding+cbpf+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-cerf-allocation', title: 'CERF COVID-19 allocation', stat: shortenNumFormat(data['#value+cerf+covid+funding+total+usd']), indicator: '#value+cerf+covid+funding+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-cbpf-allocation', title: 'CBPF COVID allocation', stat: shortenNumFormat(data['#value+cbpf+covid+funding+total+usd']), indicator: '#value+cbpf+covid+funding+total+usd'});
 
   //inform
   var informDiv = $('.country-panel .inform .panel-inner');
