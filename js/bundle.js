@@ -1219,7 +1219,7 @@ function initCountryPanel() {
     content += '<div>'+ accessLabels[key] +'</div></div>';
     accessDiv.append(content);
   }
-  createSource(accessDiv, '#access+constraints');
+  createSource(accessDiv, '#access+constraints+pct');
 }
 
 
