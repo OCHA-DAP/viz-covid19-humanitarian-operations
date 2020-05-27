@@ -1117,6 +1117,13 @@ function initCountryPanel() {
   //timeseries
   updateTimeseries(timeseriesData, data['#country+code']);
 
+// header: 2020 HRP and COVID-19 funding:
+// - (3rd figure)
+// COVID-19 GHRP requirement ($87m for sudan)
+// - (4th figure)
+// COVID-19 GHRP allocation:
+
+
   //set panel header
   $('.flag').attr('src', 'assets/flags/'+data['#country+code']+'.png');
   $('.country-panel h3').text(data['#country+name']);
@@ -1143,10 +1150,14 @@ function initCountryPanel() {
   //hrp
   var hrpDiv = $('.country-panel .hrp .panel-inner');
   hrpDiv.children().remove();  
-  createFigure(hrpDiv, {className: 'pin', title: 'Number of People in Need', stat: shortenNumFormat(data['#affected+inneed']), indicator: '#affected+inneed'});
-  createFigure(hrpDiv, {className: 'funding-level', title: 'HRP Funding Level', stat: (data['#value+covid+funding+hrp+pct']*100)+'%', indicator: '#affected+inneed'});
-  createFigure(hrpDiv, {className: 'funding-received', title: 'HRP Funding Received', stat: shortenNumFormat(data['#value+covid+funding+hrp+total+usd']), indicator: '#affected+inneed'});
-  createFigure(hrpDiv, {className: 'funding-required', title: 'GHRP Request (USD)', stat: shortenNumFormat(data['#value+funding+precovid+required+usd']), indicator: '#affected+inneed'});
+  //HRP requirement, HRP funding level, COVID-19 GHRP requirement, COVID-19 GHRP allocation, CERF COVID-19 allocation, CBPF COVID allocation
+  //createFigure(hrpDiv, {className: 'pin', title: 'Number of People in Need', stat: shortenNumFormat(data['#affected+inneed']), indicator: '#affected+inneed'});
+  createFigure(hrpDiv, {className: 'funding-required', title: 'HRP requirement', stat: shortenNumFormat(data['#value+funding+hrp+required+usd']), indicator: '#value+funding+hrp+required+usd'});
+  createFigure(hrpDiv, {className: 'funding-level', title: 'HRP Funding Level', stat: percentFormat(data['#value+funding+hrp+pct']), indicator: '#value+covid+funding+hrp+pct'});
+  createFigure(hrpDiv, {className: 'funding-covid-required', title: 'COVID-19 GHRP requirement', stat: shortenNumFormat(data['#value+covid+funding+hrp+required+usd']), indicator: '#value+covid+funding+hrp+required+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-allocation', title: 'COVID-19 GHRP allocation', stat: shortenNumFormat(data['#value+covid+funding+hrp+total+usd']), indicator: '#value+covid+funding+hrp+total+usd'});
+  if (data['#value+covid+funding+cerf+total+usd']!=undefined) createFigure(hrpDiv, {className: 'funding-covid-cerf-allocation', title: 'CERF COVID-19 allocation', stat: shortenNumFormat(data['#value+covid+funding+cerf+total+usd']), indicator: '#value+covid+funding+cerf+total+usd'});
+  if (data['#value+covid+funding+cbpf+total+usd']!=undefined) createFigure(hrpDiv, {className: 'funding-covid-cbpf-allocation', title: 'CBPF COVID allocation', stat: shortenNumFormat(data['#value+covid+funding+cbpf+total+usd']), indicator: '#value+covid+funding+cbpf+total+usd'});
 
   //inform
   var informDiv = $('.country-panel .inform .panel-inner');
@@ -1264,7 +1275,7 @@ var currentCountryIndicator = {};
 var accessLabels = {};
 
 $( document ).ready(function() {
-  var prod = (window.location.href.indexOf('ocha-dap')>-1) ? true : false;
+  var prod = true;//(window.location.href.indexOf('ocha-dap')>-1) ? true : false;
   console.log(prod);
   var isMobile = window.innerWidth<768? true : false;
   var geomPath = 'data/worldmap.json';
@@ -1298,19 +1309,19 @@ $( document ).ready(function() {
 
       //format data
       nationalData.forEach(function(item) {
-        if (item['#access+constraints+pct']!=undefined) item['#access+constraints+pct'] = item['#access+constraints+pct'].replace('%','')/100;
+        //if (item['#access+constraints+pct']!=undefined) item['#access+constraints+pct'] = item['#access+constraints+pct'].replace('%','')/100;
         if (item['#country+name']=='State of Palestine') item['#country+name'] = 'occupied Palestinian territory';
-        item['#value+covid+funding+hrp+pct'] = item['#value+covid+funding+hrp+pct'].replace('%','')/100;
+        //item['#value+covid+funding+hrp+pct'] = item['#value+covid+funding+hrp+pct'].replace('%','')/100;
       })
 
       subnationalData.forEach(function(item) {
         var pop = item['#population'];
         if (item['#population']!=undefined) item['#population'] = parseInt(pop.replace(/,/g, ''), 10);
-        item['#affected+food+p3+pct'] = item['#affected+food+p3+pct']/100;
-        item['#population+hepb3+pct+vaccinated'] = item['#population+hepb3+pct+vaccinated']/100;
-        item['#population+ipv1+pct+vaccinated'] = item['#population+ipv1+pct+vaccinated']/100;
-        item['#population+mcv2+pct+vaccinated'] = item['#population+mcv2+pct+vaccinated']/100;
-        item['#population+pct+pol3+vaccinated'] = item['#population+pct+pol3+vaccinated']/100;
+        // item['#affected+food+p3+pct'] = item['#affected+food+p3+pct']/100;
+        // item['#population+hepb3+pct+vaccinated'] = item['#population+hepb3+pct+vaccinated']/100;
+        // item['#population+ipv1+pct+vaccinated'] = item['#population+ipv1+pct+vaccinated']/100;
+        // item['#population+mcv2+pct+vaccinated'] = item['#population+mcv2+pct+vaccinated']/100;
+        // item['#population+pct+pol3+vaccinated'] = item['#population+pct+pol3+vaccinated']/100;
         item['#org+count+num'] = +item['#org+count+num'];
       })
 
@@ -1672,7 +1683,7 @@ $( document ).ready(function() {
     $('.map-legend.global .indicator-title').text(legendTitle);
     updateSource($('.indicator-source'), currentIndicator.id);
 
-    var legendFormat = (currentIndicator.id=='#access+constraints+pct' || currentIndicator.id=='#value+covid+funding+pct') ? percentFormat : shortenNumFormat;
+    var legendFormat = ((currentIndicator.id).indexOf('pct')>-1) ? percentFormat : shortenNumFormat;
     var legend = d3.legendColor()
       .labelFormat(legendFormat)
       .cells(colorRange.length)

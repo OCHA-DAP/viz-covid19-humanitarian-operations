@@ -1654,6 +1654,8 @@ circle.swatch {
       height: 35px;
       margin-right: 10px;
       width: 35px; }
+  .country-panel .source {
+    min-height: 28px; }
   .country-panel .panel-inner {
     padding-left: 20px; }
   .country-panel .figure {
