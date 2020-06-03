@@ -1759,3 +1759,21 @@ table {
 
 .c3-axis .tick text {
   fill: #000; }
+
+.mobile-message {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 5; }
+  .mobile-message .message {
+    color: #FFF;
+    padding: 20px;
+    text-align: center; }
+  .mobile-message .mobile-close-btn {
+    color: #FFF;
+    position: absolute;
+    right: 10px;
+    top: 10px; }
