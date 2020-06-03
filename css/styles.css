@@ -1286,7 +1286,7 @@ h6 {
 
 .stat {
   font-family: 'Gotham-Light', sans-serif;
-  font-size: 52px;
+  font-size: 42px;
   margin: 30px 0; }
 
 ul {
@@ -1301,11 +1301,12 @@ a:visited {
   color: #007CE1; }
 
 .footnote {
-  bottom: 16px;
+  bottom: 34px;
   font-size: 11px;
   font-style: italic;
-  left: 80px;
-  position: absolute; }
+  left: 10px;
+  position: absolute;
+  z-index: 1; }
 
 .content {
   display: flex;
@@ -1315,23 +1316,22 @@ a:visited {
     flex-flow: column;
     overflow: scroll;
     padding: 12px;
-    width: 270px; }
+    width: 255px; }
   .content .content-right {
+    height: 100%;
     position: relative; }
   .content.country-view .description,
   .content.country-view .country-label,
   .content.country-view .map-legend.global,
-  .content.country-view .menu-indicators,
+  .content.country-view .global-menu,
   .content.country-view .global-stats {
     display: none; }
   .content.country-view .map-legend.country {
     left: 40px;
     opacity: 1;
-    z-index: 1; }
-  .content.country-view .country-panel {
+    z-index: 3; }
+  .content.country-view .country-menu {
     display: block; }
-  .content.country-view #country-map {
-    opacity: 1; }
   .content.food-prices-view .map-legend.global,
   .content.food-prices-view .count-marker,
   .content.food-prices-view .global-stats {
@@ -1346,7 +1346,8 @@ a:visited {
   padding: 15px;
   position: absolute;
   top: 120px;
-  width: 240px; }
+  width: 240px;
+  z-index: 1; }
 
 .modal-bg-overlay {
   background-color: rgba(51, 51, 51, 0.7);
@@ -1388,36 +1389,47 @@ a:visited {
     margin-top: 12px; }
 
 .menu h2 {
-  padding-left: 20px;
-  padding-bottom: 15px; }
+  padding-left: 20px; }
 
-.menu-indicators {
+.menu h4 {
+  font-size: 11px;
+  line-height: 12px;
+  padding: 15px 0 10px 20px;
+  text-transform: uppercase; }
+
+.menu .global-menu {
   display: block; }
-  .menu-indicators li {
-    color: #888;
-    cursor: pointer;
-    font-size: 16px; }
-    .menu-indicators li div {
-      align-items: center;
-      display: flex;
-      height: 60px;
-      padding: 0 25px; }
-    .menu-indicators li i {
-      padding-right: 25px; }
-    .menu-indicators li:hover, .menu-indicators li.selected {
-      background-color: #F1F1F1;
-      color: #000;
-      font-weight: 700; }
-      .menu-indicators li:hover i, .menu-indicators li.selected i {
-        color: #007CE1; }
+
+.menu .country-menu {
+  display: none; }
+
+.menu-indicators li {
+  color: #888;
+  cursor: pointer;
+  font-size: 14px; }
+  .menu-indicators li div {
+    align-items: center;
+    display: flex;
+    height: 60px;
+    padding: 0 25px; }
+  .menu-indicators li i {
+    padding-right: 25px; }
+  .menu-indicators li:hover, .menu-indicators li.selected {
+    background-color: #F1F1F1;
+    color: #000;
+    font-weight: 700; }
+    .menu-indicators li:hover i, .menu-indicators li.selected i {
+      color: #007CE1; }
 
 .country-select,
 .indicator-select {
   background-color: #FFF;
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
+  border-color: #FFF;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  font: 700 16px 'Source Sans Pro', sans-serif;
   height: 48px;
+  padding: 0 20px;
   width: 100%; }
 
 .country-select {
@@ -1425,17 +1437,17 @@ a:visited {
   position: absolute;
   top: 40px;
   width: 215px;
-  z-index: 100; }
+  z-index: 3; }
 
 .global-stats {
   background-color: #FFF;
-  bottom: 16px;
+  bottom: 25px;
   display: block;
   padding: 25px;
   position: absolute;
   right: 24px;
   width: 416px;
-  z-index: 101; }
+  z-index: 3; }
   .global-stats .stats {
     display: flex;
     padding-top: 20px; }
@@ -1466,7 +1478,6 @@ a:visited {
 
 .label-header {
   display: block;
-  font-weight: 700;
   margin: 0;
   padding-bottom: 0; }
 
@@ -1513,7 +1524,8 @@ a:visited {
   padding: 15px 20px 5px;
   position: absolute;
   top: 120px;
-  width: 215px; }
+  width: 215px;
+  z-index: 3; }
   .map-legend label {
     display: flex;
     flex-direction: row-reverse;
@@ -1524,11 +1536,22 @@ a:visited {
     line-height: 14px; }
   .map-legend input {
     margin: 0 6px 0 0; }
+  .map-legend svg {
+    margin-top: 5px;
+    width: 190px; }
+  .map-legend .no-data {
+    height: 20px; }
+    .map-legend .no-data rect {
+      fill: #FFF;
+      stroke: #CCC; }
+    .map-legend .no-data text {
+      transform: translate(25px, 12.5px); }
   .map-legend.global {
     display: block; }
-    .map-legend.global svg {
-      margin-top: 10px;
-      width: 195px; }
+    .map-legend.global .legend-container {
+      height: 83px; }
+      .map-legend.global .legend-container.vaccination-campaign {
+        height: 32px; }
   .map-legend.country {
     height: auto;
     left: -215px;
@@ -1537,13 +1560,11 @@ a:visited {
     z-index: -1; }
     .map-legend.country label {
       margin-top: 10px; }
-    .map-legend.country svg {
-      height: 110px;
-      margin-top: 10px;
+    .map-legend.country .legend-container {
+      height: 118px;
       overflow: visible;
-      transform: translate(0px, 20px);
-      width: 190px; }
-      .map-legend.country svg .legendTitle {
+      transform: translate(0px, 20px); }
+      .map-legend.country .legend-container .legendTitle {
         font-family: 'Gotham-Bold', sans-serif;
         letter-spacing: 0.2px; }
     .map-legend.country .source-container {
@@ -1571,6 +1592,9 @@ a:visited {
 .country-label {
   display: block; }
 
+.label-num {
+  fill: #000; }
+
 .health-marker,
 .count-marker,
 circle.swatch {
@@ -1590,43 +1614,35 @@ circle.swatch {
 .health-layer {
   display: none; }
 
-.description {
-  color: #A1A1A1;
-  font-weight: normal;
-  display: block;
-  padding: 0 20px 10px; }
+.mapboxgl-popup.map-tooltip {
+  max-width: 270px;
+  z-index: 4; }
+  .mapboxgl-popup.map-tooltip .mapboxgl-popup-content {
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 18px;
+    padding: 15px; }
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content h2 {
+      margin-bottom: 10px; }
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat {
+      font-size: 32px;
+      margin: 15px 0; }
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases {
+      color: #888; }
 
-.tooltip {
-  background-color: #FFF;
-  border: 0px;
-  border-radius: 3px;
-  color: #000;
-  font-size: 14px;
-  line-height: 18px;
-  height: 80px;
-  opacity: 0;
-  padding: 10px;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  transition: 0.3s opacity ease;
-  width: 200px;
-  z-index: 100; }
-  .tooltip:after {
-    border-color: rgba(136, 183, 213, 0);
-    border: solid transparent;
-    border-top-color: #FFF;
-    border-width: 10px;
-    content: " ";
-    height: 0;
-    left: 50%;
-    margin-left: -10px;
-    pointer-events: none;
-    position: absolute;
-    top: 100%;
-    width: 0; }
-  .tooltip .label-header {
-    padding-bottom: 5px; }
+table {
+  font-size: 12px;
+  line-height: 14px; }
+  table th {
+    text-align: left;
+    vertical-align: bottom; }
+  table tr td:first-child, table tr td:last-child {
+    font-weight: 700; }
+  table tr.covid-postpone td:first-child, table tr.covid-postpone td:last-child {
+    color: #F2645A; }
 
 .country-panel {
   background-color: #FFF;
@@ -1638,7 +1654,7 @@ circle.swatch {
   top: 30px;
   right: 30px;
   width: 416px;
-  transition: opacity 0.3s ease; }
+  z-index: 1; }
   .country-panel .panel-header {
     background-color: #FFF;
     padding: 30px 0 15px;
@@ -1669,6 +1685,8 @@ circle.swatch {
       padding-bottom: 15px; }
       .country-panel .figure .figure-inner .title {
         height: 36px; }
+    .country-panel .figure.cases .stat, .country-panel .figure.deaths .stat {
+      font-size: 52px; }
     .country-panel .figure.risk-class .stat {
       font-size: 32px; }
   .country-panel .humanitarian-access .access-title {
@@ -1682,6 +1700,7 @@ circle.swatch {
     align-self: flex-start;
     background-color: #888;
     color: #FFF;
+    font-family: 'Source Sans Pro', sans-serif;
     font-size: 14px;
     font-weight: 700;
     height: 16px;
