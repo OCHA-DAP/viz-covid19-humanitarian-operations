@@ -1540,12 +1540,12 @@ a:visited {
   .map-legend svg {
     margin-top: 5px;
     width: 190px; }
-  .map-legend .no-data {
+  .map-legend .no-data-key {
     height: 20px; }
-    .map-legend .no-data rect {
+    .map-legend .no-data-key rect {
       fill: #FFF;
       stroke: #CCC; }
-    .map-legend .no-data text {
+    .map-legend .no-data-key text {
       transform: translate(25px, 12.5px); }
   .map-legend.global {
     display: block; }
@@ -1568,6 +1568,10 @@ a:visited {
       .map-legend.country .legend-container .legendTitle {
         font-family: 'Gotham-Bold', sans-serif;
         letter-spacing: 0.2px; }
+      .map-legend.country .legend-container.no-data {
+        height: 20px; }
+        .map-legend.country .legend-container.no-data .legendCells {
+          display: none; }
     .map-legend.country .source-container {
       margin-left: 18px; }
 

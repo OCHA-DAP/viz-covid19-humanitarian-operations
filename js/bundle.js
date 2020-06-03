@@ -1175,12 +1175,8 @@ function initMap() {
         currentCountry = selected;
         currentCountryName = d3.select('.country-select option:checked').text();
 
-        var selectedFeatures = [];
-        mapFeatures.forEach(function(feature) {
-          if (feature.sourceLayer=='hrp25_polbnda_int_15m_uncs' && feature.properties.ISO_3==currentCountry) {
-            selectedFeatures.push(feature)
-          }
-        });
+        //find matched features
+        var selectedFeatures = matchMapFeatures(currentCountry);
         
         if (currentIndicator.id=='#food-prices') {
           openModal(currentCountryName);
@@ -1202,6 +1198,17 @@ function initMap() {
       className: 'map-tooltip'
     });
   });
+}
+
+function matchMapFeatures(country_code) {
+  //loop through mapFeatures to find matches to currentCountry
+  var selectedFeatures = [];
+  mapFeatures.forEach(function(feature) {
+    if (feature.sourceLayer=='hrp25_polbnda_int_15m_uncs' && feature.properties.ISO_3==currentCountry) {
+      selectedFeatures.push(feature)
+    }
+  });
+  return selectedFeatures;
 }
 
 
@@ -1291,6 +1298,10 @@ function handleGlobalEvents(layer) {
           openModal(target.properties.Terr_Name);
         }
         else {
+          //get all geometry for PSE
+          if (currentCountry=='PSE') {
+            var features = matchMapFeatures(currentCountry);
+          }
           selectCountry(features);
         }
       }
@@ -1392,7 +1403,7 @@ function setGlobalLegend(scale) {
       .attr('class', 'scale');
 
     var nodata = div.append('svg')
-      .attr('class', 'no-data');
+      .attr('class', 'no-data-key');
 
     nodata.append('rect')
       .attr('width', 15)
@@ -1470,6 +1481,7 @@ function initCountryLayer() {
 
   map.on('mousemove', countryLayer, function(e) {
     var f = map.queryRenderedFeatures(e.point)[0];
+    if (f.properties.ADM0_REF=='State of Palestine') f.properties.ADM0_REF = currentCountryName;
     if (f.properties.ADM0_PCODE!=undefined && f.properties.ADM0_REF==currentCountryName) {
       map.getCanvas().style.cursor = 'pointer';
       createCountryMapTooltip(f.properties.ADM1_REF);
@@ -1492,6 +1504,7 @@ function initCountryLayer() {
 function updateCountryLayer() {
   if (currentCountryIndicator.id=='#affected+food+ipc+p3+pct') checkIPCData();
 
+  $('.map-legend.country .legend-container').removeClass('no-data');
   //$('.map-legend.country .legend-container').show();
   var max = getCountryIndicatorMax();
   if (currentCountryIndicator.id.indexOf('pct')>0 && max>0) max = 1;
@@ -1558,11 +1571,13 @@ function updateCountryLayer() {
   //hide color scale if no data
   if (max!=undefined && max>0)
     updateCountryLegend(countryColorScale);
-  // else
-  //   $('.map-legend.country .legend-container').hide();
+  else
+    $('.map-legend.country .legend-container').addClass('no-data');
+    //$('.map-legend.country .legend-container').hide();
 }
 
 function checkIPCData() {
+  //swap food security data source if empty
   var index = 0;
   var isEmpty = false;
   subnationalData.forEach(function(d) {
@@ -1613,7 +1628,7 @@ function createCountryLegend(scale) {
 
   //no data
   var nodata = div.append('svg')
-    .attr('class', 'no-data');
+    .attr('class', 'no-data-key');
 
   nodata.append('rect')
     .attr('width', 15)
@@ -1632,7 +1647,7 @@ function updateCountryLegend(scale) {
 
   var legendFormat;
   switch(currentCountryIndicator.id) {
-    case '#affected+food+p3+pct':
+    case '#affected+food+ipc+p3+pct':
       legendFormat = percentFormat;
       break;
     case '#affected+ch+food+p3+pct':
@@ -1702,6 +1717,7 @@ function createMapTooltip(country_code, country_name){
 }
 
 function createCountryMapTooltip(adm1_name){
+  console.log('createCountryMapTooltip',currentCountry)
   var adm1 = subnationalData.filter(function(c) {
     if (c['#adm1+name']==adm1_name && c['#country+code']==currentCountry)
       return c;
@@ -1975,6 +1991,7 @@ $( document ).ready(function() {
         .key(function(d) { return d['#country+code']; })
         .entries(vaccinationData);
 
+      //format dates and set overall status
       vaccinationDataByCountry.forEach(function(country) {
         var postponed = 'On Track';
         country.values.forEach(function(campaign) {
@@ -1995,7 +2012,7 @@ $( document ).ready(function() {
       // console.log(subnationalData)
       console.log('Loading data...')
 
-      //show message for mobile users
+      //detect mobile users
       if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
         $('.mobile-message').show();
       }
@@ -2003,12 +2020,12 @@ $( document ).ready(function() {
         $(this).remove();
       });
 
-      initGlobalView();
+      initView();
       initMap();
     });
   }
 
-  function initGlobalView() {
+  function initView() {
     //create country select 
     var countrySelect = d3.select('.country-select')
       .selectAll('option')
