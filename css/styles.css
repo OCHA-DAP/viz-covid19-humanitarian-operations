@@ -1752,4 +1752,12 @@ table {
 
 @media only screen and (max-height: 696px) {
   .map-legend.country {
-    overflow: scroll; } }
+    overflow: scroll; }
+  .global-stats {
+    width: 290px; }
+    .global-stats .stats {
+      flex-flow: column; }
+      .global-stats .stats .key-figure {
+        width: 100%; }
+        .global-stats .stats .key-figure:first-child .inner {
+          border-bottom: 0; } }

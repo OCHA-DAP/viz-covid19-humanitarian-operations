@@ -1123,7 +1123,8 @@ function initMap() {
     container: 'global-map',
     style: 'mapbox://styles/humdata/ckaoa6kf53laz1ioek5zq97qh',
     center: [10, 6],
-    minZoom: 2,
+    minZoom: 1,
+    zoom: 2,
     attributionControl: false
   });
 
@@ -1734,7 +1735,7 @@ function createCountryMapTooltip(adm1_name) {
 
   //format content for tooltip
   if (val!=undefined && val!='' && !isNaN(val)) {
-    if (currentCountryIndicator.id.indexOf('pct')>-1) val = percentFormat(val);
+    if (currentCountryIndicator.id.indexOf('pct')>-1) val = (val>1) ? percentFormat(1) : percentFormat(val);
     if (currentCountryIndicator.id=='#population') val = shortenNumFormat(val);
   }
   else {
@@ -1748,8 +1749,6 @@ function createCountryMapTooltip(adm1_name) {
 function showMapTooltip(content) {
   tooltip.setHTML(content);
 }
-
-
 
 
 
@@ -1961,8 +1960,8 @@ $( document ).ready(function() {
     $('.content').height(viewportHeight);
     $('.content-right').width(viewportWidth);
     $('.content-right').css('min-width', viewportWidth);
-    //$('.map-legend.country').height(viewportHeight - parseInt($('.map-legend.country').css('top')) - 50);
     $('.footnote').width(viewportWidth - $('.global-stats').innerWidth() - 50);
+    if (viewportHeight<696) $('.map-legend.country').height(viewportHeight - parseInt($('.map-legend.country').css('top')) - 60);
 
     getData();
     initMap();
