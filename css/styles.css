@@ -1482,40 +1482,9 @@ a:visited {
   margin: 0;
   padding-bottom: 0; }
 
-#global-map,
-#country-map {
-  fill: #A6D8E8;
-  position: relative; }
-  #global-map .map-regions,
-  #country-map .map-regions {
-    stroke: #CCC;
-    cursor: pointer;
-    transition: fill 0.5s ease; }
-  #global-map .zoom-controls,
-  #country-map .zoom-controls {
-    position: absolute;
-    left: 40px;
-    bottom: 20px;
-    display: grid;
-    grid-gap: 5px; }
-    #global-map .zoom-controls button,
-    #country-map .zoom-controls button {
-      width: 30px;
-      height: 30px;
-      font-size: 18px;
-      border-radius: 50% !important;
-      background: #FFF;
-      color: #000;
-      border: none;
-      user-select: none;
-      cursor: pointer;
-      text-align: center; }
-    #global-map .zoom-controls button:active,
-    #country-map .zoom-controls button:active {
-      background: rgba(255, 255, 255, 0.8); }
-    #global-map .zoom-controls button:focus,
-    #country-map .zoom-controls button:focus {
-      outline: 0; }
+#global-map {
+  height: 100%;
+  width: 100%; }
 
 .map-legend {
   background-color: #FFF;
@@ -1780,3 +1749,7 @@ table {
     position: absolute;
     right: 10px;
     top: 10px; }
+
+@media only screen and (max-height: 696px) {
+  .map-legend.country {
+    overflow: scroll; } }
