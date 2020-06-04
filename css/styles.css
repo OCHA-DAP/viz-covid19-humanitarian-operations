@@ -1690,8 +1690,6 @@ table {
       padding-bottom: 15px; }
       .country-panel .figure .figure-inner .title {
         height: 36px; }
-    .country-panel .figure.cases .stat, .country-panel .figure.deaths .stat {
-      font-size: 52px; }
     .country-panel .figure.risk-class .stat {
       font-size: 32px; }
   .country-panel .humanitarian-access .access-title {
@@ -1768,7 +1766,7 @@ table {
 .mobile-message {
   background-color: rgba(0, 0, 0, 0.5);
   display: none;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   right: 0;
   left: 0;
