@@ -1121,7 +1121,7 @@ function initMap() {
   console.log('Loading map...')
   map = new mapboxgl.Map({
     container: 'global-map',
-    style: 'mapbox://styles/humdata/ckaoa6kf53laz1ioek5zq97qh',
+    style: 'mapbox://styles/humdata/ckaoa6kf53laz1ioek5zq97qh/draft',
     center: [10, 6],
     minZoom: 1,
     zoom: 2,
@@ -1257,6 +1257,8 @@ function initGlobalLayer() {
   
   //set properties
   map.setPaintProperty(globalLayer, 'fill-color', expression);
+  map.setPaintProperty(globalMarkerLayer, 'circle-opacity', 1);
+  map.setPaintProperty(globalMarkerLayer, 'circle-stroke-opacity', 1);
   map.setPaintProperty(globalMarkerLayer, 'circle-radius', expressionMarkers);
   map.setPaintProperty(globalMarkerLayer, 'circle-translate', [0,-10]);
 
