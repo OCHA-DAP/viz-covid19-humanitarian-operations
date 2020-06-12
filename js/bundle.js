@@ -1165,7 +1165,7 @@ function setGlobalFigures() {
 		globalFigures.find('h2').text('People in Need');
 		var totalPIN = d3.sum(nationalData, function(d) { return +d['#affected+inneed']; });
 		createKeyFigure('.figures', 'Total Number of People in Need', 'pin', (d3.format('.4s'))(totalPIN));
-		createKeyFigure('.figures', 'Number of Countries', '', nationalData.length);
+		createKeyFigure('.figures', 'Number of Countries', '', worldData.numPINCountries);
 		createSource(globalFigures, '#affected+inneed');
 	}
 	//funding
@@ -1994,14 +1994,26 @@ function createMapTooltip(country_code, country_name) {
 
       //PIN layer shows refugees and IDPs
       if (currentIndicator.id=='#affected+inneed+pct') {
-        if (val!='No Data') content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
-        content += '<div class="pins">Refugees: '+ numFormat(country[0]['#affected+refugees']) +'<br/>IDPs: '+ numFormat(country[0]['#affected+displaced']) +'</div>';
+        if (val!='No Data') {
+          content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
+        }
+        content += '<div class="pins">';
+        if (country[0]['#affected+inneed']!='') content += 'People in Need: '+ numFormat(country[0]['#affected+inneed']) +'<br/>';
+        if (country[0]['#affected+refugees']!='') content += 'Refugees: '+ numFormat(country[0]['#affected+refugees']) +'<br/>';
+        if (country[0]['#affected+displaced']!='') content += 'IDPs: '+ numFormat(country[0]['#affected+displaced']) +'<br/>';
+        content += '</div>';
       }
       //covid trend layer shows sparklines
       else if (currentIndicator.id=='#covid+cases+per+capita') {
-        var value = (val=='No Data') ? val : val.toFixed(2);
-        content +=  "Weekly number of new cases per 100,000 people" + ':<div class="stat covid-capita">' + value + '</div>';
-        content +=  "Weekly % increase of new cases" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
+        if (val!='No Data') {
+          val = (val.toFixed(0)<1) ? '<1' : val.toFixed(0);
+        }
+        content += "Weekly number of new cases per 100,000 people" + ':<div class="stat covid-capita">' + val + '</div>';
+        content += "Weekly % increase of new cases" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
+      }
+      else if (currentIndicator.id=='#value+funding+hrp+pct') {
+        content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
+        if (country[0]['#value+funding+hrp+total+usd']!='') content += 'Humanitarian Funding Amount: '+ formatValue(country[0]['#value+funding+hrp+total+usd']) +'<br/><br/>';
       }
       //all other layers
       else {
@@ -2257,6 +2269,7 @@ $( document ).ready(function() {
       //parse national data
       var numCERF = 0;
       var numCBPF = 0;
+      var numPIN = 0;
       nationalData.forEach(function(item) {
         //normalize PSE name
         if (item['#country+name']=='State of Palestine') item['#country+name'] = 'occupied Palestinian territory';
@@ -2264,9 +2277,10 @@ $( document ).ready(function() {
         //calculate and inject PIN percentage
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || popDataByCountry[item['#country+code']]==undefined) ? '' : item['#affected+inneed']/popDataByCountry[item['#country+code']];
        
-        //tally countries with cerf and cbpf data
+        //tally countries with cerf, cbpf, and pin data
         if (item['#value+cerf+covid+funding+total+usd']!='') numCERF++;
         if (item['#value+cbpf+covid+funding+total+usd']!='') numCBPF++;
+        if (item['#affected+inneed']!='') { console.log(item['#country+name']); numPIN++; }
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
@@ -2275,6 +2289,7 @@ $( document ).ready(function() {
       })
 
       //inject data to world data
+      worldData.numPINCountries = numPIN;
       worldData.numCERFCountries = numCERF;
       worldData.numCBPFCountries = numCBPF;
 
