@@ -2000,7 +2000,7 @@ function createMapTooltip(country_code, country_name) {
       //covid trend layer shows sparklines
       else if (currentIndicator.id=='#covid+cases+per+capita') {
         var value = (val=='No Data') ? val : val.toFixed(2);
-        content +=  currentIndicator.name + ':<div class="stat covid-capita">' + value + '</div>';
+        content +=  "Weekly number of new cases per 100,000 people" + ':<div class="stat covid-capita">' + value + '</div>';
         content +=  "Weekly % increase of new cases" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
       }
       //all other layers
