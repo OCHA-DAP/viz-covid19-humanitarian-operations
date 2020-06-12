@@ -316,7 +316,7 @@ function createSparkline(data, div) {
     .append('svg')
     .attr('class', 'sparkline')
     .attr('width', width)
-    .attr('height', height)
+    .attr('height', height+5)
     .append('g')
     .attr('transform', 'translate(0, 2)');
     
@@ -1521,7 +1521,7 @@ function handleGlobalEvents(layer) {
      
   map.on('mouseleave', globalLayer, function() {
     map.getCanvas().style.cursor = '';
-    tooltip.remove();
+    //tooltip.remove();
   });
 
   map.on('click', function(e) {
@@ -1555,7 +1555,7 @@ function updateGlobalLayer() {
   //color scales
   colorScale = getGlobalColorScale();
   colorNoData = (currentIndicator.id=='#affected+inneed+pct') ? '#e7e4e6' : '#FFF';
-  
+
   //data join
   var expression = ['match', ['get', 'ISO_3']];
   nationalData.forEach(function(d) {
