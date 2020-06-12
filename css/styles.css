@@ -1434,7 +1434,7 @@ a:visited {
     align-items: center;
     display: flex;
     height: 60px;
-    padding: 0 25px; }
+    padding: 0 20px; }
   .menu-indicators li i {
     padding-right: 25px; }
   .menu-indicators li:hover, .menu-indicators li.selected {

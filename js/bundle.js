@@ -1471,7 +1471,7 @@ function initGlobalLayer() {
   map.setPaintProperty(globalMarkerLayer, 'circle-stroke-opacity', 1);
   map.setPaintProperty(globalMarkerLayer, 'circle-opacity', 1);
   map.setPaintProperty(globalMarkerLayer, 'circle-radius', expressionMarkers);
-  map.setPaintProperty(globalMarkerLayer, 'circle-translate', [0,-10]);
+  map.setPaintProperty(globalMarkerLayer, 'circle-translate', [0,-7]);
 
   //define mouse events
   handleGlobalEvents();
@@ -1585,7 +1585,7 @@ function updateGlobalLayer() {
 
 function getGlobalColorScale() {
   var max = d3.max(nationalData, function(d) { return +d[currentIndicator.id]; });
-  if (currentIndicator.id.indexOf('pct')>-1 && currentIndicator.id!='#covid+trend+pct') max = 1;
+  if (currentIndicator.id.indexOf('pct')>-1 && currentIndicator.id!='#covid+cases+per+capita') max = 1;
   else if (currentIndicator.id=='#severity+economic+num') max = 10;
   else if (currentIndicator.id=='#affected+inneed') max = roundUp(max, 1000000);
   else max = max;
@@ -1977,6 +1977,12 @@ function createMapTooltip(country_code, country_name) {
         if (val!='No Data') content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
         content += '<div class="pins">Refugees: '+ numFormat(country[0]['#affected+refugees']) +'<br/>IDPs: '+ numFormat(country[0]['#affected+displaced']) +'</div>';
       }
+      else if (currentIndicator.id=='#covid+cases+per+capita') {
+        var value = (val=='No Data') ? val : val.toFixed(2);
+        content +=  currentIndicator.name + ':<div class="stat covid-capita">' + value + '</div>';
+
+        content +=  "Weekly % increase of new cases" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
+      }
       else {
         content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
       }
@@ -1989,14 +1995,24 @@ function createMapTooltip(country_code, country_name) {
     tooltip.setHTML(content);
 
     //covid cases layer show sparkline
-    if (currentIndicator.id=='#covid+trend+pct') {
-      $('.sparkline').remove();
-      var sparklineArray = [];
-      covidTrendData[country_code].forEach(function(d) {
-        var obj = {date: d.date, value: d.pc_growth_rate};
-        sparklineArray.push(obj);
-      });
-      createSparkline(sparklineArray, '.mapboxgl-popup-content .stat')
+    if (currentIndicator.id=='#covid+cases+per+capita' && val!='No Data') {
+      if (val!='No Data') {
+        var sparklineArray = [];
+        covidTrendData[country_code].forEach(function(d) {
+          var obj = {date: d.date_epicrv, value: d.weekly_new_cases_per_ht};
+          sparklineArray.push(obj);
+        });
+        createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-capita');
+      }
+      if (country[0]['#covid+trend+pct']!=undefined) {
+        var pctArray = [];
+        covidTrendData[country_code].forEach(function(d) {
+          var obj = {date: d.date_epicrv, value: d.weekly_pc_increase};
+          pctArray.push(obj);
+        });
+        createSparkline(pctArray, '.mapboxgl-popup-content .stat.covid-pct')
+      }
+      
     }
 
     //showMapTooltip(content);
@@ -2140,7 +2156,7 @@ var informColorRange = ['#FFE8DC','#FDCCB8','#FC8F6F','#F43C27','#961518'];
 var vaccinationColorRange = ['#F2645A','#EEEEEE'];
 var immunizationColorRange = ['#CCE5F9','#99CBF3','#66B0ED','#3396E7','#027CE1'];
 var foodPricesColor = '#007CE1';
-var travelColor = '#007CE1';//'#6EB4ED'
+var travelColor = '#F2645A';//'#6EB4ED'
 var colorDefault = '#F2F2EF';
 var colorNoData = '#FFF';
 var worldData, nationalData, subnationalData, vaccinationData, timeseriesData, covidTrendData, dataByCountry, colorScale = '';
@@ -2195,7 +2211,7 @@ $( document ).ready(function() {
     Promise.all([
       d3.json('https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-covid-viz/master/out.json'),
       d3.csv(timeseriesPath),
-      d3.json('https://raw.githubusercontent.com/OCHA-DAP/pa-COVID-trend-analysis/date_window/hrp_covid_rates.json')
+      d3.json('https://raw.githubusercontent.com/OCHA-DAP/pa-COVID-trend-analysis/master/hrp_covid_weekly_trend.json')
     ]).then(function(data) {
       console.log('Data loaded')
       $('.loader span').text('Initializing map...');
@@ -2237,8 +2253,10 @@ $( document ).ready(function() {
         if (item['#value+cerf+covid+funding+total+usd']!='') numCERF++;
         if (item['#value+cbpf+covid+funding+total+usd']!='') numCBPF++;
 
-        //store covid daily increase %
-        item['#covid+trend+pct'] = (covidTrendData[item['#country+code']]!=undefined) ? covidTrendData[item['#country+code']][0].pc_growth_rate/100 : 0;
+        //store covid trend data
+        var covidByCountry = covidTrendData[item['#country+code']];
+        item['#covid+trend+pct'] = (covidByCountry!=undefined) ? covidByCountry[covidByCountry.length-1].weekly_pc_increase/100 : 0;
+        item['#covid+cases+per+capita'] = (covidByCountry!=undefined) ? covidByCountry[covidByCountry.length-1].weekly_new_cases_per_ht : 0;
       })
 
       //inject data to world data
