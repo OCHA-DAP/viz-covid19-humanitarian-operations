@@ -1680,7 +1680,8 @@ function setGlobalLegend(scale) {
     $('.no-data-key rect').css('fill', '#e7e4e6');
   }
   else {
-    $('.no-data-key .label').text('No Data')
+    $('.no-data-key .label').text('No Data');
+    $('.no-data-key rect').css('fill', '#FFF');
   }
 
   var legendFormat = ((currentIndicator.id).indexOf('pct')>-1) ? percentFormat : shortenNumFormat;
