@@ -1521,7 +1521,7 @@ function handleGlobalEvents(layer) {
      
   map.on('mouseleave', globalLayer, function() {
     map.getCanvas().style.cursor = '';
-    //tooltip.remove();
+    tooltip.remove();
   });
 
   map.on('click', function(e) {
