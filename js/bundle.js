@@ -1160,6 +1160,7 @@ const countryCodeList = [
 function setGlobalFigures() {
 	var globalFigures = $('.global-figures');
 	globalFigures.find('.figures, .source').empty();
+	//PIN
 	if (currentIndicator.id=='#affected+inneed+pct') {
 		globalFigures.find('h2').text('People in Need');
 		var totalPIN = d3.sum(nationalData, function(d) { return +d['#affected+inneed']; });
@@ -1167,6 +1168,7 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Number of Countries', '', nationalData.length);
 		createSource(globalFigures, '#affected+inneed');
 	}
+	//funding
 	else if (currentIndicator.id=='#value+funding+hrp+pct') {
 		globalFigures.find('h2').text('Humanitarian Funding Overview');
 		var totalPIN = d3.sum(nationalData, function(d) { return +d['#affected+inneed']; });
@@ -1176,18 +1178,29 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Countries Affected', '', nationalData.length);
 		//createSource(globalFigures, '#affected+inneed');
 	}
+	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
 		globalFigures.find('h2').text('CERF COVID-19 Allocations Overview');
 		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(worldData['#value+cerf+covid+funding+global+usd']));
 		createKeyFigure('.figures', 'Number of Countries', '', worldData.numCERFCountries);
 		createSource(globalFigures, '#value+cerf+covid+funding+total+usd');
 	}
+	//CBPF
 	else if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd') {
 		globalFigures.find('h2').text('CBPF COVID-19 Allocations Overview');
 		createKeyFigure('.figures', 'Total CBPF COVID-19 Funding', '', formatValue(worldData['#value+cbpf+covid+funding+global+usd']));
 		createKeyFigure('.figures', 'Number of Countries', '', worldData.numCBPFCountries);
 		createSource(globalFigures, '#value+cbpf+covid+funding+total+usd');
 	}
+	//covid trends
+	// else if (currentIndicator.id=='#covid+cases+per+capita') {
+	// 	var casesArray = [];
+ //    covidTrendData['H63'].forEach(function(d) {
+ //      var obj = {date: d.date_epicrv, value: d.weekly_pc_increase};
+ //      casesArray.push(obj);
+ //    });
+ //    createSparkline(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
+	// }
 	else {	
 		//global figures
 		var totalCases = d3.sum(nationalData, function(d) { return d['#affected+infected']; });
@@ -1541,7 +1554,8 @@ function updateGlobalLayer() {
 
   //color scales
   colorScale = getGlobalColorScale();
-
+  colorNoData = (currentIndicator.id=='#affected+inneed+pct') ? '#e7e4e6' : '#FFF';
+  
   //data join
   var expression = ['match', ['get', 'ISO_3']];
   nationalData.forEach(function(d) {
@@ -1585,7 +1599,7 @@ function updateGlobalLayer() {
 
 function getGlobalColorScale() {
   var max = d3.max(nationalData, function(d) { return +d[currentIndicator.id]; });
-  if (currentIndicator.id.indexOf('pct')>-1 && currentIndicator.id!='#covid+cases+per+capita') max = 1;
+  if (currentIndicator.id.indexOf('pct')>-1) max = 1;
   else if (currentIndicator.id=='#severity+economic+num') max = 10;
   else if (currentIndicator.id=='#affected+inneed') max = roundUp(max, 1000000);
   else max = max;
@@ -1661,8 +1675,13 @@ function setGlobalLegend(scale) {
   var legendTitle = $('.menu-indicators').find('.selected').attr('data-legend');
   $('.map-legend.global .indicator-title').text(legendTitle);
 
-  if (currentIndicator.id=='#affected+inneed+pct') $('.no-data-key .label').text('Refugee/IDP data only')
-  else $('.no-data-key .label').text('No Data')
+  if (currentIndicator.id=='#affected+inneed+pct') {
+    $('.no-data-key .label').text('Refugee/IDP data only');
+    $('.no-data-key rect').css('fill', '#e7e4e6');
+  }
+  else {
+    $('.no-data-key .label').text('No Data')
+  }
 
   var legendFormat = ((currentIndicator.id).indexOf('pct')>-1) ? percentFormat : shortenNumFormat;
   var legend = d3.legendColor()
@@ -1977,12 +1996,13 @@ function createMapTooltip(country_code, country_name) {
         if (val!='No Data') content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
         content += '<div class="pins">Refugees: '+ numFormat(country[0]['#affected+refugees']) +'<br/>IDPs: '+ numFormat(country[0]['#affected+displaced']) +'</div>';
       }
+      //covid trend layer shows sparklines
       else if (currentIndicator.id=='#covid+cases+per+capita') {
         var value = (val=='No Data') ? val : val.toFixed(2);
         content +=  currentIndicator.name + ':<div class="stat covid-capita">' + value + '</div>';
-
         content +=  "Weekly % increase of new cases" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
       }
+      //all other layers
       else {
         content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
       }
@@ -1994,7 +2014,7 @@ function createMapTooltip(country_code, country_name) {
 
     tooltip.setHTML(content);
 
-    //covid cases layer show sparkline
+    //covid cases layer sparklines
     if (currentIndicator.id=='#covid+cases+per+capita' && val!='No Data') {
       if (val!='No Data') {
         var sparklineArray = [];
@@ -2010,12 +2030,10 @@ function createMapTooltip(country_code, country_name) {
           var obj = {date: d.date_epicrv, value: d.weekly_pc_increase};
           pctArray.push(obj);
         });
-        createSparkline(pctArray, '.mapboxgl-popup-content .stat.covid-pct')
+        createSparkline(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
       }
       
     }
-
-    //showMapTooltip(content);
   }
   lastHovered = country_code;
 }
@@ -2039,12 +2057,8 @@ function createCountryMapTooltip(adm1_name) {
     }
     var content = '<h2>' + adm1_name + '</h2>' + currentCountryIndicator.name + ':<div class="stat">' + val + '</div>';
 
-    showMapTooltip(content);
+    tooltip.setHTML(content);
   }
-}
-
-function showMapTooltip(content) {
-  tooltip.setHTML(content);
 }
 
 
