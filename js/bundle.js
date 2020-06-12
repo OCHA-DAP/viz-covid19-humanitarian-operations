@@ -1774,7 +1774,7 @@ function updateCountryLayer() {
     var color, layerOpacity, markerSize;
     if (d['#country+code']==currentCountry.code) {
       var val = +d[currentCountryIndicator.id];
-      color = (val<0 || val=='') ? colorNoData : countryColorScale(val);
+      color = (val<0 || val=='' || isNaN(val)) ? colorNoData : countryColorScale(val);
       layerOpacity = 1;
 
       //health facility markers
