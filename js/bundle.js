@@ -2280,7 +2280,7 @@ $( document ).ready(function() {
         //tally countries with cerf, cbpf, and pin data
         if (item['#value+cerf+covid+funding+total+usd']!='') numCERF++;
         if (item['#value+cbpf+covid+funding+total+usd']!='') numCBPF++;
-        if (item['#affected+inneed']!='') { console.log(item['#country+name']); numPIN++; }
+        if (item['#affected+inneed']!='') numPIN++;
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
