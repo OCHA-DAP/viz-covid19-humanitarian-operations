@@ -370,12 +370,14 @@ function getCountryIDs() {
       var results = [];
       data.result.records.forEach(function(e){
         getCountryNames(e.adm0_id);
+        console.log('--',e.adm0_id)
       });
     }
   });     
 }
 
 function getCountryNames(adm0) {
+      console.log('adm0',adm0)
   var sql = 'SELECT distinct adm0_name FROM "'  +datastoreID + '" where adm0_id=' + adm0;
 
   $.ajax({
@@ -383,6 +385,7 @@ function getCountryNames(adm0) {
     url: dataDomain + '/api/3/action/datastore_search_sql?sql=' + encodeURIComponent(sql),
     success: function(data) {
     	countryLookup[data.result.records[0].adm0_name] = adm0;
+      //console.log('////',data.result.records[0].adm0_name)
       //initCountry(adm0, data.result.records[0].adm0_name);
     }
   });
@@ -2013,7 +2016,8 @@ function createMapTooltip(country_code, country_name) {
       }
       else if (currentIndicator.id=='#value+funding+hrp+pct') {
         content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
-        if (country[0]['#value+funding+hrp+total+usd']!='') content += 'Humanitarian Funding Amount: '+ formatValue(country[0]['#value+funding+hrp+total+usd']) +'<br/><br/>';
+        if (country[0]['#value+funding+hrp+total+usd']!='') content += 'HRP requirement: '+ formatValue(country[0]['#value+funding+hrp+required+usd']) +'<br/>';
+        if (country[0]['#value+funding+hrp+total+usd']!='') content += 'COVID-19 GHRP requirement: '+ formatValue(country[0]['#value+covid+funding+hrp+required+usd']) +'<br/><br/>';
       }
       //all other layers
       else {
@@ -2043,7 +2047,7 @@ function createMapTooltip(country_code, country_name) {
           var obj = {date: d.date_epicrv, value: d.weekly_pc_increase};
           pctArray.push(obj);
         });
-        createSparkline(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
+        //createSparkline(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
       }
       
     }
@@ -2284,7 +2288,7 @@ $( document ).ready(function() {
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
-        item['#covid+trend+pct'] = (covidByCountry!=undefined) ? covidByCountry[covidByCountry.length-1].weekly_pc_increase/100 : 0;
+        item['#covid+trend+pct'] = (covidByCountry!=undefined) ? covidByCountry[covidByCountry.length-1].weekly_pc_change/100 : 0;
         item['#covid+cases+per+capita'] = (covidByCountry!=undefined) ? covidByCountry[covidByCountry.length-1].weekly_new_cases_per_ht : 0;
       })
 
