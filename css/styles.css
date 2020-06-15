@@ -1629,7 +1629,7 @@ circle.swatch {
   display: none; }
 
 .mapboxgl-popup.map-tooltip {
-  max-width: 280px !important;
+  max-width: 270px;
   z-index: 4; }
   .mapboxgl-popup.map-tooltip .mapboxgl-popup-content {
     border-radius: 8px;
@@ -1643,7 +1643,11 @@ circle.swatch {
       margin-bottom: 10px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat {
       font-size: 32px;
-      margin: 15px 0; }
+      margin: 15px 0;
+      position: relative; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat > svg {
+        left: 85px;
+        position: absolute; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases {
       color: #888; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .pins {
@@ -1784,7 +1788,7 @@ table {
 
 .sparkline {
   fill: none;
-  margin-left: 20px;
+  margin-left: 6px;
   stroke: #007CE1;
   stroke-width: 1px; }
 

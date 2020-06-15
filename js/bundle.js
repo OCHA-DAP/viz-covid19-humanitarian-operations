@@ -328,8 +328,8 @@ function createSparkline(data, div) {
 
 
 function createTrendBarChart(data, div) {
-  var barWidth = 10;
-  var barMargin = 2;
+  var barWidth = 3;
+  var barMargin = 1;
   var width = (barWidth+barMargin) * data.length;
   var height = 24;
   var parseDate = d3.timeParse("%Y-%m-%d");
@@ -355,7 +355,7 @@ function createTrendBarChart(data, div) {
   var svg = d3.select(div)
     .append('svg')
     .attr('width', width+15)
-    .attr('height', height+5)
+    .attr('height', height)
     .append('g')
       .attr('x', 0)
       .attr('transform', 'translate(0,0)');
@@ -381,7 +381,7 @@ function createTrendBarChart(data, div) {
     // .attr('height', function(d) {
     //   return Math.abs(d.value);
     // })
-    .attr('width', 10);
+    .attr('width', barWidth);
 }
 
 
@@ -1253,15 +1253,6 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Number of Countries', '', worldData.numCBPFCountries);
 		createSource(globalFigures, '#value+cbpf+covid+funding+total+usd');
 	}
-	//covid trends
-	// else if (currentIndicator.id=='#covid+cases+per+capita') {
-	// 	var casesArray = [];
- //    covidTrendData['H63'].forEach(function(d) {
- //      var obj = {date: d.date_epicrv, value: d.weekly_pc_increase};
- //      casesArray.push(obj);
- //    });
- //    createSparkline(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
-	// }
 	else {	
 		//global figures
 		var totalCases = d3.sum(nationalData, function(d) { return d['#affected+infected']; });
@@ -1269,6 +1260,28 @@ function setGlobalFigures() {
 		globalFigures.find('h2').text('COVID-19 Pandemic in '+ nationalData.length +' GHRP Locations');
 		createKeyFigure('.figures', 'Total Confirmed Cases', 'cases', shortenNumFormat(totalCases));
 		createKeyFigure('.figures', 'Total Confirmed Deaths', 'deaths', numFormat(totalDeaths));
+
+		var covidGlobal = covidTrendData.H63;
+		var casesPerCapita = covidGlobal[covidGlobal.length-1].weekly_new_cases_per_ht;
+		var weeklyTrend = covidGlobal[covidGlobal.length-1].weekly_pc_change;
+		createKeyFigure('.figures', 'Weekly number of new cases per 100,000 people', 'cases-capita', casesPerCapita.toFixed(0));
+
+		var sparklineArray = [];
+		covidGlobal.forEach(function(d) {
+      var obj = {date: d.date_epicrv, value: d.weekly_new_cases_per_ht};
+      sparklineArray.push(obj);
+    });
+		createSparkline(sparklineArray, '.global-figures .cases-capita');
+
+		createKeyFigure('.figures', 'Weekly trend<br>(new cases past week / prior week)', 'cases-trend', weeklyTrend.toFixed(0) + '%');
+
+    var pctArray = [];
+    covidGlobal.forEach(function(d) {
+      var obj = {date: d.date_epicrv, value: d.weekly_pc_change};
+      pctArray.push(obj);
+    });
+    createTrendBarChart(pctArray, '.global-figures .cases-trend');
+
 		createSource(globalFigures, '#affected+infected');
 	}
 }
@@ -1675,7 +1688,6 @@ function getGlobalColorScale() {
     scale = d3.scaleQuantize().domain([0, 1]).range(reverseRange);
   }
   else if (currentIndicator.id=='#covid+cases+per+capita') {
-    console.log('quantile')
     scale = d3.scaleQuantile().domain([0, max]).range(colorRange);
   }
   else if (currentIndicator.id=='#vaccination-campaigns') {
@@ -2385,7 +2397,7 @@ $( document ).ready(function() {
         });
       });
 
-      //console.log(nationalData)
+      console.log(nationalData)
       //console.log(covidTrendData)
       // console.log(subnationalData)
 
