@@ -1290,6 +1290,9 @@ h6 {
   .small.source {
     margin-top: 2px; }
 
+.subtext {
+  color: #888; }
+
 .stat {
   font-family: 'Gotham-Light', sans-serif;
   font-size: 42px;

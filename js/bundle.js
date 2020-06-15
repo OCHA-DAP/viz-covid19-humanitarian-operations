@@ -328,8 +328,9 @@ function createSparkline(data, div) {
 
 
 function createTrendBarChart(data, div) {
-  var barWidth = 3;
+  var total = data.length;
   var barMargin = 1;
+  var barWidth = 3;//width/total - barMargin;
   var width = (barWidth+barMargin) * data.length;
   var height = 24;
   var parseDate = d3.timeParse("%Y-%m-%d");
@@ -342,19 +343,17 @@ function createTrendBarChart(data, div) {
   var max = d3.max(data, function(d) { return d.value; });
 
   var x = d3.scaleTime()
-    .domain([data[0].date, data[data.length-1].date])
+    .domain([data[0].date, data[total-1].date])
     .range([0, width]);
 
   // set the ranges
-  // var y = d3.scaleBand().range([0, height)]);
-  // y.domain(data.map(function(d) { return d.value; }));
   var y = d3.scaleLinear()
     .domain(d3.extent(data, function(d) { return d.value; }))
     .range([height, 0]);
 
   var svg = d3.select(div)
     .append('svg')
-    .attr('width', width+15)
+    .attr('width', width+barWidth)
     .attr('height', height)
     .append('g')
       .attr('x', 0)
@@ -365,22 +364,16 @@ function createTrendBarChart(data, div) {
     .data(data)
     .enter().append('rect')
     .attr('class', 'bar')
-    .attr("x", d => x(d.date))
-    .attr("y", function(d, i) { 
-      if (d.value>0){
-        return y(d.value);
-      } else {
-        return y(0);
-      }
+    .attr('x', function(d) {
+      return x(d.date);
+    })
+    .attr('y', function(d, i) { 
+      return (d.value>0) ? y(d.value) : y(0);
     })
     .attr('fill', function(d) {
-      var clr = (d.value>0) ? '#BFBFBF' : '#10BDE4';
-      return clr;
+      return (d.value>0) ? '#BFBFBF' : '#10BDE4';
     })
-    .attr("height", function(d) { return Math.abs(y(d.value) - y(0)); })
-    // .attr('height', function(d) {
-    //   return Math.abs(d.value);
-    // })
+    .attr('height', function(d) { return Math.abs(y(d.value) - y(0)); })
     .attr('width', barWidth);
 }
 
@@ -1191,6 +1184,7 @@ function setSelect(id, valueToSelect) {
   element.value = valueToSelect;
 }
 
+//25 HRP country codes
 const countryCodeList = [
   'AFG',
   'BDI',
@@ -1252,6 +1246,13 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Total CBPF COVID-19 Funding', '', formatValue(worldData['#value+cbpf+covid+funding+global+usd']));
 		createKeyFigure('.figures', 'Number of Countries', '', worldData.numCBPFCountries);
 		createSource(globalFigures, '#value+cbpf+covid+funding+total+usd');
+	}
+	//IFI
+	else if (currentIndicator.id=='#value+ifi+percap') {
+		globalFigures.find('h2').text('IFI Financing Overview');
+		createKeyFigure('.figures', 'Total Funding (IMF/World Bank)', '', formatValue(d3.sum(nationalData, function(d) { return d['#value+ifi+total']; })));
+		createKeyFigure('.figures', 'Number of Countries', '', worldData.numIFICountries);
+		createSource(globalFigures, '#value+ifi+percap');
 	}
 	else {	
 		//global figures
@@ -1693,6 +1694,10 @@ function getGlobalColorScale() {
   else if (currentIndicator.id=='#vaccination-campaigns') {
     scale = d3.scaleOrdinal().domain(['Postponed / May postpone', 'On Track']).range(vaccinationColorRange);
   }
+  else if (currentIndicator.id=='#value+ifi+percap') {
+    var reverseRange = colorRange.slice().reverse();
+    scale = d3.scaleQuantize().domain([0, max]).range(reverseRange);
+  }
   else {
     scale = d3.scaleQuantize().domain([0, max]).range(colorRange);
   }
@@ -2038,8 +2043,9 @@ function createMapTooltip(country_code, country_name) {
   var country = nationalData.filter(c => c['#country+code'] == country_code);
   var val = country[0][currentIndicator.id];
 
+  //format content for tooltip
   if (lastHovered!=country_code) {
-    //format content for tooltip
+    //vaccination campaigns tooltip 
     if (currentIndicator.id=='#vaccination-campaigns') {
       var vaccData = [];
       vaccinationDataByCountry.forEach(function(country) {
@@ -2060,14 +2066,20 @@ function createMapTooltip(country_code, country_name) {
         content += '</table>';
       }
     }
+    //all other tooltips
     else {
+      //set formats for value
       if (val!=undefined && val!='') {
         if (currentIndicator.id.indexOf('pct')>-1) val = percentFormat(val);
-        if (currentIndicator.id=='#severity+economic+num' || currentIndicator.id.indexOf('funding+total+usd')>-1) val = shortenNumFormat(val);
+        if (currentIndicator.id=='#severity+economic+num') val = shortenNumFormat(val);
+        if (currentIndicator.id.indexOf('funding+total')>-1) val = formatValue(val);
+        if (currentIndicator.id=='#value+ifi+percap') val = d3.format('$,.0f')(val);
       }
       else {
         val = 'No Data';
       }
+
+      //format content for display
       var content = '<h2>' + country_name + '</h2>';
 
       //PIN layer shows refugees and IDPs
@@ -2081,7 +2093,7 @@ function createMapTooltip(country_code, country_name) {
         if (country[0]['#affected+displaced']!='') content += 'IDPs: '+ numFormat(country[0]['#affected+displaced']) +'<br/>';
         content += '</div>';
       }
-      //covid trend layer shows sparklines
+      //COVID trend layer shows sparklines
       else if (currentIndicator.id=='#covid+cases+per+capita') {
         if (val!='No Data') {
           val = (val.toFixed(0)<1) ? '<1' : val.toFixed(0);
@@ -2089,10 +2101,21 @@ function createMapTooltip(country_code, country_name) {
         content += "Weekly number of new cases per 100,000 people" + ':<div class="stat covid-capita">' + val + '</div>';
         content += "Weekly trend (new cases past week / prior week)" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
       }
+      //Humanitarian Funding Level layer
       else if (currentIndicator.id=='#value+funding+hrp+pct') {
         content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
         if (country[0]['#value+funding+hrp+total+usd']!='') content += 'HRP requirement: '+ formatValue(country[0]['#value+funding+hrp+required+usd']) +'<br/>';
         if (country[0]['#value+funding+hrp+total+usd']!='') content += 'COVID-19 GHRP requirement: '+ formatValue(country[0]['#value+covid+funding+hrp+required+usd']) +'<br/><br/>';
+      }
+      //IFI financing layer
+      else if (currentIndicator.id=='#value+ifi+percap') {
+        content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
+        if (country[0]['#value+gdp+ifi+pct']!='') content += 'Percentage combined of GDP: '+ percentFormat(country[0]['#value+gdp+ifi+pct']) +'<br/>';
+        if (country[0]['#value+ifi+total']!='') content += 'Total amount combined: '+ formatValue(country[0]['#value+ifi+total']);
+        content += '<div class="subtext">Breakdown:<br/>';
+        content += 'IMF: '+ formatValue(country[0]['#value+imf+total']) +'<br/>';
+        content += 'World Bank: '+ formatValue(country[0]['#value+wb+total']) +'<br/><br/>';
+        content += '</div>';
       }
       //all other layers
       else {
@@ -2104,9 +2127,10 @@ function createMapTooltip(country_code, country_name) {
       content += 'COVID-19 Deaths: ' + numFormat(country[0]['#affected+killed']) + '</div>';
     }
 
+    //set content for tooltip
     tooltip.setHTML(content);
 
-    //covid cases layer sparklines
+    //COVID cases layer sparklines -- inject this after divs are created in tooltip
     if (currentIndicator.id=='#covid+cases+per+capita' && val!='No Data') {
       if (val!='No Data') {
         var sparklineArray = [];
@@ -2129,6 +2153,7 @@ function createMapTooltip(country_code, country_name) {
   }
   lastHovered = country_code;
 }
+
 
 function createCountryMapTooltip(adm1_name) {
   var adm1 = subnationalData.filter(function(c) {
@@ -2348,6 +2373,7 @@ $( document ).ready(function() {
       //parse national data
       var numCERF = 0;
       var numCBPF = 0;
+      var numIFI = 0;
       var numPIN = 0;
       nationalData.forEach(function(item) {
         //normalize PSE name
@@ -2359,6 +2385,7 @@ $( document ).ready(function() {
         //tally countries with cerf, cbpf, and pin data
         if (item['#value+cerf+covid+funding+total+usd']!='') numCERF++;
         if (item['#value+cbpf+covid+funding+total+usd']!='') numCBPF++;
+        if (item['#value+ifi+percap']!='') numIFI++;
         if (item['#affected+inneed']!='') numPIN++;
 
         //store covid trend data
@@ -2371,6 +2398,7 @@ $( document ).ready(function() {
       worldData.numPINCountries = numPIN;
       worldData.numCERFCountries = numCERF;
       worldData.numCBPFCountries = numCBPF;
+      worldData.numIFICountries = numIFI;
 
       //group national data by country -- drives country panel    
       dataByCountry = d3.nest()
@@ -2397,9 +2425,8 @@ $( document ).ready(function() {
         });
       });
 
-      console.log(nationalData)
-      //console.log(covidTrendData)
-      // console.log(subnationalData)
+      //console.log(nationalData)
+      //console.log(subnationalData)
 
       dataLoaded = true;
       if (mapLoaded==true) displayMap();
