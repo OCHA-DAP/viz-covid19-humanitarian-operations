@@ -297,7 +297,7 @@ function createSparkline(data, div) {
   var width = 75;
   var height = 24;
   var x = d3.scaleLinear().range([0, width]);
-  var y = d3.scaleLinear().range([height, 0]);
+  var y = d3.scaleLinear().range([0, height]);
   var parseDate = d3.timeParse("%Y-%m-%d");
   var line = d3.line()
     .x(function(d) { return x(d.date); })
@@ -318,12 +318,70 @@ function createSparkline(data, div) {
     .attr('width', width)
     .attr('height', height+5)
     .append('g')
-    .attr('transform', 'translate(0, 2)');
+      .attr('transform', 'translate(0,0)');
     
   svg.append('path')
    .datum(data)
    .attr('class', 'sparkline')
    .attr('d', line);
+}
+
+
+function createTrendBarChart(data, div) {
+  var barWidth = 10;
+  var barMargin = 2;
+  var width = (barWidth+barMargin) * data.length;
+  var height = 24;
+  var parseDate = d3.timeParse("%Y-%m-%d");
+
+  data.forEach(function(d) {
+    d.date = parseDate(d.date);
+    d.value = +d.value;
+  });
+  var min = d3.min(data, function(d) { return d.value; });
+  var max = d3.max(data, function(d) { return d.value; });
+
+  var x = d3.scaleTime()
+    .domain([data[0].date, data[data.length-1].date])
+    .range([0, width]);
+
+  // set the ranges
+  // var y = d3.scaleBand().range([0, height)]);
+  // y.domain(data.map(function(d) { return d.value; }));
+  var y = d3.scaleLinear()
+    .domain(d3.extent(data, function(d) { return d.value; }))
+    .range([height, 0]);
+
+  var svg = d3.select(div)
+    .append('svg')
+    .attr('width', width+15)
+    .attr('height', height+5)
+    .append('g')
+      .attr('x', 0)
+      .attr('transform', 'translate(0,0)');
+
+  // append bars
+  var bars = svg.selectAll('.bar')
+    .data(data)
+    .enter().append('rect')
+    .attr('class', 'bar')
+    .attr("x", d => x(d.date))
+    .attr("y", function(d, i) { 
+      if (d.value>0){
+        return y(d.value);
+      } else {
+        return y(0);
+      }
+    })
+    .attr('fill', function(d) {
+      var clr = (d.value>0) ? '#BFBFBF' : '#10BDE4';
+      return clr;
+    })
+    .attr("height", function(d) { return Math.abs(y(d.value) - y(0)); })
+    // .attr('height', function(d) {
+    //   return Math.abs(d.value);
+    // })
+    .attr('width', 10);
 }
 
 
@@ -1601,6 +1659,7 @@ function updateGlobalLayer() {
 }
 
 function getGlobalColorScale() {
+  var min = d3.min(nationalData, function(d) { return +d[currentIndicator.id]; });
   var max = d3.max(nationalData, function(d) { return +d[currentIndicator.id]; });
   if (currentIndicator.id.indexOf('pct')>-1) max = 1;
   else if (currentIndicator.id=='#severity+economic+num') max = 10;
@@ -1614,6 +1673,10 @@ function getGlobalColorScale() {
   else if (currentIndicator.id=='#value+funding+hrp+pct') {
     var reverseRange = colorRange.slice().reverse();
     scale = d3.scaleQuantize().domain([0, 1]).range(reverseRange);
+  }
+  else if (currentIndicator.id=='#covid+cases+per+capita') {
+    console.log('quantile')
+    scale = d3.scaleQuantile().domain([0, max]).range(colorRange);
   }
   else if (currentIndicator.id=='#vaccination-campaigns') {
     scale = d3.scaleOrdinal().domain(['Postponed / May postpone', 'On Track']).range(vaccinationColorRange);
@@ -2044,10 +2107,10 @@ function createMapTooltip(country_code, country_name) {
       if (country[0]['#covid+trend+pct']!=undefined) {
         var pctArray = [];
         covidTrendData[country_code].forEach(function(d) {
-          var obj = {date: d.date_epicrv, value: d.weekly_pc_increase};
+          var obj = {date: d.date_epicrv, value: d.weekly_pc_change};
           pctArray.push(obj);
         });
-        //createSparkline(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
+        createTrendBarChart(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
       }
       
     }
