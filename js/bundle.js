@@ -297,7 +297,7 @@ function createSparkline(data, div) {
   var width = 75;
   var height = 24;
   var x = d3.scaleLinear().range([0, width]);
-  var y = d3.scaleLinear().range([0, height]);
+  var y = d3.scaleLinear().range([height, 0]);
   var parseDate = d3.timeParse("%Y-%m-%d");
   var line = d3.line()
     .x(function(d) { return x(d.date); })
