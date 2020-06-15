@@ -2012,7 +2012,7 @@ function createMapTooltip(country_code, country_name) {
           val = (val.toFixed(0)<1) ? '<1' : val.toFixed(0);
         }
         content += "Weekly number of new cases per 100,000 people" + ':<div class="stat covid-capita">' + val + '</div>';
-        content += "Weekly % increase of new cases" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
+        content += "Weekly trend (new cases past week / prior week)" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
       }
       else if (currentIndicator.id=='#value+funding+hrp+pct') {
         content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
