@@ -1250,7 +1250,7 @@ function setGlobalFigures() {
 	//IFI
 	else if (currentIndicator.id=='#value+ifi+percap') {
 		globalFigures.find('h2').text('IFI Financing Overview');
-		createKeyFigure('.figures', 'Total Funding (IMF/World Bank)', '', formatValue(d3.sum(nationalData, function(d) { return d['#value+ifi+total']; })));
+		createKeyFigure('.figures', 'Total Funding (IMF/World Bank)', '', formatValue(worldData['#value+ifi+global']));
 		createKeyFigure('.figures', 'Number of Countries', '', worldData.numIFICountries);
 		createSource(globalFigures, '#value+ifi+percap');
 	}
@@ -2108,10 +2108,12 @@ function createMapTooltip(country_code, country_name) {
         content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
         if (country[0]['#value+gdp+ifi+pct']!='') content += 'Percentage combined of GDP: '+ percentFormat(country[0]['#value+gdp+ifi+pct']) +'<br/>';
         if (country[0]['#value+ifi+total']!='') content += 'Total amount combined: '+ formatValue(country[0]['#value+ifi+total']);
-        content += '<div class="subtext">Breakdown:<br/>';
-        content += 'IMF: '+ formatValue(country[0]['#value+imf+total']) +'<br/>';
-        content += 'World Bank: '+ formatValue(country[0]['#value+wb+total']) +'<br/><br/>';
-        content += '</div>';
+        if (val!='No Data') {
+          content += '<div class="subtext">Breakdown:<br/>';
+          content += 'IMF: '+ formatValue(country[0]['#value+imf+total']) +'<br/>';
+          content += 'World Bank: '+ formatValue(country[0]['#value+wb+total']) +'<br/><br/>';
+          content += '</div>';
+        }
       }
       //all other layers
       else {
