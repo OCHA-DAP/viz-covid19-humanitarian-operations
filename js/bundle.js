@@ -1,7 +1,7 @@
 window.$ = window.jQuery = require('jquery');
 function createBarChart(data, type) {
   data.forEach(function(item, index) {
-    if (item.min=='' || item.max=='')
+    if (!isVal(item.min) || !isVal(item.max))
       data.splice(index, 1);
   });
 
@@ -246,6 +246,8 @@ function createTimeseriesLegend(chart, div, country) {
 }
 
 function updateTimeseries(data, selected) {
+  if (selected=='Syrian Arab Republic') selected = 'Syria';
+
   countryTimeseriesChart.focus(selected);
   $('.c3-chart-lines .c3-line').css('stroke', '#999');
   $('.c3-chart-lines .c3-line-'+selected).css('stroke', '#007CE1');
@@ -1137,7 +1139,7 @@ function truncateString(str, num) {
 function formatValue(val) {
   var format = d3.format('$.3s');
   var value;
-  if (val=='') {
+  if (!isVal(val)) {
     value = 'NA';
   }
   else {
@@ -1207,7 +1209,7 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'GHRP Requirement (COVID-19)', '', formatValue(worldData['#value+covid+funding+ghrp+required+usd']));
 		createKeyFigure('.figures', 'Funding Coverage', '', percentFormat(worldData['#value+funding+pct']));
 		createKeyFigure('.figures', 'Countries Affected', '', nationalData.length);
-		//createSource(globalFigures, '#affected+inneed');
+		createSource(globalFigures, '#value+funding+required+usd');
 	}
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
