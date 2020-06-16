@@ -1684,19 +1684,15 @@ function getGlobalColorScale() {
   if (currentIndicator.id=='#severity+type') {
     scale = d3.scaleOrdinal().domain(['Very Low', 'Low', 'Medium', 'High', 'Very High']).range(informColorRange);
   }
-  else if (currentIndicator.id=='#value+funding+hrp+pct') {
+  else if (currentIndicator.id.indexOf('funding')>-1 || currentIndicator.id=='#value+ifi+percap') {
     var reverseRange = colorRange.slice().reverse();
-    scale = d3.scaleQuantize().domain([0, 1]).range(reverseRange);
+    scale = d3.scaleQuantize().domain([0, max]).range(reverseRange);
   }
   else if (currentIndicator.id=='#covid+cases+per+capita') {
     scale = d3.scaleQuantile().domain([0, max]).range(colorRange);
   }
   else if (currentIndicator.id=='#vaccination-campaigns') {
     scale = d3.scaleOrdinal().domain(['Postponed / May postpone', 'On Track']).range(vaccinationColorRange);
-  }
-  else if (currentIndicator.id=='#value+ifi+percap') {
-    var reverseRange = colorRange.slice().reverse();
-    scale = d3.scaleQuantize().domain([0, max]).range(reverseRange);
   }
   else {
     scale = d3.scaleQuantize().domain([0, max]).range(colorRange);
