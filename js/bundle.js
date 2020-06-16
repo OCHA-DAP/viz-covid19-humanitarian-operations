@@ -1208,7 +1208,7 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Total Funding Required', '', formatValue(worldData['#value+funding+required+usd']));
 		createKeyFigure('.figures', 'GHRP Requirement (COVID-19)', '', formatValue(worldData['#value+covid+funding+ghrp+required+usd']));
 		createKeyFigure('.figures', 'Funding Coverage', '', percentFormat(worldData['#value+funding+pct']));
-		createKeyFigure('.figures', 'Countries Affected', '', nationalData.length);
+		createKeyFigure('.figures', 'Countries Affected', '', worldData.numFundingPctCountries);
 		createSource(globalFigures, '#value+funding+required+usd');
 	}
 	//CERF
@@ -1336,6 +1336,7 @@ function displayMap() {
 
   createEvents();
 
+  //map.setFeatureState({source: '63_polbnda_int_uncs-29lk4r', id: globalLayer}, { hover: false});
   //get layers
   map.getStyle().layers.map(function (layer) {
     switch(layer.id) {
@@ -2356,6 +2357,7 @@ $( document ).ready(function() {
         .object(subnationalData);
 
       //parse national data
+      var numFundingPct = 0;
       var numCERF = 0;
       var numCBPF = 0;
       var numIFI = 0;
@@ -2368,10 +2370,11 @@ $( document ).ready(function() {
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || popDataByCountry[item['#country+code']]==undefined) ? '' : item['#affected+inneed']/popDataByCountry[item['#country+code']];
        
         //tally countries with cerf, cbpf, and pin data
-        if (item['#value+cerf+covid+funding+total+usd']!='') numCERF++;
-        if (item['#value+cbpf+covid+funding+total+usd']!='') numCBPF++;
-        if (item['#value+ifi+percap']!='') numIFI++;
-        if (item['#affected+inneed']!='') numPIN++;
+        if (!isVal(item['#value+funding+hrp+pct'])) numFundingPct++;
+        if (!isVal(item['#value+cerf+covid+funding+total+usd'])) numCERF++;
+        if (!isVal(item['#value+cbpf+covid+funding+total+usd'])) numCBPF++;
+        if (!isVal(item['#value+ifi+percap'])) numIFI++;
+        if (!isVal(item['#affected+inneed'])) numPIN++;
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
@@ -2381,6 +2384,7 @@ $( document ).ready(function() {
 
       //inject data to world data
       worldData.numPINCountries = numPIN;
+      worldData.numFundingPctCountries = numFundingPct;
       worldData.numCERFCountries = numCERF;
       worldData.numCBPFCountries = numCBPF;
       worldData.numIFICountries = numIFI;
