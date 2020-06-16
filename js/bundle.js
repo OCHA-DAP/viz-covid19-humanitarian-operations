@@ -1546,7 +1546,7 @@ function initGlobalLayer() {
 
     //covid markers
     var covidVal = d['#affected+infected'];
-    var size = (covidVal=='') ? 0 : markerScale(covidVal);
+    var size = (covidVal=='' || covidVal==undefined) ? 0 : markerScale(covidVal);
     expressionMarkers.push(d['#country+code'], size);
   });
 
