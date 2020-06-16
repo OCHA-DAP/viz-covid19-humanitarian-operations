@@ -2100,8 +2100,10 @@ function createMapTooltip(country_code, country_name) {
       //Humanitarian Funding Level layer
       else if (currentIndicator.id=='#value+funding+hrp+pct') {
         content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
-        if (country[0]['#value+funding+hrp+total+usd']!='') content += 'HRP requirement: '+ formatValue(country[0]['#value+funding+hrp+required+usd']) +'<br/>';
-        if (country[0]['#value+funding+hrp+total+usd']!='') content += 'COVID-19 GHRP requirement: '+ formatValue(country[0]['#value+covid+funding+hrp+required+usd']) +'<br/><br/>';
+        if (val!='No Data') {
+          if (country[0]['#value+funding+hrp+total+usd']!='') content += 'HRP requirement: '+ formatValue(country[0]['#value+funding+hrp+required+usd']) +'<br/>';
+          if (country[0]['#value+funding+hrp+total+usd']!='') content += 'COVID-19 GHRP requirement: '+ formatValue(country[0]['#value+covid+funding+hrp+required+usd']) +'<br/><br/>';
+        }
       }
       //IFI financing layer
       else if (currentIndicator.id=='#value+ifi+percap') {
