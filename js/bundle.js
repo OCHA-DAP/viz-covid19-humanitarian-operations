@@ -1229,7 +1229,7 @@ function setGlobalFigures() {
 	else if (currentIndicator.id=='#value+ifi+percap') {
 		globalFigures.find('h2').text('IFI Financing Overview');
 		createKeyFigure('.figures', 'Total Funding (IMF/World Bank)', '', formatValue(worldData['#value+ifi+global']));
-		createKeyFigure('.figures', 'Number of Countries', '', nationalData.length);
+		createKeyFigure('.figures', 'Number of Countries', '', worldData.numIFICountries);
 		createSource(globalFigures, '#value+ifi+percap');
 	}
 	else {	
@@ -2414,6 +2414,7 @@ $( document ).ready(function() {
       worldData.numPINCountries = 0;
       worldData.numCERFCountries = 0;
       worldData.numCBPFCountries = 0;
+      worldData.numIFICountries = 0;
 
       //parse national data
       nationalData.forEach(function(item) {
@@ -2424,9 +2425,10 @@ $( document ).ready(function() {
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || popDataByCountry[item['#country+code']]==undefined) ? '' : item['#affected+inneed']/popDataByCountry[item['#country+code']];
        
         //tally countries with funding and pin data
-        if (!isVal(item['#affected+inneed'])) worldData.numPINCountries++;
-        if (!isVal(item['#value+cerf+covid+funding+total+usd'])) worldData.numCERFCountries++;
-        if (!isVal(item['#value+cbpf+covid+funding+total+usd'])) worldData.numCBPFCountries++;
+        if (isVal(item['#affected+inneed'])) worldData.numPINCountries++;
+        if (isVal(item['#value+cerf+covid+funding+total+usd'])) worldData.numCERFCountries++;
+        if (isVal(item['#value+cbpf+covid+funding+total+usd'])) worldData.numCBPFCountries++;
+        if (isVal(item['#value+ifi+percap'])) worldData.numIFICountries++;
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
