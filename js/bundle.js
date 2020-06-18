@@ -2459,8 +2459,8 @@ $( document ).ready(function() {
         });
       });
 
-      console.log(nationalData)
-      console.log(subnationalData)
+      //console.log(nationalData)
+      //console.log(subnationalData)
 
       dataLoaded = true;
       if (mapLoaded==true) displayMap();
