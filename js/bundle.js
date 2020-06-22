@@ -1516,7 +1516,7 @@ function selectCountry(features) {
   map.once('moveend', initCountryView);
 }
 
-function setTravelDescription(country) { 
+function setTravelDescription(country) {
   var data = dataByCountry[country.code][0];
   var text = truncateString(data['#severity+travel'], 275);
   var content = '<h2 class="title">'+ country.name +'</h2>';
@@ -1627,7 +1627,7 @@ function handleGlobalEvents(layer) {
   
     if (target!=null) {
       currentCountry.code = target.properties.ISO_3;
-      currentCountry.name = target.properties.Terr_Name;
+      currentCountry.name = (target.properties.Terr_Name=='CuraÃ§ao') ? 'Curaçao' : target.properties.Terr_Name;
 
       if (currentCountry.code!=undefined) {
         if (currentIndicator.id=='#food-prices' && getCountryIDByName(currentCountry.name)!=undefined) {
