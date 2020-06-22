@@ -1635,7 +1635,7 @@ circle.swatch {
   display: none; }
 
 .mapboxgl-popup.map-tooltip {
-  max-width: 270px;
+  max-width: 250px !important;
   z-index: 4; }
   .mapboxgl-popup.map-tooltip .mapboxgl-popup-content {
     border-radius: 8px;
@@ -1652,7 +1652,7 @@ circle.swatch {
       margin: 15px 0;
       position: relative; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat > svg {
-        left: 85px;
+        left: 110px;
         position: absolute; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases {
       color: #888;
