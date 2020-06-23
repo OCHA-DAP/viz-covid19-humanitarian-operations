@@ -413,8 +413,7 @@ function getCountryNames(adm0) {
   });
 }
 
-function getProductsByCountryID(adm0_code,adm0_name){  
-console.log('getProductsByCountryID')  
+function getProductsByCountryID(adm0_code,adm0_name){
   var sql = 'SELECT cm_id, cm_name, um_id, um_name, avg(cast(mp_month as double precision)) as month_num, mp_year, avg(mp_price) FROM "' + datastoreID + '" where adm0_id=' + adm0_code + ' and mp_year>2009 group by cm_id, cm_name, um_name, um_id, mp_month, mp_year order by cm_id, um_id, mp_year, month_num';
   //var today = new Date();
   //var sql = 'SELECT cm_id,cm_name,um_id,um_name,avg(cast(mp_month as double precision)) as month_num,mp_year,avg(mp_price) FROM "'+datastoreID+'" where adm0_id='+adm0_code+' and mp_year>2009 and EXISTS (SELECT mp_year FROM "'+datastoreID+'" WHERE adm0_id='+adm0_code+' and mp_year='+today.getFullYear()+') group by cm_id, cm_name, um_name, um_id, mp_month, mp_year order by cm_id, um_id, mp_year, month_num';
@@ -444,7 +443,6 @@ console.log('getProductsByCountryID')
 }
 
 function getProductDataByCountryID(adm0_code,cm_id,um_id,adm0_name,cm_name,um_name,adm1_name,mkt_name){
-console.log('getProductDataByCountryID')  
   var sql = 'SELECT adm1_id,adm1_name,mkt_id,mkt_name, cast(mp_month as double precision) as month_num, mp_year, mp_price FROM "'+datastoreID+'" where adm0_id='+adm0_code+' and cm_id='+cm_id+' and um_id='+um_id;
 
   var data = encodeURIComponent(JSON.stringify({sql: sql}));
