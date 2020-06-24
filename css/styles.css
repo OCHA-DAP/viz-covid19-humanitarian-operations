@@ -1791,6 +1791,9 @@ table {
   .c3-tooltip td > span {
     display: none; }
 
+.c3-focused .c3-lines .c3-line {
+  stroke: #007CE1 !important; }
+
 .sparkline {
   fill: none;
   margin-left: 6px;
