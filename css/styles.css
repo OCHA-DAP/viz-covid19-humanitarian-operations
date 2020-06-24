@@ -1352,6 +1352,11 @@ a:visited {
     display: none; }
   .content.food-prices-view .layer-description, .content.travel-restrictions-view .layer-description {
     display: block; }
+    .content.food-prices-view .layer-description svg, .content.travel-restrictions-view .layer-description svg {
+      height: 33px;
+      width: 200px; }
+  .content.travel-restrictions-view .description-legend {
+    display: none; }
 
 .layer-description {
   background-color: #FFF;
@@ -1374,6 +1379,9 @@ a:visited {
       font-family: 'Source Sans Pro', sans-serif;
       font-size: 14px;
       text-decoration: none; }
+  .layer-description .description-legend {
+    display: block;
+    margin-top: 10px; }
 
 .modal-bg-overlay {
   background-color: rgba(51, 51, 51, 0.7);
