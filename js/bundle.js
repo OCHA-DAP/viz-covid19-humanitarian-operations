@@ -414,9 +414,9 @@ function getCountryNames(adm0) {
 }
 
 function getProductsByCountryID(adm0_code,adm0_name){
-  var sql = 'SELECT cm_id, cm_name, um_id, um_name, avg(cast(mp_month as double precision)) as month_num, mp_year, avg(mp_price) FROM "' + datastoreID + '" where adm0_id=' + adm0_code + ' and mp_year>2009 group by cm_id, cm_name, um_name, um_id, mp_month, mp_year order by cm_id, um_id, mp_year, month_num';
-  //var today = new Date();
-  //var sql = 'SELECT cm_id,cm_name,um_id,um_name,avg(cast(mp_month as double precision)) as month_num,mp_year,avg(mp_price) FROM "'+datastoreID+'" where adm0_id='+adm0_code+' and mp_year>2009 and EXISTS (SELECT mp_year FROM "'+datastoreID+'" WHERE adm0_id='+adm0_code+' and mp_year='+today.getFullYear()+') group by cm_id, cm_name, um_name, um_id, mp_month, mp_year order by cm_id, um_id, mp_year, month_num';
+  //var sql = 'SELECT cm_id, cm_name, um_id, um_name, avg(cast(mp_month as double precision)) as month_num, mp_year, avg(mp_price) FROM "' + datastoreID + '" where adm0_id=' + adm0_code + ' and mp_year>2009 group by cm_id, cm_name, um_name, um_id, mp_month, mp_year order by cm_id, um_id, mp_year, month_num';
+  var today = new Date();
+  var sql = 'SELECT T1.cm_id,T1.cm_name,T1.um_id,T1.um_name,avg(cast(T1.mp_month as double precision)) AS month_num,T1.mp_year,avg(T1.mp_price) FROM "' + datastoreID + '" AS T1 INNER JOIN (SELECT DISTINCT adm0_id,cm_id,um_id from "' + datastoreID + '" WHERE mp_year='+today.getFullYear()+') AS T2 ON T1.adm0_id=T2.adm0_id AND T1.cm_id=T2.cm_id AND T1.um_id=T2.um_id WHERE T1.adm0_id=' + adm0_code + ' AND T1.mp_year>'+(today.getFullYear()-11)+' GROUP BY T1.cm_id,T1.cm_name,T1.um_name,T1.um_id,T1.mp_month,T1.mp_year ORDER BY T1.cm_id, T1.um_id, T1.mp_year, month_num';
   var data = encodeURIComponent(JSON.stringify({sql: sql}));
 
   $.ajax({
@@ -427,15 +427,15 @@ function getProductsByCountryID(adm0_code,adm0_name){
     	$('.modal-subnav').empty();
 
         //remove products from data that dont have 2020 data
-        var dataByProduct = d3.nest()
-            .key(function(d) { return d.cm_name; })
-            .entries(data.result.records);
-        dataByProduct.forEach(function(product) {
-            var latestYear = product.values[product.values.length-1].mp_year;
-            if (latestYear<2020) {
-                data.result.records = data.result.records.filter(function(record) { return record.cm_name!=product.key; })
-            }
-        });
+        // var dataByProduct = d3.nest()
+        //     .key(function(d) { return d.cm_name; })
+        //     .entries(data.result.records);
+        // dataByProduct.forEach(function(product) {
+        //     var latestYear = product.values[product.values.length-1].mp_year;
+        //     if (latestYear<2020) {
+        //         data.result.records = data.result.records.filter(function(record) { return record.cm_name!=product.key; })
+        //     }
+        // });
 
         generateSparklines(data.result.records,adm0_code,adm0_name);
     }
@@ -1173,7 +1173,7 @@ function setSelect(id, valueToSelect) {
 }
 
 function isVal(value) {
-  return (value!='' && value!=' ' && value!=undefined || value==0) ? true : false;
+  return (value===undefined || value===null || value==='') ? false : true;
 }
 
 
@@ -1685,6 +1685,7 @@ function updateGlobalLayer() {
   map.setPaintProperty(globalLayer, 'fill-color', expression);
   setGlobalLegend(colorScale);
 
+  //food prices and travel restrictions layers
   if (currentIndicator.id=='#food-prices' || currentIndicator.id=='#severity+travel') {
     map.setLayoutProperty(globalMarkerLayer, 'visibility', 'none');
 
@@ -1698,6 +1699,7 @@ function updateGlobalLayer() {
       layer.find('h4').text('Click on a country to view travel restrictions');
     }
   }
+  //all other layers
   else {
     map.setLayoutProperty(globalMarkerLayer, 'visibility', 'visible');
   }
@@ -2449,7 +2451,8 @@ $( document ).ready(function() {
 
         //calculate and inject PIN percentage
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || popDataByCountry[item['#country+code']]==undefined) ? '' : item['#affected+inneed']/popDataByCountry[item['#country+code']];
-       
+
+        console.log('PIN',item['#country+name'], item['#affected+inneed+pct'], isVal(item['#affected+inneed+pct']))
         //tally countries with funding and pin data
         if (isVal(item['#affected+inneed'])) worldData.numPINCountries++;
         if (isVal(item['#value+cerf+covid+funding+total+usd'])) worldData.numCERFCountries++;
@@ -2460,6 +2463,7 @@ $( document ).ready(function() {
         var covidByCountry = covidTrendData[item['#country+code']];
         item['#covid+trend+pct'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1].weekly_pc_change/100;
         item['#covid+cases+per+capita'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1].weekly_new_cases_per_ht;
+        console.log(item['#country+name'], item['#covid+cases+per+capita'], isVal(item['#covid+cases+per+capita']))
       })
 
       //group national data by country -- drives country panel    
@@ -2535,7 +2539,7 @@ $( document ).ready(function() {
 
   function initTracking() {
     //initialize mixpanel
-    let MIXPANEL_TOKEN = window.location.hostname=='data.humdata.org'? '5cbf12bc9984628fb2c55a49daf32e74' : '99035923ee0a67880e6c05ab92b6cbc0';
+    var MIXPANEL_TOKEN = window.location.hostname=='data.humdata.org'? '5cbf12bc9984628fb2c55a49daf32e74' : '99035923ee0a67880e6c05ab92b6cbc0';
     mixpanel.init(MIXPANEL_TOKEN);
     mixpanel.track('page view', {
       'page title': document.title,
