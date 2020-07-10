@@ -1295,7 +1295,8 @@ h6 {
 
 .stat {
   font-family: 'Gotham-Light', sans-serif;
-  font-size: 42px;
+  font-size: 36px;
+  line-height: 40px;
   margin: 30px 0; }
 
 ul {
@@ -1310,61 +1311,58 @@ a:visited {
   color: #007CE1; }
 
 .footnote {
-  bottom: 34px;
-  font-size: 11px;
+  font-size: 10px;
   font-style: italic;
-  left: 10px;
-  position: absolute;
-  z-index: 1; }
+  line-height: 12px;
+  padding-bottom: 10px; }
 
 .content {
   display: flex;
   flex-flow: row; }
   .content .content-left {
+    background-color: #FFF;
     display: flex;
     flex-flow: column;
     overflow: scroll;
-    padding: 12px;
+    padding: 12px 0 12px 12px;
     min-width: 255px;
-    width: 255px; }
+    width: 255px;
+    z-index: 2; }
   .content .content-right {
     background-color: #99DAEA;
     height: 100%;
-    position: relative; }
+    position: relative;
+    z-index: 1; }
   .content.country-view .description,
   .content.country-view .country-label,
   .content.country-view .map-legend.global,
-  .content.country-view .global-menu,
   .content.country-view .global-figures,
   .content.country-view .layer-description {
     display: none; }
   .content.country-view .map-legend.country {
-    left: 40px;
+    left: auto;
+    right: 24px;
     opacity: 1;
     z-index: 3; }
-  .content.country-view .country-menu {
-    display: block; }
+  .content.country-view .country-panel {
+    left: 0;
+    transition: left 0.4s ease-out; }
   .content.food-prices-view .map-legend.global,
-  .content.food-prices-view .count-marker,
-  .content.food-prices-view .global-figures, .content.travel-restrictions-view .map-legend.global,
-  .content.travel-restrictions-view .count-marker,
-  .content.travel-restrictions-view .global-figures {
+  .content.food-prices-view .count-marker {
     display: none; }
-  .content.food-prices-view .layer-description, .content.travel-restrictions-view .layer-description {
+  .content.food-prices-view .layer-description {
     display: block; }
-    .content.food-prices-view .layer-description svg, .content.travel-restrictions-view .layer-description svg {
+    .content.food-prices-view .layer-description svg {
       height: 33px;
       width: 200px; }
-  .content.travel-restrictions-view .description-legend {
-    display: none; }
 
 .layer-description {
   background-color: #FFF;
   display: none;
-  left: 40px;
-  padding: 15px;
+  bottom: 36px;
+  padding: 15px 15px 5px;
   position: absolute;
-  top: 120px;
+  right: 24px;
   width: 240px;
   z-index: 1; }
   .layer-description .description-source {
@@ -1382,6 +1380,8 @@ a:visited {
   .layer-description .description-legend {
     display: block;
     margin-top: 10px; }
+  .layer-description .footnote {
+    padding-top: 10px; }
 
 .modal-bg-overlay {
   background-color: rgba(51, 51, 51, 0.7);
@@ -1437,9 +1437,6 @@ a:visited {
 .menu .global-menu {
   display: block; }
 
-.menu .country-menu {
-  display: none; }
-
 .menu-indicators li {
   color: #888;
   cursor: pointer;
@@ -1448,7 +1445,18 @@ a:visited {
     align-items: center;
     display: flex;
     height: 60px;
-    padding: 0 25px; }
+    padding: 0 50px 0 25px;
+    position: relative; }
+    .menu-indicators li div:after {
+      color: #CCC;
+      content: '\e96e';
+      font-family: 'Humanitarian-Icons-v02';
+      position: absolute;
+      right: 20px; }
+    .menu-indicators li div.expand:after {
+      content: '\e9e8'; }
+    .menu-indicators li div.no-expand:after {
+      content: ''; }
   .menu-indicators li i {
     padding-right: 25px; }
   .menu-indicators li:hover, .menu-indicators li.selected {
@@ -1459,7 +1467,8 @@ a:visited {
       color: #007CE1; }
 
 .country-select,
-.indicator-select {
+.indicator-select,
+.ranking-select {
   background-color: #FFF;
   border-color: #FFF;
   border-radius: 8px;
@@ -1470,40 +1479,63 @@ a:visited {
   width: 100%; }
 
 .country-select {
-  left: 40px;
+  right: 24px;
   opacity: 0;
   position: absolute;
-  top: 40px;
+  top: 30px;
   width: 215px;
   z-index: 3; }
 
+.ranking-select {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  font-weight: normal;
+  height: 30px;
+  margin-left: 8px;
+  padding: 0;
+  width: 155px; }
+
 .global-figures {
-  background-color: #FFF;
-  bottom: 25px;
+  background-color: rgba(255, 255, 255, 0.9);
   display: block;
+  left: 0;
   opacity: 0;
-  padding: 25px;
+  overflow: auto;
+  padding: 20px 25px;
   position: absolute;
-  right: 24px;
-  width: 416px;
+  top: 0;
+  width: 255px;
   z-index: 3; }
+  .global-figures .close-btn {
+    cursor: pointer;
+    color: #888;
+    right: 20px;
+    position: absolute;
+    top: 20px; }
+  .global-figures .source-container {
+    border-bottom: 1px solid #CCC;
+    padding-bottom: 15px; }
+    .global-figures .source-container .source {
+      padding-right: 50px; }
   .global-figures .figures {
-    display: flex;
-    flex-wrap: wrap;
-    padding-top: 20px; }
+    padding-top: 10px; }
     .global-figures .figures .key-figure {
-      flex: 0 0 calc(50% - 15px);
-      margin-right: 15px;
       padding-bottom: 10px; }
       .global-figures .figures .key-figure .inner {
         border-bottom: 1px solid #CCC;
-        border-top: 1px solid #CCC; }
+        padding-bottom: 10px; }
         .global-figures .figures .key-figure .inner h3 {
           color: #000;
           font-size: 14px;
           line-height: 16px;
-          margin: 14px 0 0;
-          min-height: 32px; }
+          margin: 10px 0; }
+        .global-figures .figures .key-figure .inner .num {
+          position: relative; }
+        .global-figures .figures .key-figure .inner svg {
+          bottom: 10px;
+          left: 110px;
+          position: absolute; }
       .global-figures .figures .key-figure:nth-child(2), .global-figures .figures .key-figure:nth-child(4) {
         flex: 0 0 calc(50%);
         margin-right: 0; }
@@ -1514,11 +1546,25 @@ a:visited {
   .global-figures .num {
     color: #000;
     font-family: 'Gotham-Light', sans-serif;
-    font-size: 42px;
-    line-height: 46px;
-    padding: 10px 0; }
+    font-size: 36px;
+    line-height: 40px;
+    padding: 5px 0; }
     .global-figures .num span {
       font-size: 26px; }
+
+.ranking-chart {
+  margin-top: 20px;
+  min-height: 234px;
+  overflow: scroll; }
+  .ranking-chart .bar {
+    fill: #F2645B; }
+  .ranking-chart .name {
+    text-anchor: end; }
+  .ranking-chart .y.axis text {
+    display: none; }
+
+.ranking-select-container {
+  margin-top: 10px; }
 
 .label-header {
   display: block;
@@ -1543,11 +1589,11 @@ a:visited {
   background-color: #FFF;
   color: #000;
   fill: #000;
-  left: 40px;
+  right: 24px;
   opacity: 0;
   padding: 15px 20px 5px;
   position: absolute;
-  top: 120px;
+  bottom: 30px;
   width: 215px;
   z-index: 3; }
   .map-legend label {
@@ -1583,7 +1629,7 @@ a:visited {
     height: auto;
     left: -215px;
     opacity: 0;
-    padding-bottom: 15px;
+    padding-bottom: 5px;
     z-index: -1; }
     .map-legend.country label {
       margin-top: 10px; }
@@ -1600,16 +1646,6 @@ a:visited {
           display: none; }
     .map-legend.country .source-container {
       margin-left: 18px; }
-
-#country-map {
-  left: 0;
-  fill: transparent;
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  transition: opacity 0.5s ease; }
-  #country-map .map-regions {
-    stroke: #999; }
 
 .country-label,
 .adm1-label,
@@ -1663,11 +1699,15 @@ circle.swatch {
       margin: 15px 0;
       position: relative; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat > svg {
-        left: 110px;
+        left: 115px;
         position: absolute; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases {
       color: #888;
       margin-top: 10px; }
+
+.mapboxgl-ctrl-top-right {
+  top: 84px;
+  right: 16px; }
 
 table {
   font-size: 12px;
@@ -1682,22 +1722,21 @@ table {
 
 .country-panel {
   background-color: #FFF;
-  bottom: 30px;
-  display: none;
-  overflow: scroll;
-  padding: 0 30px 30px;
+  bottom: 0;
+  overflow: hidden;
+  padding: 12px 30px 30px;
   position: absolute;
-  top: 30px;
-  right: 30px;
+  top: 0;
+  left: -416px;
   width: 416px;
-  z-index: 1; }
+  z-index: 3;
+  transition: left 0.3s ease-in; }
+  .country-panel .hdx-logo,
+  .country-panel h1 {
+    padding-left: 0; }
   .country-panel .panel-header {
     background-color: #FFF;
-    padding: 30px 0 15px;
-    position: sticky;
-    top: 0;
-    width: 356px;
-    z-index: 1000; }
+    padding: 30px 0 15px; }
     .country-panel .panel-header .panel-title {
       align-items: center;
       display: flex;
@@ -1706,6 +1745,9 @@ table {
       height: 35px;
       margin-right: 10px;
       width: 35px; }
+  .country-panel .panel-content {
+    height: 100%;
+    overflow: scroll; }
   .country-panel .source {
     min-height: 28px; }
   .country-panel .panel-inner {
@@ -1808,7 +1850,7 @@ table {
 .sparkline {
   fill: none;
   margin-left: 6px;
-  stroke: #007CE1;
+  stroke: #F2645B;
   stroke-width: 1px; }
 
 .mobile-message {
@@ -1831,12 +1873,4 @@ table {
 
 @media only screen and (max-height: 696px) {
   .map-legend.country {
-    overflow: scroll; }
-  .global-figures {
-    width: 290px; }
-    .global-figures .figures {
-      flex-flow: column; }
-      .global-figures .figures .key-figure {
-        width: 100%; }
-        .global-figures .figures .key-figure:first-child .inner {
-          border-bottom: 0; } }
+    overflow: scroll; } }
