@@ -1386,7 +1386,7 @@ function setGlobalFigures() {
 	}
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
-		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(worldData['##value+cerf+covid+funding+total+usd']));
+		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(worldData['#value+cerf+covid+funding+total+usd']));
 		createKeyFigure('.figures', 'Number of Countries', '', worldData.numCERFCountries);
 	}
 	//CBPF
