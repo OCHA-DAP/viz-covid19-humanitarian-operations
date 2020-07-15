@@ -1882,5 +1882,8 @@ table {
     top: 10px; }
 
 @media only screen and (max-height: 696px) {
+  .map-legend.global {
+    max-height: 440px;
+    overflow: auto; }
   .map-legend.country {
     overflow: scroll; } }
