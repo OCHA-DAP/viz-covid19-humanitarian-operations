@@ -378,8 +378,12 @@ function createRankingChart() {
 
   //format data
   var rankingByCountry = d3.nest()
-    .key(function(d) { return d['#country+name']; })
-    .rollup(function(v) { return v[0][indicator]; })
+    .key(function(d) {
+      if (regionMatch(d['#region+name'])) return d['#country+name']; 
+    })
+    .rollup(function(v) {
+      if (regionMatch(v[0]['#region+name'])) return v[0][indicator]; 
+    })
     .entries(nationalData);
 
   rankingData = rankingByCountry.filter(function(item) { 
@@ -547,7 +551,7 @@ function getCountryIDs() {
 }
 
 function getCountryNames(adm0) {
-  var sql = 'SELECT distinct adm0_name FROM "'  +datastoreID + '" where adm0_id=' + adm0;
+  var sql = 'SELECT distinct adm0_name FROM "' + datastoreID + '" where adm0_id=' + adm0;
 
   $.ajax({
     type: 'GET',
@@ -560,8 +564,24 @@ function getCountryNames(adm0) {
 
 function getProductsByCountryID(adm0_code,adm0_name){
   //var sql = 'SELECT cm_id, cm_name, um_id, um_name, avg(cast(mp_month as double precision)) as month_num, mp_year, avg(mp_price) FROM "' + datastoreID + '" where adm0_id=' + adm0_code + ' and mp_year>2009 group by cm_id, cm_name, um_name, um_id, mp_month, mp_year order by cm_id, um_id, mp_year, month_num';
+  
   var today = new Date();
-  var sql = 'SELECT T1.cm_id,T1.cm_name,T1.um_id,T1.um_name,avg(cast(T1.mp_month as double precision)) AS month_num,T1.mp_year,avg(T1.mp_price) FROM "' + datastoreID + '" AS T1 INNER JOIN (SELECT DISTINCT adm0_id,cm_id,um_id from "' + datastoreID + '" WHERE mp_year='+today.getFullYear()+') AS T2 ON T1.adm0_id=T2.adm0_id AND T1.cm_id=T2.cm_id AND T1.um_id=T2.um_id WHERE T1.adm0_id=' + adm0_code + ' AND T1.mp_year>'+(today.getFullYear()-11)+' GROUP BY T1.cm_id,T1.cm_name,T1.um_name,T1.um_id,T1.mp_month,T1.mp_year ORDER BY T1.cm_id, T1.um_id, T1.mp_year, month_num';
+  var yearnow = today.getFullYear()
+  var monthnow = today.getMonth()
+  var sql = 'SELECT T1.cm_id,T1.cm_name,T1.um_id,T1.um_name,avg(cast(T1.mp_month as double precision)) AS month_num,T1.mp_year,avg(T1.mp_price) FROM "' + datastoreID + '" AS T1 INNER JOIN (SELECT DISTINCT adm0_id,cm_id,um_id from "' + datastoreID + '" WHERE '
+  for (i = 1; i < 7; i++) {
+    var month = monthnow - i;
+    var year = yearnow;
+    if (month <= 0) {
+      month = 12 - month;
+      year -= 1;
+    }
+    sql += '(mp_year='+year+' AND cast(mp_month as int)='+month+') OR ';
+  }
+  sql = sql.substring(0, sql.length - 4);
+  sql += ') AS T2 ON T1.adm0_id=T2.adm0_id AND T1.cm_id=T2.cm_id AND T1.um_id=T2.um_id WHERE T1.adm0_id=' + adm0_code + ' AND T1.mp_year>'+(yearnow-11)+' GROUP BY T1.cm_id,T1.cm_name,T1.um_name,T1.um_id,T1.mp_month,T1.mp_year ORDER BY T1.cm_id, T1.um_id, T1.mp_year, month_num';
+
+  //var sql = 'SELECT T1.cm_id,T1.cm_name,T1.um_id,T1.um_name,avg(cast(T1.mp_month as double precision)) AS month_num,T1.mp_year,avg(T1.mp_price) FROM "' + datastoreID + '" AS T1 INNER JOIN (SELECT DISTINCT adm0_id,cm_id,um_id from "' + datastoreID + '" WHERE mp_year='+today.getFullYear()+') AS T2 ON T1.adm0_id=T2.adm0_id AND T1.cm_id=T2.cm_id AND T1.um_id=T2.um_id WHERE T1.adm0_id=' + adm0_code + ' AND T1.mp_year>'+(today.getFullYear()-11)+' GROUP BY T1.cm_id,T1.cm_name,T1.um_name,T1.um_id,T1.mp_month,T1.mp_year ORDER BY T1.cm_id, T1.um_id, T1.mp_year, month_num';
   var data = encodeURIComponent(JSON.stringify({sql: sql}));
 
   $.ajax({
@@ -1323,15 +1343,33 @@ function roundUp(x, limit) {
   return Math.ceil(x/limit)*limit;
 }
 
-function setSelect(id, valueToSelect) {    
-  let element = document.getElementById(id);
-  element.value = valueToSelect;
-}
-
 function isVal(value) {
   return (value===undefined || value===null || value==='') ? false : true;
 }
 
+function regionMatch(region) {
+  var match = false;
+  var regions = region.split('|');
+  for (var region of regions) {
+    if (currentRegion=='' || region==currentRegion) {
+      match = true;
+      break;
+    }
+  }
+  return match;
+}
+
+
+//regional id/name list
+const regionalList = [
+  {id: 'H25', name: '25 HRP Locations'},
+  {id: 'ROAP', name: 'Asia and the Pacific'},
+  {id: 'ROCCA', name: 'Eastern Europe'},
+  {id: 'ROLAC', name: 'Latin America and the Caribbean'},
+  {id: 'ROMENA', name: 'Middle East and North Africa'},
+  {id: 'ROSEA', name: 'Southern and Eastern Africa'},
+  {id: 'ROWCA', name: 'West and Central Africa'}
+];
 
 //25 HRP country codes
 const countryCodeList = [
@@ -1370,73 +1408,104 @@ function setGlobalFigures() {
 	var indicator = (currentIndicator.id=='#affected+inneed+pct') ? '#affected+inneed' : currentIndicator.id;
 	createSource(globalFiguresSource, indicator);
 
+	var data = worldData;
+	if (currentRegion!='') {
+		regionalData.forEach(function(d) {
+			if (d['#region+name']==currentRegion) {
+				data = d;
+			}
+		});
+	}
+
+	var totalCountries = 0;
+	nationalData.forEach(function(d) {
+		if (regionMatch(d['#region+name'])) {
+			var val = d[currentIndicator.id];
+			if (isVal(val) && !isNaN(val)) {
+				totalCountries++;
+			}
+		}
+	});
+
 	//PIN
 	if (currentIndicator.id=='#affected+inneed+pct') {
-		var totalPIN = d3.sum(nationalData, function(d) { return +d['#affected+inneed']; });
+		var totalPIN = d3.sum(nationalData, function(d) {
+			if (regionMatch(d['#region+name'])) {
+				return +d['#affected+inneed']; 
+			}
+		});
 		createKeyFigure('.figures', 'Total Number of People in Need', 'pin', (d3.format('.4s'))(totalPIN));
-		createKeyFigure('.figures', 'Number of Countries', '', worldData.numPINCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//humanitarian funding
 	else if (currentIndicator.id=='#value+funding+hrp+pct') {
 		var totalPIN = d3.sum(nationalData, function(d) { return +d['#affected+inneed']; });
-		createKeyFigure('.figures', 'Total Funding Required', '', formatValue(worldData['#value+funding+hrp+required+usd']));
-		createKeyFigure('.figures', 'GHRP Requirement (COVID-19)', '', formatValue(worldData['#value+covid+funding+hrp+required+usd']));
-		createKeyFigure('.figures', 'Funding Coverage', '', percentFormat(worldData['#value+funding+hrp+pct']));
-		createKeyFigure('.figures', 'Countries Affected', '', nationalData.length);
+		createKeyFigure('.figures', 'Total Funding Required', '', formatValue(data['#value+funding+hrp+required+usd']));
+		createKeyFigure('.figures', 'GHRP Requirement (COVID-19)', '', formatValue(data['#value+covid+funding+hrp+required+usd']));
+		createKeyFigure('.figures', 'Funding Coverage', '', percentFormat(data['#value+funding+hrp+pct']));
+		createKeyFigure('.figures', 'Countries Affected', '', totalCountries);
 	}
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
-		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(worldData['#value+cerf+covid+funding+total+usd']));
-		createKeyFigure('.figures', 'Number of Countries', '', worldData.numCERFCountries);
+		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(data['#value+cerf+covid+funding+total+usd']));
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//CBPF
 	else if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd') {
-		createKeyFigure('.figures', 'Total CBPF COVID-19 Funding', '', formatValue(worldData['#value+cbpf+covid+funding+total+usd']));
-		createKeyFigure('.figures', 'Number of Countries', '', worldData.numCBPFCountries);
+		createKeyFigure('.figures', 'Total CBPF COVID-19 Funding', '', formatValue(data['#value+cbpf+covid+funding+total+usd']));
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//IFI
 	else if (currentIndicator.id=='#value+gdp+ifi+pct') {
-		createKeyFigure('.figures', 'Total Funding (IMF/World Bank)', '', formatValue(worldData['#value+ifi+total']));
-		createKeyFigure('.figures', 'Number of Countries', '', worldData.numIFICountries);
+		createKeyFigure('.figures', 'Total Funding (IMF/World Bank)', '', formatValue(data['#value+ifi+total']));
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//covid figures
 	else if (currentIndicator.id=='#covid+cases+per+capita') {
-		var totalCases = d3.sum(nationalData, function(d) { return d['#affected+infected']; });
-		var totalDeaths = d3.sum(nationalData, function(d) { return d['#affected+killed']; });
+		var totalCases = d3.sum(nationalData, function(d) { 
+			if (regionMatch(d['#region+name']))
+				return d['#affected+infected']; 
+		});
+		var totalDeaths = d3.sum(nationalData, function(d) { 
+			if (regionMatch(d['#region+name']))
+				return d['#affected+killed']; 
+		});
 		createKeyFigure('.figures', 'Total Confirmed Cases', 'cases', shortenNumFormat(totalCases));
 		createKeyFigure('.figures', 'Total Confirmed Deaths', 'deaths', shortenNumFormat(totalDeaths));
 
-		var covidGlobal = covidTrendData.H63;
-		var weeklyCases = covidGlobal[covidGlobal.length-1].weekly_new_cases;
-		var weeklyDeaths = covidGlobal[covidGlobal.length-1].weekly_new_deaths;
-		var weeklyTrend = covidGlobal[covidGlobal.length-1].weekly_new_cases_pc_change;
+		var covidGlobal = (currentRegion!='') ? covidTrendData[currentRegion] : covidTrendData.H63;
+		var weeklyCases = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1].weekly_new_cases : 0;
+		var weeklyDeaths = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1].weekly_new_deaths : 0;
+		var weeklyTrend = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1].weekly_new_cases_pc_change : 0;
 		
-		//weekly new cases
-		createKeyFigure('.figures', 'Weekly number of new cases', 'weekly-cases', shortenNumFormat(weeklyCases));
-		var sparklineArray = [];
-		covidGlobal.forEach(function(d) {
-      var obj = {date: d.date_epicrv, value: d.weekly_new_cases};
-      sparklineArray.push(obj);
-    });
-		createSparkline(sparklineArray, '.global-figures .weekly-cases');
+		if (covidGlobal!=undefined) {
+			//weekly new cases
+			createKeyFigure('.figures', 'Weekly number of new cases', 'weekly-cases', shortenNumFormat(weeklyCases));
+			var sparklineArray = [];
+			covidGlobal.forEach(function(d) {
+	      var obj = {date: d.date_epicrv, value: d.weekly_new_cases};
+	      sparklineArray.push(obj);
+	    });
+			createSparkline(sparklineArray, '.global-figures .weekly-cases');
 
-		//weekly new deaths
-		createKeyFigure('.figures', 'Weekly number of new deaths', 'weekly-deaths', shortenNumFormat(weeklyDeaths));
-		var sparklineArray = [];
-		covidGlobal.forEach(function(d) {
-      var obj = {date: d.date_epicrv, value: d.weekly_new_deaths};
-      sparklineArray.push(obj);
-    });
-		createSparkline(sparklineArray, '.global-figures .weekly-deaths');
+			//weekly new deaths
+			createKeyFigure('.figures', 'Weekly number of new deaths', 'weekly-deaths', shortenNumFormat(weeklyDeaths));
+			var sparklineArray = [];
+			covidGlobal.forEach(function(d) {
+	      var obj = {date: d.date_epicrv, value: d.weekly_new_deaths};
+	      sparklineArray.push(obj);
+	    });
+			createSparkline(sparklineArray, '.global-figures .weekly-deaths');
 
-		//weekly trend
-		createKeyFigure('.figures', 'Weekly trend<br>(new cases past week / prior week)', 'cases-trend', weeklyTrend.toFixed(1) + '%');
-    var pctArray = [];
-    covidGlobal.forEach(function(d) {
-      var obj = {date: d.date_epicrv, value: d.weekly_new_cases_pc_change};
-      pctArray.push(obj);
-    });
-    createTrendBarChart(pctArray, '.global-figures .cases-trend');
+			//weekly trend
+			createKeyFigure('.figures', 'Weekly trend<br>(new cases past week / prior week)', 'cases-trend', weeklyTrend.toFixed(1) + '%');
+	    var pctArray = [];
+	    covidGlobal.forEach(function(d) {
+	      var obj = {date: d.date_epicrv, value: d.weekly_new_cases_pc_change};
+	      pctArray.push(obj);
+	    });
+	    createTrendBarChart(pctArray, '.global-figures .cases-trend');
+		}
 	}
 	else {
 		//no global figures
@@ -1623,6 +1692,17 @@ function createEvents() {
     }
   });
 
+  //region select event
+  d3.select('.region-select').on('change',function(e) {
+    currentRegion = d3.select('.region-select').node().value;
+    if (currentRegion=='') {
+      resetMap();
+    }
+    else {        
+      selectRegion();
+    }
+  });
+
   //country select event
   d3.select('.country-select').on('change',function(e) {
     var selected = d3.select('.country-select').node().value;
@@ -1682,6 +1762,18 @@ function toggleGlobalFigures(currentBtn, state) {
   });
 }
 
+
+function selectRegion() {
+  var regionFeature = regionBoundaryData.filter(d => d.properties.tbl_regcov_2020_ocha_Field3 == currentRegion);
+  var offset = 50;
+  map.fitBounds(regionFeature[0].bbox, {
+    padding: {top: offset, right: $('.map-legend').outerWidth()+offset, bottom: offset, left: $('.global-figures').outerWidth()+offset},
+    linear: true
+  });
+
+  updateGlobalLayer();
+}
+
 function selectCountry(features) {
   //set first country indicator
   $('#foodSecurity').prop('checked', true);
@@ -1714,16 +1806,6 @@ function selectCountry(features) {
   mpTrack(currentCountry.code, currentCountryIndicator.name);
 }
 
-function setTravelDescription(country) {
-  var data = dataByCountry[country.code][0];
-  var text = truncateString(data['#severity+travel'], 275);
-  var content = '<h2 class="title">'+ country.name +'</h2>';
-  content += '<span class="small">Published on: '+ data['#severity+date+travel'] +'</span>';
-  content += '<p>Restrictions: '+ text +'</p>';
-  content += '<a href="https://unwfp.maps.arcgis.com/apps/opsdashboard/index.html#/db5b5df309ac4f10bfd36145a6f8880e" target="_blank">Read More&nbsp;&nbsp;<i class="humanitarianicons-Out-of-platform"></i></a>';
-  $('.layer-description .description-content').empty().append(content);
-}
-
 
 /****************************/
 /*** GLOBAL MAP FUNCTIONS ***/
@@ -1736,7 +1818,7 @@ function initGlobalLayer() {
     .range([2, 15]);
   
   //color scale
-  colorScale = getGlobalColorScale();
+  colorScale = getGlobalLegendScale();
   setGlobalLegend(colorScale);
 
   //data join
@@ -1774,11 +1856,13 @@ function initGlobalLayer() {
 function handleGlobalEvents(layer) {
   map.on('mouseenter', globalLayer, function(e) {
     map.getCanvas().style.cursor = 'pointer';
-    tooltip.addTo(map);
+    if (currentIndicator.id!='#value+food+num+ratio') {
+      tooltip.addTo(map);
+    }
   });
 
   map.on('mousemove', function(e) {
-    if (currentIndicator.id!='#value+food+num+ratio' && currentIndicator.id!='#severity+travel') {
+    if (currentIndicator.id!='#value+food+num+ratio') {
       var features = map.queryRenderedFeatures(e.point, { layers: [globalLayer, globalLabelLayer, globalMarkerLayer] });
       var target;
       features.forEach(function(feature) {
@@ -1811,15 +1895,12 @@ function handleGlobalEvents(layer) {
       currentCountry.name = (target.properties.Terr_Name=='CuraÃ§ao') ? 'Curaçao' : target.properties.Terr_Name;
 
       if (currentCountry.code!=undefined) {
-        if (currentIndicator.id=='#value+food+num+ratio' && getCountryIDByName(currentCountry.name)!=undefined) {
+        var country = nationalData.filter(c => c['#country+code'] == currentCountry.code);
+        if (currentIndicator.id=='#value+food+num+ratio' && country[0]['#value+food+num+ratio']!=undefined) {
           openModal(currentCountry.name);
-        }
-        if (currentIndicator.id=='#severity+travel') {
-          setTravelDescription(currentCountry);
         }
       }
     }
-    
   });
 }
 
@@ -1827,68 +1908,65 @@ function updateGlobalLayer() {
   setGlobalFigures();
 
   //color scales
-  colorScale = getGlobalColorScale();
+  colorScale = getGlobalLegendScale();
   colorNoData = (currentIndicator.id=='#affected+inneed+pct' || currentIndicator.id=='#value+funding+hrp+pct') ? '#E7E4E6' : '#FFF';
+
+  var maxCases = d3.max(nationalData, function(d) { 
+    if (regionMatch(d['#region+name']))
+      return +d['#affected+infected']; 
+  });
+  markerScale.domain([1, maxCases]);
 
   //data join
   var expression = ['match', ['get', 'ISO_3']];
+  var expressionMarkers = ['match', ['get', 'ISO_3']];
   nationalData.forEach(function(d) {
-    var val = d[currentIndicator.id];
-    var color = colorDefault;
-    
-    // if (currentIndicator.id=='#food-prices') {
-    //   var id = getCountryIDByName(d['#country+name']);
-    //   color = (id!=undefined) ? foodPricesColor : colorNoData;
-    // }
-    if (currentIndicator.id=='#covid+cases') {
-      color = (val==null) ? colorNoData : colorScale(val);
+    if (regionMatch(d['#region+name'])) {
+      var val = d[currentIndicator.id];
+      var color = colorDefault;
+      
+      if (currentIndicator.id=='#covid+cases') {
+        color = (val==null) ? colorNoData : colorScale(val);
+      }
+      else if (currentIndicator.id=='#severity+type') {
+        color = (!isVal(val)) ? colorNoData : colorScale(val);
+      }
+      else {
+        color = (val<0 || isNaN(val) || !isVal(val)) ? colorNoData : colorScale(val);
+      }
+      expression.push(d['#country+code'], color);
+
+      //covid markers
+      var covidVal = d['#affected+infected'];
+      var size = (!isVal(covidVal)) ? 0 : markerScale(covidVal);
+      expressionMarkers.push(d['#country+code'], size);
     }
-    else if (currentIndicator.id=='#severity+travel') {
-      color = travelColor;
-    }
-    else if (currentIndicator.id=='#severity+type') {
-      color = (!isVal(val)) ? colorNoData : colorScale(val);
-    }
-    else {
-      color = (val<0 || isNaN(val) || !isVal(val)) ? colorNoData : colorScale(val);
-    }
-    expression.push(d['#country+code'], color);
   });
 
   //default value for no data
   expression.push(colorDefault);
+  expressionMarkers.push(0);
 
   map.setPaintProperty(globalLayer, 'fill-color', expression);
+  map.setLayoutProperty(globalMarkerLayer, 'visibility', 'visible');
+  map.setPaintProperty(globalMarkerLayer, 'circle-radius', expressionMarkers);
   setGlobalLegend(colorScale);
-
-  // //food prices and travel restrictions layers
-  // if (currentIndicator.id=='#food-prices' || currentIndicator.id=='#severity+travel') {
-  //   map.setLayoutProperty(globalMarkerLayer, 'visibility', 'none');
-
-  //   var layer = $('.layer-description');
-  //   layer.find('.description-content, .description-source').empty();    
-  //   createSource($('.layer-description .description-source'), currentIndicator.id);
-  //   if (currentIndicator.id=='#food-prices') {
-  //     layer.find('h4').text('Click on a country to explore commodity prices');
-  //   }
-  //   if (currentIndicator.id=='#severity+travel') {
-  //     layer.find('h4').text('Click on a country to view travel restrictions');
-  //   }
-  // }
-  // //all other layers
-  // else {
-    map.setLayoutProperty(globalMarkerLayer, 'visibility', 'visible');
-  //}
 }
 
-function getGlobalColorScale() {
-  var min = d3.min(nationalData, function(d) { return +d[currentIndicator.id]; });
-  var max = d3.max(nationalData, function(d) { return +d[currentIndicator.id]; });
+function getGlobalLegendScale() {
+  //get min/max
+  var min = d3.min(nationalData, function(d) { 
+    if (regionMatch(d['#region+name'])) return +d[currentIndicator.id]; 
+  });
+  var max = d3.max(nationalData, function(d) { 
+    if (regionMatch(d['#region+name'])) return +d[currentIndicator.id];
+  });
   if (currentIndicator.id.indexOf('pct')>-1 || currentIndicator.id.indexOf('ratio')>-1) max = 1;
   else if (currentIndicator.id=='#severity+economic+num') max = 10;
   else if (currentIndicator.id=='#affected+inneed') max = roundUp(max, 1000000);
   else max = max;
 
+  //set scale
   var scale;
   if (currentIndicator.id=='#severity+type') {
     scale = d3.scaleOrdinal().domain(['Very Low', 'Low', 'Medium', 'High', 'Very High']).range(informColorRange);
@@ -1900,14 +1978,14 @@ function getGlobalColorScale() {
   else if (currentIndicator.id=='#covid+cases+per+capita') {
     var data = [];
     nationalData.forEach(function(d) {
-      if (d[currentIndicator.id]!=null)
+      if (d[currentIndicator.id]!=null && regionMatch(d['#region+name']))
         data.push(d[currentIndicator.id]);
     })
-    scale = d3.scaleQuantile().domain(data).range(colorRange);
+    if (data.length==1)
+      scale = d3.scaleQuantize().domain([0, max]).range(colorRange);
+    else
+      scale = d3.scaleQuantile().domain(data).range(colorRange);
   }
-  // else if (currentIndicator.id=='#food-prices') {
-  //   scale = d3.scaleOrdinal().domain(['Data Available', 'No Data']).range([foodPricesColor, colorNoData]);
-  // }
   else if (currentIndicator.id=='#value+gdp+ifi+pct') {
     var reverseRange = colorRange.slice().reverse();
     scale = d3.scaleThreshold()
@@ -1918,18 +1996,18 @@ function getGlobalColorScale() {
     scale = d3.scaleQuantize().domain([0, max]).range(colorRange);
   }
 
-  return scale;
+  return (max==undefined && currentIndicator.id!='#severity+type') ? null : scale;
 }
 
 function setGlobalLegend(scale) {
   var div = d3.select('.map-legend.global');
   var svg;
-
-  //catch PIN pct indicator
   var indicator = (currentIndicator.id=='#affected+inneed+pct') ? '#affected+inneed' : currentIndicator.id;
   $('.map-legend.global .source-secondary').empty();
 
+  //SETUP
   if (d3.select('.map-legend.global .scale').empty()) {
+    //current indicator
     createSource($('.map-legend.global .indicator-source'), indicator);
     svg = div.append('svg')
       .attr('class', 'legend-container');
@@ -1950,11 +2028,36 @@ function setGlobalLegend(scale) {
     //secondary source
     $('.map-legend.global').append('<div class="source-secondary"></div>');
 
+    //vacc methodology explanatory text
+    var vaccinationMethodologyText = 'Methodology: Information about interrupted vaccination campaigns contains both official and unofficial information sources. The country ranking has been determined by calculating the ratio of total number of postponed or cancelled campaigns and total vaccination campaigns. Note: data collection is ongoing and may not reflect all the campaigns in every country.';
+    $('.map-legend.global').append('<p class="footnote vacc-methodology small">'+ truncateString(vaccinationMethodologyText, 60) +' <a href="#" class="expand">MORE</a></p>');
+    $('.map-legend.global .vacc-methodology').click(function() {
+      if ($(this).find('a').hasClass('collapse')) {
+        $(this).html(truncateString(vaccinationMethodologyText, 60) + ' <a href="#" class="expand">MORE</a>');
+      }
+      else {
+        $(this).html(vaccinationMethodologyText + ' <a href="#" class="collapse">LESS</a>');
+      }
+    });
+    //food methodology explanatory text
+    var foodMethodologyText = 'Methodology: Information about food prices is collected from data during the last 6 month moving window. The country ranking for food prices has been determined by calculating the ratio of the number of commodities in alert, stress or crisis and the total number of commodities. The commodity status comes from <a href="https://snap.vam.wfp.org/main/" target="_blank">WFP’s model</a>.';
+    $('.map-legend.global').append('<p class="footnote food-methodology small">'+ truncateString(foodMethodologyText, 65) +' <a href="#" class="expand">MORE</a></p>');
+    $('.map-legend.global .food-methodology').click(function() {
+      if ($(this).find('a').hasClass('collapse')) {
+        $(this).html(truncateString(foodMethodologyText, 65) + ' <a href="#" class="expand">MORE</a>');
+      }
+      else {
+        $(this).html(foodMethodologyText + ' <a href="#" class="collapse">LESS</a>');
+      }
+    });
+
     //cases
     $('.map-legend.global').append('<h4>Number of COVID-19 cases</h4>');
     createSource($('.map-legend.global'), '#affected+infected');
+
     var markersvg = div.append('svg')
-      .attr('height', '55px');
+      .attr('height', '55px')
+      .attr('class', 'casesScale');
     markersvg.append('g')
       .attr("transform", "translate(5, 10)")
       .attr('class', 'legendSize');
@@ -1971,16 +2074,56 @@ function setGlobalLegend(scale) {
     markersvg.select('.legendSize')
       .call(legendSize);
 
-    $('.map-legend.global').append('<p class="footnote small">The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations.</p>');
+    //boundaries disclaimer
+    var disclaimerText = 'The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations.';
+    $('.map-legend.global').append('<p class="footnote disclaimer small">'+ truncateString(disclaimerText, 65) +' <a href="#" class="expand">MORE</a></p>');
+    $('.map-legend.global .disclaimer').click(function() {
+      if ($(this).find('a').hasClass('collapse')) {
+        $(this).html(truncateString(disclaimerText, 65) + ' <a href="#" class="expand">MORE</a>');
+      }
+      else {
+        $(this).html(disclaimerText + ' <a href="#" class="collapse">LESS</a>');
+      }
+    });
   }
   else {
     updateSource($('.indicator-source'), indicator);
   }
 
+  //POPULATE
   var legendTitle = $('.menu-indicators').find('.selected').attr('data-legend');
   if (currentIndicator.id=='#value+food+num+ratio') legendTitle += '<br>Click on a country to explore commodity prices';
   $('.map-legend.global .indicator-title').html(legendTitle);
 
+  //current indicator
+  if (scale==null) {
+    $('.map-legend.global .legend-container').hide();
+  }
+  else {
+    $('.map-legend.global .legend-container').show();
+    var legend;
+    if (currentIndicator.id=='#value+gdp+ifi+pct') {
+      var legendFormat = d3.format('.0%');
+      legend = d3.legendColor()
+        .labelFormat(legendFormat)
+        .cells(colorRange.length)
+        .labels(d3.legendHelpers.thresholdLabels)
+        .useClass(true)
+        .scale(scale);
+    }
+    else {
+      var legendFormat = (currentIndicator.id.indexOf('pct')>-1 || currentIndicator.id.indexOf('ratio')>-1) ? d3.format('.0%') : shortenNumFormat;
+      if (currentIndicator.id=='#covid+cases+per+capita') legendFormat = d3.format('.1f');
+      legend = d3.legendColor()
+        .labelFormat(legendFormat)
+        .cells(colorRange.length)
+        .scale(scale);
+    }
+    var g = d3.select('.map-legend.global .scale');
+    g.call(legend);
+  }
+
+  //no data
   var noDataKey = $('.map-legend.global .no-data-key');
   if (currentIndicator.id=='#affected+inneed+pct') {
     noDataKey.find('.label').text('Refugee/IDP data only');
@@ -1998,28 +2141,25 @@ function setGlobalLegend(scale) {
     noDataKey.find('rect').css('fill', '#FFF');
   }
 
+  //methodology
+  if (currentIndicator.id=='#vaccination+num+ratio')
+    $('.vacc-methodology').show();
+  else
+    $('.vacc-methodology').hide();
 
-  var legend;
-  if (currentIndicator.id=='#value+gdp+ifi+pct') {
-    var legendFormat = d3.format('.0%');
-    legend = d3.legendColor()
-      .labelFormat(legendFormat)
-      .cells(colorRange.length)
-      .labels(d3.legendHelpers.thresholdLabels)
-      .useClass(true)
-      .scale(scale);
-  }
-  else {
-    var legendFormat = (currentIndicator.id.indexOf('pct')>-1 || currentIndicator.id.indexOf('ratio')>-1) ? d3.format('.0%') : shortenNumFormat;
-    if (currentIndicator.id=='#covid+cases+per+capita') legendFormat = d3.format('.1f');
-    legend = d3.legendColor()
-      .labelFormat(legendFormat)
-      .cells(colorRange.length)
-      .scale(scale);
-  }
+  if (currentIndicator.id=='#value+food+num+ratio')
+    $('.food-methodology').show();
+  else
+    $('.food-methodology').hide();
 
-  var g = d3.select('.map-legend.global .scale');
-  g.call(legend);
+  //cases
+  var maxCases = d3.max(nationalData, function(d) { 
+    if (regionMatch(d['#region+name']))
+      return +d['#affected+infected']; 
+  });
+  markerScale.domain([1, maxCases]);
+
+  d3.select('.casesScale .cell:nth-child(2) .label').text(numFormat(maxCases));
 }
 
 
@@ -2027,8 +2167,6 @@ function setGlobalLegend(scale) {
 /*** COUNTRY MAP FUNCTIONS ***/
 /*****************************/
 function initCountryView() {
-  // $('.content').removeClass('food-prices-view');
-  // $('.content').removeClass('travel-restrictions-view');
   $('.content').addClass('country-view');
   $('.country-panel').scrollTop(0);
 
@@ -2384,22 +2522,22 @@ function resetMap() {
   map.setLayoutProperty(countryLayer, 'visibility', 'none');
   map.setLayoutProperty(countryLabelLayer, 'visibility', 'none');
   $('.content').removeClass('country-view');
-  setSelect('countrySelect', '');
-
-  // if (currentIndicator.id=='#food-prices') {
-  //   $('.content').addClass('food-prices-view');
-  // }
-
+  $('.country-select').val('');
   updateGlobalLayer();
 
-  map.flyTo({ 
-    speed: 2,
-    zoom: zoomLevel,
-    center: [-25, 0] 
-  });
-  map.once('moveend', function() {
-    map.setLayoutProperty(globalLayer, 'visibility', 'visible');
-  });
+  if (currentRegion!='') {
+    selectRegion();
+  }
+  else {
+    map.flyTo({ 
+      speed: 2,
+      zoom: zoomLevel,
+      center: [-25, 0] 
+    });
+    map.once('moveend', function() {
+      map.setLayoutProperty(globalLayer, 'visibility', 'visible');
+    });
+  }
 }
 
 
@@ -2475,13 +2613,12 @@ var informColorRange = ['#FFE8DC','#FDCCB8','#FC8F6F','#F43C27','#961518'];
 var vaccinationColorRange = ['#F2645A','#EEEEEE'];
 var immunizationColorRange = ['#CCE5F9','#99CBF3','#66B0ED','#3396E7','#027CE1'];
 var foodPricesColor = '#007CE1';
-var travelColor = '#F2645A';//'#6EB4ED'
 var colorDefault = '#F2F2EF';
 var colorNoData = '#FFF';
-var worldData, nationalData, subnationalData, vaccinationData, timeseriesData, covidTrendData, dataByCountry, colorScale, viewportWidth, viewportHeight = '';
+var regionBoundaryData, regionalData, worldData, nationalData, subnationalData, vaccinationData, timeseriesData, covidTrendData, dataByCountry, countriesByRegion, colorScale, viewportWidth, viewportHeight, currentRegion = '';
 var mapLoaded = false;
 var dataLoaded = false;
-var zoomLevel = 2;
+var zoomLevel = 1.4;
 
 var currentIndicator = {};
 var currentCountryIndicator = {};
@@ -2494,8 +2631,8 @@ $( document ).ready(function() {
   
   var timeseriesPath = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vS23DBKc8c39Aq55zekL0GCu4I6IVnK4axkd05N6jUBmeJe9wA69s3CmMUiIvAmPdGtZPBd-cLS9YwS%2Fpub%3Fgid%3D1253093254%26single%3Dtrue%26output%3Dcsv';
   mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2FvMW1wbDIwMzE2MnFwMW9teHQxOXhpIn0.Uri8IURftz3Jv5It51ISAA';
-  var minWidth = 1000;
   var tooltip = d3.select('.tooltip');
+  var minWidth = 1000;
   viewportWidth = (window.innerWidth<minWidth) ? minWidth - $('.content-left').innerWidth() : window.innerWidth - $('.content-left').innerWidth();
   viewportHeight = window.innerHeight;
 
@@ -2511,6 +2648,7 @@ $( document ).ready(function() {
 
     //set content sizes based on viewport
     $('.global-figures').height(viewportHeight-40);
+    $('.content').width(viewportWidth + $('.content-left').innerWidth());
     $('.content').height(viewportHeight);
     $('.content-right').width(viewportWidth);
     $('.country-panel .panel-content').height(viewportHeight - $('.country-panel .panel-content').position().top);
@@ -2534,7 +2672,8 @@ $( document ).ready(function() {
     Promise.all([
       d3.json('https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-covid-viz/master/out.json'),
       d3.csv(timeseriesPath),
-      d3.json('https://raw.githubusercontent.com/OCHA-DAP/pa-COVID-trend-analysis/master/hrp_covid_weekly_trend.json')
+      d3.json('https://raw.githubusercontent.com/OCHA-DAP/pa-COVID-trend-analysis/master/hrp_covid_weekly_trend.json'),
+      d3.json('data/ocha-regions-bbox.geojson')
     ]).then(function(data) {
       console.log('Data loaded')
       $('.loader span').text('Initializing map...');
@@ -2543,7 +2682,9 @@ $( document ).ready(function() {
       var allData = data[0];
       timeseriesData = data[1];
       covidTrendData = data[2];
+      regionBoundaryData = data[3].features;
       worldData = allData.world_data[0];
+      regionalData = allData.regional_data;
       nationalData = allData.national_data;
       subnationalData = allData.subnational_data;
       sourcesData = allData.sources_data;
@@ -2562,12 +2703,6 @@ $( document ).ready(function() {
         .rollup(function(v) { return d3.sum(v, function(d) { return d['#population']; }); })
         .object(subnationalData);
 
-      //init tally counts
-      worldData.numPINCountries = 0;
-      worldData.numCERFCountries = 0;
-      worldData.numCBPFCountries = 0;
-      worldData.numIFICountries = 0;
-
       //parse national data
       nationalData.forEach(function(item) {
         //normalize counry names
@@ -2576,12 +2711,6 @@ $( document ).ready(function() {
 
         //calculate and inject PIN percentage
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || popDataByCountry[item['#country+code']]==undefined) ? '' : item['#affected+inneed']/popDataByCountry[item['#country+code']];
-
-        //tally countries with funding and pin data
-        if (isVal(item['#affected+inneed'])) worldData.numPINCountries++;
-        if (isVal(item['#value+cerf+covid+funding+total+usd'])) worldData.numCERFCountries++;
-        if (isVal(item['#value+cbpf+covid+funding+total+usd'])) worldData.numCBPFCountries++;
-        if (isVal(item['#value+gdp+ifi+pct'])) worldData.numIFICountries++;
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
@@ -2594,6 +2723,11 @@ $( document ).ready(function() {
       //group national data by country -- drives country panel    
       dataByCountry = d3.nest()
         .key(function(d) { return d['#country+code']; })
+        .object(nationalData);
+
+      //group countries by region    
+      countriesByRegion = d3.nest()
+        .key(function(d) { return d['#region+name']; })
         .object(nationalData);
 
       //group vaccination data by country    
@@ -2632,6 +2766,18 @@ $( document ).ready(function() {
   }
 
   function initView() {
+    //create regional select
+    $('.region-select').empty();
+    var regionalSelect = d3.select('.region-select')
+      .selectAll('option')
+      .data(regionalList)
+      .enter().append('option')
+        .text(function(d) { return d.name; })
+        .attr('value', function (d) { return d.id; });
+    //insert default option    
+    $('.region-select').prepend('<option value="">All Regions</option>');
+    $('.region-select').val($('.region-select option:first').val());
+
     //create country select
     var hrpData = nationalData.filter((row) => countryCodeList.includes(row['#country+code']));
     var countrySelect = d3.select('.country-select')
@@ -2640,7 +2786,6 @@ $( document ).ready(function() {
       .enter().append('option')
         .text(function(d) { return d['#country+name']; })
         .attr('value', function (d) { return d['#country+code']; });
-
     //insert default option    
     $('.country-select').prepend('<option value="">View Country Page</option>');
     $('.country-select').val($('.country-select option:first').val());

@@ -1324,7 +1324,7 @@ a:visited {
     display: flex;
     flex-flow: column;
     overflow: scroll;
-    padding: 12px 0 12px 12px;
+    padding: 12px 0;
     min-width: 255px;
     width: 255px;
     z-index: 2; }
@@ -1445,7 +1445,7 @@ a:visited {
     align-items: center;
     display: flex;
     height: 60px;
-    padding: 0 50px 0 25px;
+    padding: 0 61px 0 25px;
     position: relative; }
     .menu-indicators li div:after {
       color: #CCC;
@@ -1466,6 +1466,7 @@ a:visited {
     .menu-indicators li:hover i, .menu-indicators li.selected i {
       color: #007CE1; }
 
+.region-select,
 .country-select,
 .indicator-select,
 .ranking-select {
@@ -1477,6 +1478,10 @@ a:visited {
   height: 48px;
   padding: 0 20px;
   width: 100%; }
+
+.region-select {
+  margin: 0 20px;
+  width: 82%; }
 
 .country-select {
   right: 24px;
@@ -1534,7 +1539,7 @@ a:visited {
           position: relative; }
         .global-figures .figures .key-figure .inner svg {
           bottom: 10px;
-          left: 110px;
+          left: 125px;
           position: absolute; }
       .global-figures .figures .key-figure:nth-child(2), .global-figures .figures .key-figure:nth-child(4) {
         flex: 0 0 calc(50%);
@@ -1699,6 +1704,7 @@ circle.swatch {
       margin: 15px 0;
       position: relative; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat > svg {
+        bottom: 8px;
         left: 115px;
         position: absolute; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases {
