@@ -37,6 +37,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
+.humanitarianicons-Covid-19:before {
+  content: "\ea4c"; }
+
 .humanitarianicons-Social-gh:before {
   content: "\ea48"; }
 
@@ -1458,7 +1461,8 @@ a:visited {
     .menu-indicators li div.no-expand:after {
       content: ''; }
   .menu-indicators li i {
-    padding-right: 25px; }
+    flex: 0 0 40px;
+    font-size: 18px; }
   .menu-indicators li:hover, .menu-indicators li.selected {
     background-color: #F1F1F1;
     color: #000;
