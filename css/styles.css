@@ -1461,8 +1461,10 @@ a:visited {
     .menu-indicators li div.no-expand:after {
       content: ''; }
   .menu-indicators li i {
-    flex: 0 0 40px;
-    font-size: 18px; }
+    flex: 0 0 18px;
+    font-size: 18px;
+    margin-right: 22px;
+    text-align: center; }
   .menu-indicators li:hover, .menu-indicators li.selected {
     background-color: #F1F1F1;
     color: #000;
