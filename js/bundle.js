@@ -2218,7 +2218,8 @@ function initCountryView() {
 
 function initCountryLayer() {
   //color scale
-  var countryColorScale = d3.scaleQuantize().domain([0, 1]).range(colorRange);
+  var clrRange = (currentCountryIndicator.id=='#population') ? populationColorRange : colorRange;
+  var countryColorScale = d3.scaleQuantize().domain([0, 1]).range(clrRange);
   createCountryLegend(countryColorScale);
 
   //mouse events
@@ -2259,7 +2260,13 @@ function updateCountryLayer() {
   if (currentCountryIndicator.id=='#org+count+num') max = roundUp(max, 10);
 
   //color scale
-  var clrRange = (currentCountryIndicator.id.indexOf('vaccinated')>0) ? immunizationColorRange : colorRange;
+  var clrRange;
+  if (currentCountryIndicator.id.indexOf('vaccinated')>0)
+    clrRange = immunizationColorRange;
+  else if (currentCountryIndicator.id=='#population')
+    clrRange = populationColorRange;
+  else
+    clrRange = colorRange;
   var countryColorScale = d3.scaleQuantize().domain([0, max]).range(clrRange);
 
   //data join
@@ -2684,7 +2691,7 @@ var colorRange = ['#F7DBD9', '#F6BDB9', '#F5A09A', '#F4827A', '#F2645A'];
 var informColorRange = ['#FFE8DC','#FDCCB8','#FC8F6F','#F43C27','#961518'];
 var vaccinationColorRange = ['#F2645A','#EEEEEE'];
 var immunizationColorRange = ['#CCE5F9','#99CBF3','#66B0ED','#3396E7','#027CE1'];
-var foodPricesColor = '#007CE1';
+var populationColorRange = ['#FFE281','#FDB96D','#FA9059','#F27253','#E9554D'];
 var colorDefault = '#F2F2EF';
 var colorNoData = '#FFF';
 var regionBoundaryData, regionalData, worldData, nationalData, subnationalData, vaccinationData, timeseriesData, covidTrendData, dataByCountry, countriesByRegion, colorScale, viewportWidth, viewportHeight, currentRegion = '';
