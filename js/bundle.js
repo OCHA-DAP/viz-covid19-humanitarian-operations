@@ -1968,14 +1968,8 @@ function getGlobalLegendScale() {
 
   //set scale
   var scale;
-  if (currentIndicator.id=='#severity+type') {
-    scale = d3.scaleOrdinal().domain(['Very Low', 'Low', 'Medium', 'High', 'Very High']).range(informColorRange);
-  }
-  else if (currentIndicator.id.indexOf('funding')>-1) {
-    var reverseRange = colorRange.slice().reverse();
-    scale = d3.scaleQuantize().domain([0, max]).range(reverseRange);
-  }
-  else if (currentIndicator.id=='#covid+cases+per+capita') {
+  if (currentIndicator.id=='#covid+cases+per+capita') {
+    console.log('1')
     var data = [];
     nationalData.forEach(function(d) {
       if (d[currentIndicator.id]!=null && regionMatch(d['#region+name']))
@@ -1986,13 +1980,24 @@ function getGlobalLegendScale() {
     else
       scale = d3.scaleQuantile().domain(data).range(colorRange);
   }
+  else if (currentIndicator.id=='#severity+type') {
+    console.log('2')
+    scale = d3.scaleOrdinal().domain(['Very Low', 'Low', 'Medium', 'High', 'Very High']).range(informColorRange);
+  }
+  else if (currentIndicator.id.indexOf('funding')>-1) {
+    var reverseRange = colorRange.slice().reverse();
+    console.log('3')
+    scale = d3.scaleQuantize().domain([0, max]).range(reverseRange);
+  }
   else if (currentIndicator.id=='#value+gdp+ifi+pct') {
     var reverseRange = colorRange.slice().reverse();
+    console.log('4')
     scale = d3.scaleThreshold()
       .domain([ .01, .02, .03, .05, .05 ])
       .range(reverseRange);
   }
   else {
+    console.log('5')
     scale = d3.scaleQuantize().domain([0, max]).range(colorRange);
   }
 
@@ -2107,9 +2112,9 @@ function setGlobalLegend(scale) {
       legend = d3.legendColor()
         .labelFormat(legendFormat)
         .cells(colorRange.length)
+        .scale(scale)
         .labels(d3.legendHelpers.thresholdLabels)
-        .useClass(true)
-        .scale(scale);
+        //.useClass(true);
     }
     else {
       var legendFormat = (currentIndicator.id.indexOf('pct')>-1 || currentIndicator.id.indexOf('ratio')>-1) ? d3.format('.0%') : shortenNumFormat;
@@ -2622,7 +2627,7 @@ var zoomLevel = 1.4;
 
 var currentIndicator = {};
 var currentCountryIndicator = {};
-var popDataByCountry = {};
+//var popDataByCountry = {};
 var currentCountry = {};
 
 $( document ).ready(function() {
@@ -2698,10 +2703,10 @@ $( document ).ready(function() {
       })
 
       //group population data by country    
-      popDataByCountry = d3.nest()
-        .key(function(d) { return d['#country+code']; })
-        .rollup(function(v) { return d3.sum(v, function(d) { return d['#population']; }); })
-        .object(subnationalData);
+      // popDataByCountry = d3.nest()
+      //   .key(function(d) { return d['#country+code']; })
+      //   .rollup(function(v) { return d3.sum(v, function(d) { return d['#population']; }); })
+      //   .object(subnationalData);
 
       //parse national data
       nationalData.forEach(function(item) {
@@ -2710,7 +2715,7 @@ $( document ).ready(function() {
         if (item['#country+name']=='Bolivia (Plurinational State of)') item['#country+name'] = 'Bolivia';
 
         //calculate and inject PIN percentage
-        item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || popDataByCountry[item['#country+code']]==undefined) ? '' : item['#affected+inneed']/popDataByCountry[item['#country+code']];
+        item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || item['#population']=='') ? '' : item['#affected+inneed']/item['#population'];
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
@@ -2755,7 +2760,7 @@ $( document ).ready(function() {
         });
       });
 
-      //console.log(nationalData)
+      console.log(nationalData)
       //console.log(subnationalData)
 
       dataLoaded = true;
