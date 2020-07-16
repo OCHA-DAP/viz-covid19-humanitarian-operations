@@ -1818,7 +1818,7 @@ function selectRegion() {
 
 function selectCountry(features) {
   //set first country indicator
-  $('#foodSecurity').prop('checked', true);
+  $('#population').prop('checked', true);
   currentCountryIndicator = {
     id: $('input[name="countryIndicators"]:checked').val(), 
     name: $('input[name="countryIndicators"]:checked').parent().text()
@@ -2345,8 +2345,8 @@ function getCountryIndicatorMax() {
 }
 
 function createCountryLegend(scale) {
-  createSource($('.map-legend.country .food-security-source'), '#affected+food+ipc+p3+pct');
   createSource($('.map-legend.country .population-source'), '#population');
+  createSource($('.map-legend.country .food-security-source'), '#affected+food+ipc+p3+pct');
   createSource($('.map-legend.country .orgs-source'), '#org+count+num');
   createSource($('.map-legend.country .health-facilities-source'), '#loc+count+health');
   createSource($('.map-legend.country .immunization-source'), '#population+ipv1+pct+vaccinated');
@@ -2864,7 +2864,7 @@ $( document ).ready(function() {
   function initCountryView() {
     $('.content').addClass('country-view');
     $('.country-panel').scrollTop(0);
-    $('#foodSecurity').prop('checked', true);
+    $('#population').prop('checked', true);
     currentCountryIndicator = {id: $('input[name="countryIndicators"]:checked').val(), name: $('input[name="countryIndicators"]:checked').parent().text()};
 
     initCountryPanel();
