@@ -2597,13 +2597,7 @@ function createCountryMapTooltip(adm1_name) {
 
 function resetMap() {
   var id = currentCountry.code.toLowerCase();
-  if (map.getLayer(id+'-popdensity')) {
-    map.removeLayer(id+'-popdensity');
-  }
-  if (map.getSource(id+'-pop-tileset')) {
-    map.removeSource(id+'-pop-tileset');
-  }
-  
+  map.setLayoutProperty(id+'-popdensity', 'visibility', 'none');
   map.setLayoutProperty(countryLayer, 'visibility', 'none');
   map.setLayoutProperty(countryLabelLayer, 'visibility', 'none');
   $('.content').removeClass('country-view');
