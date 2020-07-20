@@ -2602,12 +2602,14 @@ function resetMap() {
   map.setLayoutProperty(countryLabelLayer, 'visibility', 'none');
   $('.content').removeClass('country-view');
   $('.country-select').val('');
-  updateGlobalLayer();
 
   if (currentRegion!='') {
     selectRegion();
+    map.setLayoutProperty(globalLayer, 'visibility', 'visible');
   }
   else {
+    updateGlobalLayer();
+
     map.flyTo({ 
       speed: 2,
       zoom: zoomLevel,
