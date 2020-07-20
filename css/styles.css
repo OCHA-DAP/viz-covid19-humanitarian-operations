@@ -1509,9 +1509,7 @@ a:visited {
 
 .global-figures {
   background-color: rgba(255, 255, 255, 0.9);
-  display: block;
-  left: 0;
-  opacity: 0;
+  left: -255px;
   overflow: auto;
   padding: 20px 25px;
   position: absolute;

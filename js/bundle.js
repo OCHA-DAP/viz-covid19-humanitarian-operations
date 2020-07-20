@@ -1585,7 +1585,15 @@ function displayMap() {
 
   //remove loader and show vis
   $('.loader, #static-map').remove();
-  $('#global-map, .country-select, .map-legend, .global-figures').css('opacity', 1);
+  $('#global-map, .country-select, .map-legend').css('opacity', 1);
+  
+  //position global figures
+  if (window.innerWidth>=1440) {
+    $('.menu-indicators li:first-child div').addClass('expand');
+    $('.global-figures').animate({
+      left: 0
+    }, 200);
+  }
 
   //set initial indicator
   currentIndicator = {id: $('.menu-indicators').find('.selected').attr('data-id'), name: $('.menu-indicators').find('.selected').attr('data-legend')};
@@ -1797,10 +1805,12 @@ function toggleGlobalFigures(currentBtn, state) {
     left: newPos
   }, 200, function() {
     var div = $(currentBtn).find('div');
-    if ($('.global-figures').position().left==0 && !div.hasClass('no-expand'))
+    if ($('.global-figures').position().left==0) {
       div.addClass('expand');
-    else
+    }
+    else{
       div.removeClass('expand');
+    }
   });
 }
 
