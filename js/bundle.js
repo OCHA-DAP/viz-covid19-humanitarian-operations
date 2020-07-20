@@ -1836,11 +1836,18 @@ function selectCountry(features) {
   map.setLayoutProperty(countryLabelLayer, 'visibility', 'visible');
   map.setLayoutProperty(countryMarkerLayer, 'visibility', 'visible');
 
-  //fix MMR bug
-  var bbox = (currentCountry.code=='MMR') ? [92.197265625, 9.990490803070287, 101.162109375, 28.555576049185973] : turf.bbox(turf.featureCollection(features));
+  //fix hardcoded coords
+  var bbox;
+  if (currentCountry.code=='MMR') 
+    bbox = [92.197265625, 9.990490803070287, 101.162109375, 28.555576049185973]
+  else if (currentCountry.code=='PSE')
+    bbox = [34.292578125, 31.35363694150098, 35.5517578125, 32.509761735919426];
+  else
+    bbox = turf.bbox(turf.featureCollection(features));
+
   var offset = 50;
   map.fitBounds(bbox, {
-    padding: {left: ($('.country-panel').outerWidth() - $('.content-left').outerWidth()) + offset, right: $('.map-legend.country').outerWidth()+offset},
+    padding: {top: offset, right: $('.map-legend.country').outerWidth()+offset, bottom: offset, left: ($('.country-panel').outerWidth() - $('.content-left').outerWidth()) + offset},
     linear: true
   });
 
@@ -1939,7 +1946,6 @@ function handleGlobalEvents(layer) {
       if (currentCountry.code!=undefined) {
         var country = nationalData.filter(c => c['#country+code'] == currentCountry.code);
         if (currentIndicator.id=='#value+food+num+ratio' && country[0]['#value+food+num+ratio']!=undefined) {
-          console.log(currentCountry.name)
           openModal(currentCountry.name);
         }
       }
