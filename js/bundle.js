@@ -358,53 +358,53 @@ function createTrendBarChart(data, div) {
 /*************************/
 var rankingY, rankingBars, rankingData, rankingBarHeight;
 function createRankingChart() {
-  if (currentIndicator.id=='#severity+access+category') {
-    var chart = $('.ranking-chart');
-    //set title
-    $('.global-figures .ranking-container').addClass('access-severity');
-    $('.global-figures .ranking-title').text( $('.menu-indicators').find('.selected').attr('data-legend'));
+  // if (currentIndicator.id=='#severity+access+category') {
+  //   var chart = $('.ranking-chart');
+  //   //set title
+  //   $('.global-figures .ranking-container').addClass('access-severity');
+  //   $('.global-figures .ranking-title').text( $('.menu-indicators').find('.selected').attr('data-legend'));
 
-    //format data
-    var rankingByCategory = d3.nest()
-      .key(function(d) {
-        if (regionMatch(d['#region+name'])) return d['#severity+access+category+num']; 
-      })
-      .key(function(d) {
-        if (regionMatch(d['#region+name'])) return d['#severity+access+num+score']; 
-      })
-      .sortKeys((a, b) => d3.descending(+a, +b))
-      .entries(nationalData)
-      .sort(function(a, b) { return d3.descending(+a.key, +b.key); });
+  //   //format data
+  //   var rankingByCategory = d3.nest()
+  //     .key(function(d) {
+  //       if (regionMatch(d['#region+name'])) return d['#severity+access+category+num']; 
+  //     })
+  //     .key(function(d) {
+  //       if (regionMatch(d['#region+name'])) return d['#severity+access+num+score']; 
+  //     })
+  //     .sortKeys((a, b) => d3.descending(+a, +b))
+  //     .entries(nationalData)
+  //     .sort(function(a, b) { return d3.descending(+a.key, +b.key); });
 
-    //create category lists
-    rankingByCategory.forEach(function(category) {
-      if (category.key!='-1' && category.key!='undefined') {
-        var categoryName;
-        switch(category.key) {
-          case '2':
-            categoryName = 'High';
-            break;
-          case '1':
-            categoryName = 'Medium';
-            break;
-          case '0':
-            categoryName = 'Low';
-            break;
-          default:
-            categoryName = '';
-        }
-        chart.append('<label class="access-category '+ categoryName.toLowerCase() +'">'+ categoryName +'</label>');
-        var listClass = categoryName.toLowerCase() + '-list';
-        chart.append('<ul class="'+ listClass +'"></ul>');
-        category.values.forEach(function(level) {
-          level.values.forEach(function(country) {
-            chart.find('.'+listClass).append('<li>'+ country['#country+name'] +'</li>')
-          });
-        });
-      }
-    });
-  }
-  else {
+  //   //create category lists
+  //   rankingByCategory.forEach(function(category) {
+  //     if (category.key!='-1' && category.key!='undefined') {
+  //       var categoryName;
+  //       switch(category.key) {
+  //         case '2':
+  //           categoryName = 'High';
+  //           break;
+  //         case '1':
+  //           categoryName = 'Medium';
+  //           break;
+  //         case '0':
+  //           categoryName = 'Low';
+  //           break;
+  //         default:
+  //           categoryName = '';
+  //       }
+  //       chart.append('<label class="access-category '+ categoryName.toLowerCase() +'">'+ categoryName +'</label>');
+  //       var listClass = categoryName.toLowerCase() + '-list';
+  //       chart.append('<ul class="'+ listClass +'"></ul>');
+  //       category.values.forEach(function(level) {
+  //         level.values.forEach(function(country) {
+  //           chart.find('.'+listClass).append('<li>'+ country['#country+name'] +'</li>')
+  //         });
+  //       });
+  //     }
+  //   });
+  // }
+  // else {
     //set title
     $('.global-figures .ranking-container').removeClass('access-severity');
     $('.global-figures .ranking-title').text( $('.menu-indicators').find('.selected').attr('data-legend') + ' by country' );
@@ -523,7 +523,7 @@ function createRankingChart() {
       .text(function (d) {
         return valueFormat(d.value);
       });
-  }
+  //}
 }
 
 function updateRankingChart(sortMode) {
@@ -1472,8 +1472,14 @@ function setGlobalFigures() {
 	nationalData.forEach(function(d) {
 		if (regionMatch(d['#region+name'])) {
 			var val = d[currentIndicator.id];
-			if (isVal(val) && !isNaN(val)) {
-				totalCountries++;
+			if (currentIndicator.id=='#severity+access+category') {
+				if (val!=undefined)
+					totalCountries++;
+			}
+			else {
+				if (isVal(val) && !isNaN(val)) {
+					totalCountries++;
+				}
 			}
 		}
 	});
@@ -1488,13 +1494,42 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Total Number of People in Need', 'pin', (d3.format('.4s'))(totalPIN));
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
+	//access security
+	else if (currentIndicator.id=='#severity+access+category') {
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
+		var accessLabels = ['Top 3 access constraints into country','Top 3 access constraints within country','Top 3 impacts','Countries with existing mitigation measures'];
+		var accessTags = ['#access+constraints+into','#access+constraints+within','#access+impact','#access+mitigation'];
+		var content;
+		accessTags.forEach(function(tag, index) {
+			var descArr = (data[tag+'+desc']!=undefined) ? data[tag+'+desc'].split('|') : [];
+			var pctArr = (data[tag+'+pct']!=undefined) ? data[tag+'+pct'].split('|') : [];
+			console.log(tag, pctArr)
+			content = '<h6>'+ accessLabels[index] +'</h6><ul class="access-figures">';
+			pctArr.forEach(function(item, index) {
+				if (tag=='#access+mitigation') {
+					content += '<li><div class="pct">'+ Math.round(item*100)+'%' + '</div><div class="desc">Yes</div></li>';
+					content += '<li><div class="pct">'+ Math.round((1-item)*100)+'%' + '</div><div class="desc">No</div></li>';
+				}
+				else {
+					content += '<li><div class="pct">'+ Math.round(item*100)+'%' + '</div><div class="desc">' + descArr[index] +'</div></li>';
+				}
+			})
+			content += '</ul>';
+			$('.figures').append(content);
+		});
+	}
 	//humanitarian funding
 	else if (currentIndicator.id=='#value+funding+hrp+pct') {
-		var totalPIN = d3.sum(nationalData, function(d) { return +d['#affected+inneed']; });
+		var numCountries = 0;
+		nationalData.forEach(function(d) {
+			if (regionMatch(d['#region+name'])) {
+				numCountries++;
+			}
+		});
 		createKeyFigure('.figures', 'Total Funding Required', '', formatValue(data['#value+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'GHRP Requirement (COVID-19)', '', formatValue(data['#value+covid+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'Funding Coverage', '', percentFormat(data['#value+funding+hrp+pct']));
-		createKeyFigure('.figures', 'Countries Affected', '', totalCountries);
+		createKeyFigure('.figures', 'Countries Affected', '', numCountries);
 	}
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
@@ -1563,7 +1598,13 @@ function setGlobalFigures() {
 	}
 
 	//ranking chart
-	createRankingChart();
+	if (currentIndicator.id!='#severity+access+category') {
+		$('.ranking-container').show();
+		createRankingChart();
+	}
+	else {
+		$('.ranking-container').hide();
+	}
 }
 
 function createKeyFigure(target, title, className, value) {
@@ -2538,17 +2579,22 @@ function createMapTooltip(country_code, country_name) {
     //access layer
     else if (currentIndicator.id=='#severity+access+category') {
       if (val!='No Data') {
-        var accessLabels = ['Top 3 access restrictions into country:', 'Top 3 access restrictions within country:', 'Top 3 impacts:'];
-        var accessTags = ['#access+constraints+into+desc','#access+constraints+within+desc','#access+impact+desc'];
+        var accessLabels = ['Top 3 access restrictions into country:', 'Top 3 access restrictions within country:', 'Top 3 impacts:', 'Mitigation measures:'];
+        var accessTags = ['#access+constraints+into+desc','#access+constraints+within+desc','#access+impact+desc','#access+mitigation+desc'];
         accessLabels.forEach(function(label, index) {
-          var arr = (country[0][accessTags[index]]!=undefined) ? country[0][accessTags[index]].split('|') : [];
-          content += '<label class="access-label">'+ label + '</label>';
-          content += '<ul>';
-          arr.forEach(function(item, index) {
-            if (index<3)
-              content += '<li>'+ item + '</li>';
-          });
-          content += '</ul>';
+          if (accessTags[index]=='#access+mitigation+desc' && country[0][accessTags[index]]!=undefined) {
+            content += '<label class="access-label">'+ label + '</label> '+ country[0][accessTags[index]].toUpperCase();
+          }
+          else {
+            var arr = (country[0][accessTags[index]]!=undefined) ? country[0][accessTags[index]].split('|') : [];
+            content += '<label class="access-label">'+ label + '</label>';
+            content += '<ul>';
+            arr.forEach(function(item, index) {
+              if (index<3)
+                content += '<li>'+ item + '</li>';
+            });
+            content += '</ul>';
+          }
         });
       }
       else {
@@ -2928,7 +2974,7 @@ $( document ).ready(function() {
         });
       });
 
-      console.log(nationalData)
+      //console.log(nationalData)
       //console.log(subnationalData)
 
       dataLoaded = true;
