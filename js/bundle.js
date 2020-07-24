@@ -2601,6 +2601,15 @@ function createMapTooltip(country_code, country_name) {
         content += currentIndicator.name + ':<div class="stat">' + val + '</div>';
       }
     }
+    //INFORM layer
+    else if (currentIndicator.id=='#severity+inform+type') {
+      content += 'INFORM COVID-19 Risk Index:<div class="stat">' + country[0]['#severity+inform+num'] + '</div>';
+      if (val!='No Data') {
+        if (country[0]['#severity+coping+inform+num']!=undefined) content += 'Lack of Coping Capacity: '+ country[0]['#severity+coping+inform+num']+'<br>';
+        if (country[0]['#severity+hazard+inform+num']!=undefined) content += 'COVID-19 Hazard & Exposure: '+ country[0]['#severity+hazard+inform+num']+'<br>';
+        if (country[0]['#severity+inform+num+vulnerability']!=undefined) content += 'Vulnerability: '+ country[0]['#severity+inform+num+vulnerability']+'<br>';
+      }
+    }
     //Vaccination campaigns layer
     else if (currentIndicator.id=='#vaccination+num+ratio') {
       var vaccData = [];

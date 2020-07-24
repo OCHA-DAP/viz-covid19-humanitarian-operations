@@ -1742,7 +1742,7 @@ circle.swatch {
       margin-bottom: 10px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat {
       font-size: 32px;
-      margin: 15px 0;
+      margin: 10px 0;
       position: relative; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat > svg {
         bottom: 8px;
