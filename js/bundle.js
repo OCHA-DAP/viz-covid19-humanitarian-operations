@@ -1529,7 +1529,7 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Total Funding Required', '', formatValue(data['#value+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'GHRP Requirement (COVID-19)', '', formatValue(data['#value+covid+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'Funding Coverage', '', percentFormat(data['#value+funding+hrp+pct']));
-		createKeyFigure('.figures', 'Countries Affected', '', numCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
 	}
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
@@ -1595,6 +1595,8 @@ function setGlobalFigures() {
 	}
 	else {
 		//no global figures
+		
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 
 	//ranking chart
@@ -2584,7 +2586,7 @@ function createMapTooltip(country_code, country_name) {
     //access layer
     else if (currentIndicator.id=='#severity+access+category') {
       if (val!='No Data') {
-        var accessLabels = ['Top 3 access restrictions into country:', 'Top 3 access restrictions within country:', 'Top 3 impacts:', 'Mitigation measures:'];
+        var accessLabels = ['Top 3 access constraints into country:', 'Top 3 access constraints within country:', 'Top 3 impacts:', 'Mitigation measures:'];
         var accessTags = ['#access+constraints+into+desc','#access+constraints+within+desc','#access+impact+desc','#access+mitigation+desc'];
         accessLabels.forEach(function(label, index) {
           if (accessTags[index]=='#access+mitigation+desc' && country[0][accessTags[index]]!=undefined) {
