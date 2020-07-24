@@ -411,8 +411,8 @@ function createRankingChart() {
 
     var indicator;
     switch(currentIndicator.id) {
-      case '#severity+type':
-        indicator = '#severity+num';
+      case '#severity+inform+type':
+        indicator = '#severity+inform+num';
         break;
       case '#vaccination-campaigns':
         indicator = '#vaccination+num+ratio';
@@ -1468,17 +1468,17 @@ function setGlobalFigures() {
 		});
 	}
 
-	var totalCountries = 0;
+	var numCountries = 0;
 	nationalData.forEach(function(d) {
 		if (regionMatch(d['#region+name'])) {
 			var val = d[currentIndicator.id];
 			if (currentIndicator.id=='#severity+access+category') {
 				if (val!=undefined)
-					totalCountries++;
+					numCountries++;
 			}
 			else {
 				if (isVal(val) && !isNaN(val)) {
-					totalCountries++;
+					numCountries++;
 				}
 			}
 		}
@@ -1492,11 +1492,11 @@ function setGlobalFigures() {
 			}
 		});
 		createKeyFigure('.figures', 'Total Number of People in Need', 'pin', (d3.format('.4s'))(totalPIN));
-		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
 	}
 	//access security
 	else if (currentIndicator.id=='#severity+access+category') {
-		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
 		var accessLabels = ['Top 3 access constraints into country','Top 3 access constraints within country','Top 3 impacts','Countries with existing mitigation measures'];
 		var accessTags = ['#access+constraints+into','#access+constraints+within','#access+impact','#access+mitigation'];
 		var content;
@@ -1520,31 +1520,31 @@ function setGlobalFigures() {
 	}
 	//humanitarian funding
 	else if (currentIndicator.id=='#value+funding+hrp+pct') {
-		var numCountries = 0;
+		var totalCountries = 0;
 		nationalData.forEach(function(d) {
 			if (regionMatch(d['#region+name'])) {
-				numCountries++;
+				totalCountries++;
 			}
 		});
 		createKeyFigure('.figures', 'Total Funding Required', '', formatValue(data['#value+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'GHRP Requirement (COVID-19)', '', formatValue(data['#value+covid+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'Funding Coverage', '', percentFormat(data['#value+funding+hrp+pct']));
-		createKeyFigure('.figures', 'Countries Affected', '', numCountries);
+		createKeyFigure('.figures', 'Countries Affected', '', totalCountries);
 	}
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
 		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(data['#value+cerf+covid+funding+total+usd']));
-		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
 	}
 	//CBPF
 	else if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd') {
 		createKeyFigure('.figures', 'Total CBPF COVID-19 Funding', '', formatValue(data['#value+cbpf+covid+funding+total+usd']));
-		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
 	}
 	//IFI
 	else if (currentIndicator.id=='#value+gdp+ifi+pct') {
 		createKeyFigure('.figures', 'Total Funding (IMF/World Bank)', '', formatValue(data['#value+ifi+total']));
-		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
 	}
 	//covid figures
 	else if (currentIndicator.id=='#covid+cases+per+capita') {
@@ -2078,7 +2078,7 @@ function updateGlobalLayer() {
       if (currentIndicator.id=='#covid+cases') {
         color = (val==null) ? colorNoData : colorScale(val);
       }
-      else if (currentIndicator.id=='#severity+type' || currentIndicator.id=='#severity+access+category') {
+      else if (currentIndicator.id=='#severity+inform+type' || currentIndicator.id=='#severity+access+category') {
         color = (!isVal(val)) ? colorNoData : colorScale(val);
       }
       else {
@@ -2114,7 +2114,7 @@ function getGlobalLegendScale() {
   if (currentIndicator.id.indexOf('pct')>-1 || currentIndicator.id.indexOf('ratio')>-1) max = 1;
   else if (currentIndicator.id=='#severity+economic+num') max = 10;
   else if (currentIndicator.id=='#affected+inneed') max = roundUp(max, 1000000);
-  else if (currentIndicator.id=='#severity+type' || currentIndicator.id=='#severity+access+category') max = 0;
+  else if (currentIndicator.id=='#severity+inform+type' || currentIndicator.id=='#severity+access+category') max = 0;
   else max = max;
 
   //set scale
@@ -2133,7 +2133,7 @@ function getGlobalLegendScale() {
   else if (currentIndicator.id=='#severity+access+category') {
     scale = d3.scaleOrdinal().domain(['Low', 'Medium', 'High']).range(accessColorRange);
   }
-  else if (currentIndicator.id=='#severity+type') {
+  else if (currentIndicator.id=='#severity+inform+type') {
     scale = d3.scaleOrdinal().domain(['Very Low', 'Low', 'Medium', 'High', 'Very High']).range(informColorRange);
   }
   else if (currentIndicator.id.indexOf('funding')>-1) {
@@ -2806,8 +2806,8 @@ function initCountryPanel() {
   //inform
   var informDiv = $('.country-panel .inform .panel-inner');
   informDiv.children().remove();  
-  createFigure(informDiv, {className: 'risk-index', title: 'Risk Index<br>(1-10)', stat: data['#severity+num'], indicator: '#severity+num'});
-  createFigure(informDiv, {className: 'risk-class', title: 'Risk Class<br>(Very Low-Very High)', stat: data['#severity+type'], indicator: '#severity+num'});
+  createFigure(informDiv, {className: 'risk-index', title: 'Risk Index<br>(1-10)', stat: data['#severity+inform+num'], indicator: '#severity+inform+num'});
+  createFigure(informDiv, {className: 'risk-class', title: 'Risk Class<br>(Very Low-Very High)', stat: data['#severity+inform+type'], indicator: '#severity+inform+num'});
 
   //school
   var schoolDiv = $('.country-panel .schools .panel-inner');
