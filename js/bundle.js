@@ -1468,17 +1468,17 @@ function setGlobalFigures() {
 		});
 	}
 
-	var numCountries = 0;
+	var totalCountries = 0;
 	nationalData.forEach(function(d) {
 		if (regionMatch(d['#region+name'])) {
 			var val = d[currentIndicator.id];
 			if (currentIndicator.id=='#severity+access+category') {
 				if (val!=undefined)
-					numCountries++;
+					totalCountries++;
 			}
 			else {
 				if (isVal(val) && !isNaN(val)) {
-					numCountries++;
+					totalCountries++;
 				}
 			}
 		}
@@ -1492,11 +1492,11 @@ function setGlobalFigures() {
 			}
 		});
 		createKeyFigure('.figures', 'Total Number of People in Need', 'pin', (d3.format('.4s'))(totalPIN));
-		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//access security
 	else if (currentIndicator.id=='#severity+access+category') {
-		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 		var accessLabels = ['Top 3 access constraints into country','Top 3 access constraints within country','Top 3 impacts','Countries with existing mitigation measures'];
 		var accessTags = ['#access+constraints+into','#access+constraints+within','#access+impact','#access+mitigation'];
 		var content;
@@ -1520,31 +1520,31 @@ function setGlobalFigures() {
 	}
 	//humanitarian funding
 	else if (currentIndicator.id=='#value+funding+hrp+pct') {
-		var totalCountries = 0;
+		var numCountries = 0;
 		nationalData.forEach(function(d) {
 			if (regionMatch(d['#region+name'])) {
-				totalCountries++;
+				numCountries++;
 			}
 		});
 		createKeyFigure('.figures', 'Total Funding Required', '', formatValue(data['#value+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'GHRP Requirement (COVID-19)', '', formatValue(data['#value+covid+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'Funding Coverage', '', percentFormat(data['#value+funding+hrp+pct']));
-		createKeyFigure('.figures', 'Countries Affected', '', totalCountries);
+		createKeyFigure('.figures', 'Countries Affected', '', numCountries);
 	}
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
 		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(data['#value+cerf+covid+funding+total+usd']));
-		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//CBPF
 	else if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd') {
 		createKeyFigure('.figures', 'Total CBPF COVID-19 Funding', '', formatValue(data['#value+cbpf+covid+funding+total+usd']));
-		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//IFI
 	else if (currentIndicator.id=='#value+gdp+ifi+pct') {
 		createKeyFigure('.figures', 'Total Funding (IMF/World Bank)', '', formatValue(data['#value+ifi+total']));
-		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//covid figures
 	else if (currentIndicator.id=='#covid+cases+per+capita') {
@@ -2229,16 +2229,7 @@ function setGlobalLegend(scale) {
       .call(legendSize);
 
     //boundaries disclaimer
-    var disclaimerText = 'The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations.';
-    $('.map-legend.global').append('<p class="footnote disclaimer small">'+ truncateString(disclaimerText, 65) +' <a href="#" class="expand">MORE</a></p>');
-    $('.map-legend.global .disclaimer').click(function() {
-      if ($(this).find('a').hasClass('collapse')) {
-        $(this).html(truncateString(disclaimerText, 65) + ' <a href="#" class="expand">MORE</a>');
-      }
-      else {
-        $(this).html(disclaimerText + ' <a href="#" class="collapse">LESS</a>');
-      }
-    });
+    boundariesDisclaimer($('.map-legend.global'));
   }
   else {
     updateSource($('.indicator-source'), indicator);
@@ -2502,7 +2493,21 @@ function createCountryLegend(scale) {
     .attr('class', 'label')
     .text('No Data');
 
-  $('.map-legend.country').append('<p class="footnote small">The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations.</p>');
+  //boundaries disclaimer
+  boundariesDisclaimer($('.map-legend.country'));
+}
+
+function boundariesDisclaimer(target) {
+  var disclaimerText = 'The boundaries and names shown and the designations used on this map do not imply official endorsement or acceptance by the United Nations.';
+  target.append('<p class="footnote disclaimer small">'+ truncateString(disclaimerText, 65) +' <a href="#" class="expand">MORE</a></p>');
+  target.find('.disclaimer').click(function() {
+    if ($(this).find('a').hasClass('collapse')) {
+      $(this).html(truncateString(disclaimerText, 65) + ' <a href="#" class="expand">MORE</a>');
+    }
+    else {
+      $(this).html(disclaimerText + ' <a href="#" class="collapse">LESS</a>');
+    }
+  });
 }
 
 function updateCountryLegend(scale) {
@@ -2941,8 +2946,7 @@ $( document ).ready(function() {
         item['#covid+cases'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1].weekly_new_cases;
         item['#covid+deaths'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1].weekly_new_deaths;
 
-        //access categories
-        item['#severity+access+category+num'] = (item['#severity+access+category+num']==undefined) ? -1 : +item['#severity+access+category+num'];
+        //assign access categories
         if (item['#severity+access+category+num']==0) item['#severity+access+category'] = 'Low';
         if (item['#severity+access+category+num']==1) item['#severity+access+category'] = 'Medium';
         if (item['#severity+access+category+num']==2) item['#severity+access+category'] = 'High';
@@ -2983,7 +2987,7 @@ $( document ).ready(function() {
         });
       });
 
-      console.log(nationalData)
+      //console.log(nationalData)
       //console.log(subnationalData)
 
       dataLoaded = true;
