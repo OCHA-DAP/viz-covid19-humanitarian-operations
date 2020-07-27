@@ -1327,7 +1327,7 @@ a:visited {
     box-shadow: 2px 2px 4px rgba(208, 208, 208, 0.5);
     display: flex;
     flex-flow: column;
-    overflow: scroll;
+    overflow: auto;
     padding: 12px 0;
     min-width: 255px;
     width: 255px;
@@ -1506,7 +1506,7 @@ a:visited {
   height: 30px;
   margin-left: 8px;
   padding: 0;
-  width: 155px; }
+  width: auto; }
 
 .global-figures {
   background-color: rgba(255, 255, 255, 0.9);
@@ -1546,11 +1546,6 @@ a:visited {
           bottom: 10px;
           left: 125px;
           position: absolute; }
-      .global-figures .figures .key-figure:nth-child(2), .global-figures .figures .key-figure:nth-child(4) {
-        flex: 0 0 calc(50%);
-        margin-right: 0; }
-      .global-figures .figures .key-figure:nth-child(3) .inner, .global-figures .figures .key-figure:nth-child(4) .inner {
-        border-top: 0; }
   .global-figures .date {
     padding-bottom: 10px; }
   .global-figures .num {
@@ -1574,7 +1569,8 @@ a:visited {
 .ranking-container .ranking-chart {
   margin-top: 20px;
   min-height: 234px;
-  overflow: scroll; }
+  overflow-y: scroll;
+  overflow-x: hidden; }
   .ranking-container .ranking-chart .bar {
     fill: #F2645B; }
   .ranking-container .ranking-chart .name {
@@ -1925,8 +1921,6 @@ table {
     top: 10px; }
 
 @media only screen and (max-height: 696px) {
-  .map-legend.global {
+  .map-legend {
     max-height: 440px;
-    overflow: auto; }
-  .map-legend.country {
-    overflow: scroll; } }
+    overflow: auto; } }
