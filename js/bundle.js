@@ -2332,15 +2332,6 @@ function updateCountryLayer() {
     default:
       clrRange = colorRange;
   }
-
-  // var data = []; 
-  // subnationalData.forEach(function(d) {
-  //   if (d['#country+code']==currentCountry.code) {
-  //     data.push(d[currentCountryIndicator.id]); 
-  //   }
-  // });
-
-  // var countryColorScale = d3.scaleQuantile().domain(data).range(clrRange);
   var countryColorScale = d3.scaleQuantize().domain([0, max]).range(clrRange);
 
   //data join
@@ -2467,20 +2458,13 @@ function updateCountryLegend(scale) {
   }
 
   var legendFormat;
-  switch(currentCountryIndicator.id) {
-    case '#affected+food+ipc+p3+pct':
-      legendFormat = percentFormat;
-      break;
-    case '#affected+ch+food+p3+pct':
-      legendFormat = percentFormat;
-      break;
-    case '#population':
-      legendFormat = shortenNumFormat;
-      break;
-    default:
-      legendFormat = d3.format('.0s');
-  }
-  if (currentCountryIndicator.id.indexOf('vaccinated')>-1) legendFormat = percentFormat;
+  if (currentCountryIndicator.id=='#affected+food+ipc+p3+pct' || currentCountryIndicator.id=='#affected+ch+food+p3+pct' || currentCountryIndicator.id.indexOf('vaccinated')>-1)
+    legendFormat = d3.format('.0%');
+  else if (currentCountryIndicator.id=='#population')
+    legendFormat = shortenNumFormat;
+  else
+    legendFormat = d3.format('.0f');
+
   var legend = d3.legendColor()
     .labelFormat(legendFormat)
     .cells(colorRange.length)
