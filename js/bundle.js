@@ -1341,7 +1341,6 @@ function formatValue(val) {
 }
 
 function roundUp(x, limit) {
-  console.log(x, Math.ceil(x/limit)*limit)
   return Math.ceil(x/limit)*limit;
 }
 
