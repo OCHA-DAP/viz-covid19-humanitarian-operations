@@ -12,7 +12,7 @@ function createProjectionsChart(data, type) {
   var maxVal = d3.max(data, function(d) { return +d.max; })
   var barHeight = 25;
   var barPadding = 20;
-  var margin = {top: 0, right: 40, bottom: 30, left: 50},
+  var margin = {top: 0, right: 50, bottom: 30, left: 50},
       width = 336,
       height = (barHeight + barPadding) * data.length;
   
@@ -2514,9 +2514,9 @@ function createMapTooltip(country_code, country_name) {
 
     //COVID trend layer shows sparklines
     if (currentIndicator.id=='#covid+cases+per+capita') {
-      content += "Weekly number of new cases" + ':<div class="stat covid-cases">' + numFormat(country[0]['#covid+cases']) + '</div>';
-      content += "Weekly number of new deaths" + ':<div class="stat covid-deaths">' + numFormat(country[0]['#covid+deaths']) + '</div>';
-      content += "Weekly trend (new cases past week / prior week)" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
+      content += "Weekly Number of New Cases" + ':<div class="stat covid-cases">' + numFormat(country[0]['#covid+cases']) + '</div>';
+      content += "Weekly Number of New Deaths" + ':<div class="stat covid-deaths">' + numFormat(country[0]['#covid+deaths']) + '</div>';
+      content += "Weekly Trend (new cases past week / prior week)" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
     }
     //PIN layer shows refugees and IDPs
     else if (currentIndicator.id=='#affected+inneed+pct') {
@@ -2532,7 +2532,7 @@ function createMapTooltip(country_code, country_name) {
     //access layer
     else if (currentIndicator.id=='#severity+access+category') {
       if (val!='No Data') {
-        var accessLabels = ['Top access constraints into country:', 'Top access constraints within country:', 'Top impacts:', 'Mitigation measures:'];
+        var accessLabels = ['Top Access Constraints into Country:', 'Top Access Constraints within Country:', 'Top Impacts:', 'Mitigation Measures:'];
         var accessTags = ['#access+constraints+into+desc','#access+constraints+within+desc','#access+impact+desc','#access+mitigation+desc'];
         accessLabels.forEach(function(label, index) {
           if (accessTags[index]=='#access+mitigation+desc' && country[0][accessTags[index]]!=undefined) {
@@ -2588,8 +2588,8 @@ function createMapTooltip(country_code, country_name) {
     else if (currentIndicator.id=='#value+funding+hrp+pct') {
       if (val!='No Data') {
         content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
-        if (isVal(country[0]['#value+funding+hrp+required+usd'])) content += 'HRP requirement: '+ formatValue(country[0]['#value+funding+hrp+required+usd']) +'<br/>';
-        if (isVal(country[0]['#value+covid+funding+hrp+required+usd'])) content += 'COVID-19 GHRP requirement: '+ formatValue(country[0]['#value+covid+funding+hrp+required+usd']) +'<br/>';
+        if (isVal(country[0]['#value+funding+hrp+required+usd'])) content += 'HRP Requirement: '+ formatValue(country[0]['#value+funding+hrp+required+usd']) +'<br/>';
+        if (isVal(country[0]['#value+covid+funding+hrp+required+usd'])) content += 'COVID-19 GHRP Requirement: '+ formatValue(country[0]['#value+covid+funding+hrp+required+usd']) +'<br/>';
       }
       if (isVal(country[0]['#value+funding+other+planname'])) {
         var planArray = country[0]['#value+funding+other+planname'].split('|');
@@ -2611,7 +2611,7 @@ function createMapTooltip(country_code, country_name) {
       content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
       if (val!='No Data') {
         if (isVal(country[0]['#value+ifi+percap'])) content += 'Total IFI Funding per Capita: '+ d3.format('$,.2f')(country[0]['#value+ifi+percap']) +'<br/>';
-        if (isVal(country[0]['#value+ifi+total'])) content += 'Total amount combined: '+ formatValue(country[0]['#value+ifi+total']);
+        if (isVal(country[0]['#value+ifi+total'])) content += 'Total Amount Combined: '+ formatValue(country[0]['#value+ifi+total']);
       
         content += '<div class="subtext">Breakdown:<br/>';
         var fundingArray = ['adb','afdb','ec','eib','idb','imf','isdb','unmptf','wb'];
@@ -2699,6 +2699,7 @@ function resetMap() {
     var id = currentCountry.code.toLowerCase()
     map.setLayoutProperty(id+'-popdensity', 'visibility', 'none');
   }
+  map.setLayoutProperty(countryBoundaryLayer, 'visibility', 'none');
   map.setLayoutProperty(countryLayer, 'visibility', 'none');
   map.setLayoutProperty(countryLabelLayer, 'visibility', 'none');
   $('.content').removeClass('country-view');
@@ -2758,12 +2759,12 @@ function initCountryPanel() {
   //hrp
   var hrpDiv = $('.country-panel .hrp .panel-inner');
   hrpDiv.children().remove();
-  createFigure(hrpDiv, {className: 'funding-required', title: 'HRP requirement', stat: formatValue(data['#value+funding+hrp+required+usd']), indicator: '#value+funding+hrp+required+usd'});
+  createFigure(hrpDiv, {className: 'funding-required', title: 'HRP Requirement', stat: formatValue(data['#value+funding+hrp+required+usd']), indicator: '#value+funding+hrp+required+usd'});
   createFigure(hrpDiv, {className: 'funding-level', title: 'HRP Funding Level', stat: percentFormat(data['#value+funding+hrp+pct']), indicator: '#value+covid+funding+hrp+pct'});
-  createFigure(hrpDiv, {className: 'funding-covid-required', title: 'COVID-19 GHRP requirement', stat: formatValue(data['#value+covid+funding+hrp+required+usd']), indicator: '#value+covid+funding+hrp+required+usd'});
-  createFigure(hrpDiv, {className: 'funding-covid-allocation', title: 'COVID-19 GHRP allocation', stat: formatValue(data['#value+covid+funding+hrp+total+usd']), indicator: '#value+covid+funding+hrp+total+usd'});
-  createFigure(hrpDiv, {className: 'funding-covid-cerf-allocation', title: 'CERF COVID-19 allocation', stat: formatValue(data['#value+cerf+covid+funding+total+usd']), indicator: '#value+cerf+covid+funding+total+usd'});
-  createFigure(hrpDiv, {className: 'funding-covid-cbpf-allocation', title: 'CBPF COVID allocation', stat: formatValue(data['#value+cbpf+covid+funding+total+usd']), indicator: '#value+cbpf+covid+funding+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-required', title: 'COVID-19 GHRP Requirement', stat: formatValue(data['#value+covid+funding+hrp+required+usd']), indicator: '#value+covid+funding+hrp+required+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-allocation', title: 'COVID-19 GHRP Allocation', stat: formatValue(data['#value+covid+funding+hrp+total+usd']), indicator: '#value+covid+funding+hrp+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-cerf-allocation', title: 'CERF COVID-19 Allocation', stat: formatValue(data['#value+cerf+covid+funding+total+usd']), indicator: '#value+cerf+covid+funding+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-cbpf-allocation', title: 'CBPF COVID Allocation', stat: formatValue(data['#value+cbpf+covid+funding+total+usd']), indicator: '#value+cbpf+covid+funding+total+usd'});
 
   //inform
   var informDiv = $('.country-panel .inform .panel-inner');
