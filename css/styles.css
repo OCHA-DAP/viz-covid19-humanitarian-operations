@@ -1742,7 +1742,7 @@ circle.swatch {
       position: relative; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat > svg {
         bottom: 8px;
-        left: 115px;
+        left: 125px;
         position: absolute; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases {
       color: #888;
