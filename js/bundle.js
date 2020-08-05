@@ -138,7 +138,7 @@ function formatTimeseriesData(data) {
           val = e.values[0]['confirmed cases'];
         }
       });
-      arr.push(val);
+      if (val!=undefined) arr.push(val);
     });
     timeseriesArray.push(arr);
   });
@@ -1458,7 +1458,7 @@ function setGlobalFigures() {
 			createKeyFigure('.figures', 'Weekly Number of New Cases', 'weekly-cases', shortenNumFormat(weeklyCases));
 			var sparklineArray = [];
 			covidGlobal.forEach(function(d) {
-	      var obj = {date: d.date_epicrv, value: d.weekly_new_cases};
+	      var obj = {date: d.Date_reported, value: d.weekly_new_cases};
 	      sparklineArray.push(obj);
 	    });
 			createSparkline(sparklineArray, '.global-figures .weekly-cases');
@@ -1467,7 +1467,7 @@ function setGlobalFigures() {
 			createKeyFigure('.figures', 'Weekly Number of New Deaths', 'weekly-deaths', shortenNumFormat(weeklyDeaths));
 			var sparklineArray = [];
 			covidGlobal.forEach(function(d) {
-	      var obj = {date: d.date_epicrv, value: d.weekly_new_deaths};
+	      var obj = {date: d.Date_reported, value: d.weekly_new_deaths};
 	      sparklineArray.push(obj);
 	    });
 			createSparkline(sparklineArray, '.global-figures .weekly-deaths');
@@ -1476,7 +1476,7 @@ function setGlobalFigures() {
 			createKeyFigure('.figures', 'Weekly Trend<br>(new cases past week / prior week)', 'cases-trend', weeklyTrend.toFixed(1) + '%');
 	    var pctArray = [];
 	    covidGlobal.forEach(function(d) {
-	      var obj = {date: d.date_epicrv, value: d.weekly_new_cases_pc_change};
+	      var obj = {date: d.Date_reported, value: d.weekly_new_cases_pc_change};
 	      pctArray.push(obj);
 	    });
 	    createTrendBarChart(pctArray, '.global-figures .cases-trend');
@@ -2580,7 +2580,7 @@ function createMapTooltip(country_code, country_name) {
       //weekly cases sparkline
       var sparklineArray = [];
       covidTrendData[country_code].forEach(function(d) {
-        var obj = {date: d.date_epicrv, value: d.weekly_new_cases};
+        var obj = {date: d.Date_reported, value: d.weekly_new_cases};
         sparklineArray.push(obj);
       });
       createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-cases');
@@ -2588,7 +2588,7 @@ function createMapTooltip(country_code, country_name) {
       //weekly deaths sparkline
       var sparklineArray = [];
       covidTrendData[country_code].forEach(function(d) {
-        var obj = {date: d.date_epicrv, value: d.weekly_new_deaths};
+        var obj = {date: d.Date_reported, value: d.weekly_new_deaths};
         sparklineArray.push(obj);
       });
       createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-deaths');
@@ -2597,7 +2597,7 @@ function createMapTooltip(country_code, country_name) {
       if (country[0]['#covid+trend+pct']!=undefined) {
         var pctArray = [];
         covidTrendData[country_code].forEach(function(d) {
-          var obj = {date: d.date_epicrv, value: d.weekly_new_cases_pc_change};
+          var obj = {date: d.Date_reported, value: d.weekly_new_cases_pc_change};
           pctArray.push(obj);
         });
         createTrendBarChart(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
@@ -2793,7 +2793,6 @@ $( document ).ready(function() {
     Promise.all([
       d3.json('https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-covid-viz/master/out.json'),
       d3.csv(timeseriesPath),
-      d3.json('https://raw.githubusercontent.com/OCHA-DAP/pa-COVID-trend-analysis/master/hrp_covid_weekly_trend.json'),
       d3.json('data/ocha-regions-bbox.geojson')
     ]).then(function(data) {
       console.log('Data loaded')
@@ -2802,13 +2801,13 @@ $( document ).ready(function() {
       //parse data
       var allData = data[0];
       timeseriesData = data[1];
-      covidTrendData = data[2];
-      regionBoundaryData = data[3].features;
+      regionBoundaryData = data[2].features;
       worldData = allData.world_data[0];
       regionalData = allData.regional_data;
       nationalData = allData.national_data;
       subnationalData = allData.subnational_data;
       sourcesData = allData.sources_data;
+      covidTrendData = allData.covid_trend_data;
       vaccinationData = allData.vaccination_campaigns_data;
 
       //format data
