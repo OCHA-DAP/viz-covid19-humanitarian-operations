@@ -1,4 +1,6 @@
 window.$ = window.jQuery = require('jquery');
+var bbox = require('@turf/bbox');
+var turfHelpers = require('@turf/helpers');
 /*******************************/
 /*** COVID PROJECTIONS CHART ***/
 /*******************************/
@@ -1828,16 +1830,17 @@ function selectCountry(features) {
   map.setLayoutProperty(countryMarkerLayer, 'visibility', 'visible');
 
   //fix hardcoded coords
-  var bbox;
-  if (currentCountry.code=='MMR') 
-    bbox = [92.197265625, 9.990490803070287, 101.162109375, 28.555576049185973]
-  else if (currentCountry.code=='PSE')
-    bbox = [34.292578125, 31.35363694150098, 35.5517578125, 32.509761735919426];
-  else
-    bbox = turf.bbox(turf.featureCollection(features));
+  //var target;
+  // if (currentCountry.code=='MMR') 
+  //   target = [92.197265625, 9.990490803070287, 101.162109375, 28.555576049185973]
+  // else if (currentCountry.code=='PSE')
+  //   target = [34.292578125, 31.35363694150098, 35.5517578125, 32.509761735919426];
+  // else
+  //   target = turf.bbox(turf.featureCollection(features));
+  var target = bbox.default(turfHelpers.featureCollection(features));
 
   var offset = 50;
-  map.fitBounds(bbox, {
+  map.fitBounds(target, {
     padding: {top: offset, right: $('.map-legend.country').outerWidth()+offset, bottom: offset, left: ($('.country-panel').outerWidth() - $('.content-left').outerWidth()) + offset},
     linear: true
   });
@@ -2681,6 +2684,12 @@ function initCountryPanel() {
   covidDiv.children().remove();  
   createFigure(covidDiv, {className: 'cases', title: 'Total Confirmed Cases', stat: numFormat(data['#affected+infected']), indicator: '#affected+infected'});
   createFigure(covidDiv, {className: 'deaths', title: 'Total Confirmed Deaths', stat: numFormat(data['#affected+killed']), indicator: '#affected+killed'});
+
+  var covidData = covidTrendData[currentCountry.code];
+  var weeklyCases = covidData[covidData.length-1].weekly_new_cases;
+  var weeklyDeaths = covidData[covidData.length-1].weekly_new_deaths;
+  createFigure(covidDiv, {className: 'weekly-cases', title: 'Weekly Number of New Cases', stat: numFormat(weeklyCases), indicator: '#affected+killed'});
+  createFigure(covidDiv, {className: 'weekly-deaths', title: 'Weekly Number of New Deaths', stat: numFormat(weeklyDeaths), indicator: '#affected+killed'});
 
   //projections
   var projectionsDiv = $('.country-panel .projections .panel-inner');
