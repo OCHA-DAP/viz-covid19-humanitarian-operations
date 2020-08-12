@@ -1578,9 +1578,29 @@ a:visited {
   .ranking-container .ranking-chart .y.axis text {
     display: none; }
 
+.ranking-container .ranking-title {
+  display: block; }
+
 .ranking-container .ranking-select-container {
   display: block;
   margin-top: 10px; }
+  .ranking-container .ranking-select-container .default-select {
+    display: block; }
+  .ranking-container .ranking-select-container .covid-select {
+    display: none; }
+
+.ranking-container.covid .ranking-title {
+  display: none; }
+
+.ranking-container.covid .ranking-select-container .default-select {
+  display: none; }
+
+.ranking-container.covid .ranking-select-container .covid-select {
+  display: block; }
+  .ranking-container.covid .ranking-select-container .covid-select .ranking-select {
+    height: 50px;
+    white-space: pre-wrap;
+    width: 100%; }
 
 .ranking-container.access-severity .ranking-chart {
   height: auto !important; }
