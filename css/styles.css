@@ -1569,8 +1569,7 @@ a:visited {
 .ranking-container .ranking-chart {
   margin-top: 20px;
   min-height: 234px;
-  overflow-y: scroll;
-  overflow-x: hidden; }
+  overflow: scroll; }
   .ranking-container .ranking-chart .bar {
     fill: #F2645B; }
   .ranking-container .ranking-chart .name {
