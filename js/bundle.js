@@ -2609,6 +2609,8 @@ function createMapTooltip(country_code, country_name) {
     //all other layers
     else {
       content += currentIndicator.name + ':<div class="stat">' + val + '</div>';
+      //hardcode value for CBPF Turkey
+      if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd' && country_code=='TUR') content+='<span>(Syria Cross Border HF)</span>';
     }
 
     //covid cases and deaths
@@ -2873,6 +2875,9 @@ $( document ).ready(function() {
         //normalize counry names
         if (item['#country+name']=='State of Palestine') item['#country+name'] = 'occupied Palestinian territory';
         if (item['#country+name']=='Bolivia (Plurinational State of)') item['#country+name'] = 'Bolivia';
+
+        //hardcode CBPF val for Turkey
+        if (item['#country+code']=='TUR') item['#value+cbpf+covid+funding+total+usd'] = 23000000;
 
         //calculate and inject PIN percentage
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || item['#population']=='') ? '' : item['#affected+inneed']/item['#population'];

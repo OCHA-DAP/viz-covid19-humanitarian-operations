@@ -1763,6 +1763,9 @@ circle.swatch {
         bottom: 8px;
         left: 125px;
         position: absolute; }
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat + span {
+      display: block;
+      margin-top: -10px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases {
       color: #888;
       margin-top: 10px; }
