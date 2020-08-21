@@ -2728,7 +2728,7 @@ function initCountryPanel() {
   covidDiv.children().remove();  
   createFigure(covidDiv, {className: 'cases', title: 'Total Confirmed Cases', stat: numFormat(data['#affected+infected']), indicator: '#affected+infected'});
   createFigure(covidDiv, {className: 'deaths', title: 'Total Confirmed Deaths', stat: numFormat(data['#affected+killed']), indicator: '#affected+killed'});
-
+lshtm
   var covidData = covidTrendData[currentCountry.code];
   var weeklyCases = covidData[covidData.length-1].weekly_new_cases;
   var weeklyDeaths = covidData[covidData.length-1].weekly_new_deaths;
@@ -2739,8 +2739,8 @@ function initCountryPanel() {
   var projectionsDiv = $('.country-panel .projections .panel-inner');
   projectionsDiv.children().remove();  
   projectionsDiv.append('<h6>COVID-19 Projections</h6><div class="bar-chart projections-cases"><p class="chart-title">Cases</p></div>');
-  var cases = [{model: 'Imperial', min: data['#affected+cases+infected+imperial+min'], max: data['#affected+cases+infected+imperial+max']},
-               {model: 'LSHTM', min: data['#affected+cases+infected+lshtm+min'], max: data['#affected+cases+infected+lshtm+max']}];
+  var cases = [{model: 'Imperial', min: data['#affected+imperial+infected+min'], max: data['#affected+imperial+infected+max']},
+               {model: 'LSHTM', min: data['#affected+lshtm+infected+min'], max: data['#affected+lshtm+infected+max']}];
   createProjectionsChart(cases, 'Cases');
   
   projectionsDiv.append('<div class="bar-chart projections-deaths"><p class="chart-title">Deaths</p></div>');
