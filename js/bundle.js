@@ -2743,8 +2743,8 @@ function initCountryPanel() {
   createProjectionsChart(cases, 'Cases');
   
   projectionsDiv.append('<div class="bar-chart projections-deaths"><p class="chart-title">Deaths</p></div>');
-  var deaths = [{model: 'Imperial', min: data['#affected+deaths+imperial+min'], max: data['#affected+deaths+imperial+max']},
-                {model: 'LSHTM', min: data['#affected+deaths+lshtm+min'], max: data['#affected+deaths+lshtm+max']}];
+  var deaths = [{model: 'Imperial', min: data['#affected+imperial+killed+min'], max: data['#affected+imperial+killed+max']},
+                {model: 'LSHTM', min: data['#affected+killed+lshtm+min'], max: data['#affected+killed+lshtm+max']}];
   createProjectionsChart(deaths, 'Deaths');
 
   //hrp
