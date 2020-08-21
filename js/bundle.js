@@ -2739,7 +2739,7 @@ function initCountryPanel() {
   projectionsDiv.children().remove();  
   projectionsDiv.append('<h6>COVID-19 Projections</h6><div class="bar-chart projections-cases"><p class="chart-title">Cases</p></div>');
   var cases = [{model: 'Imperial', min: data['#affected+imperial+infected+min'], max: data['#affected+imperial+infected+max']},
-               {model: 'LSHTM', min: data['#affected+lshtm+infected+min'], max: data['#affected+lshtm+infected+max']}];
+               {model: 'LSHTM', min: data['#affected+infected+lshtm+min'], max: data['#affected+infected+lshtm+max']}];
   createProjectionsChart(cases, 'Cases');
   
   projectionsDiv.append('<div class="bar-chart projections-deaths"><p class="chart-title">Deaths</p></div>');
