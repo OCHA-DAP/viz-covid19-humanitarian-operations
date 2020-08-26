@@ -2,19 +2,22 @@
   font-family: 'Gotham-Bold';
   src: url("../assets/fonts/Gotham-Bold.otf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+  font-display: swap; }
 
 @font-face {
   font-family: 'Gotham-Book';
   src: url("../assets/fonts/Gotham-Book.otf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+  font-display: swap; }
 
 @font-face {
   font-family: 'Gotham-Light';
   src: url("../assets/fonts/Gotham-Light.otf") format("truetype");
   font-weight: normal;
-  font-style: normal; }
+  font-style: normal;
+  font-display: swap; }
 
 @font-face {
   font-family: 'Humanitarian-Icons-v02';
@@ -1318,6 +1321,8 @@ a:visited {
   font-style: italic;
   line-height: 12px;
   padding-bottom: 10px; }
+  .footnote.gender-data {
+    margin-top: 10px; }
 
 .content {
   display: flex;
@@ -1766,9 +1771,16 @@ circle.swatch {
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat + span {
       display: block;
       margin-top: -10px; }
-    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases {
-      color: #888;
-      margin-top: 10px; }
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total,
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .deaths-total {
+      color: #333;
+      font-size: 14px;
+      line-height: 15px;
+      margin-top: 8px; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total span,
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .deaths-total span {
+        color: #888;
+        font-size: 12px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content ul {
       color: #888;
       list-style-type: disc;
@@ -1942,6 +1954,16 @@ table {
     position: absolute;
     right: 10px;
     top: 10px; }
+
+.visuallyhidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px; }
 
 @media only screen and (max-height: 850px) {
   .map-legend {

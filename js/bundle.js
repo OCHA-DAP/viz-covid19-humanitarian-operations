@@ -95,7 +95,7 @@ function createProjectionsChart(data, type) {
         date = sourceDate;
         projectionsDiv.find('.source').append(' <span class="date">'+ dateFormat(date) +'</span>');
       }
-      projectionsDiv.find('.source').append(' | '+ d.model +': <a href="'+ source['#meta+url'] +'" class="dataURL" target="_blank">DATA</a>');
+      projectionsDiv.find('.source').append(' | '+ d.model +': <a href="'+ source['#meta+url'] +'" class="dataURL" target="_blank" rel="noopener">DATA</a>');
     });
   }
 }
@@ -218,7 +218,7 @@ function createTimeSeries(array, div) {
 
   if (div=='.country-timeseries-chart') {
     countryTimeseriesChart = chart;
-    $('.cases-timeseries').append('<p class="small"><span class="date">'+ dateFormat(lastUpdated) +'</span> | <span class="source-name">WHO</span> | <a href="https://data.humdata.org/dataset/coronavirus-covid-19-cases-and-deaths" class="dataURL" target="_blank">DATA</a></p>');
+    $('.cases-timeseries').append('<p class="small"><span class="date">'+ dateFormat(lastUpdated) +'</span> | <span class="source-name">WHO</span> | <a href="https://data.humdata.org/dataset/coronavirus-covid-19-cases-and-deaths" class="dataURL" target="_blank" rel="noopener">DATA</a></p>');
   }
   createTimeseriesLegend(chart, div);
 }
@@ -667,7 +667,7 @@ function generateSparklines(results,adm0_code,adm0_name){
     var curUnit = '';
     var topMonth = 0;
 
-    var headerHtml = '<h5>'+adm0_name+' Food Market Prices – since '+ results[0].mp_year +' <span class="source small"><a href="" target="_blank">DATA</a></span></h5>';
+    var headerHtml = '<h5>'+adm0_name+' Food Market Prices – since '+ results[0].mp_year +' <span class="source small"><a href="" target="_blank" rel="noopener">DATA</a></span></h5>';
     $(targetHeader).html(headerHtml);
 
     var country_name = adm0_name.replace(/\s+/g, '-').toLowerCase();
@@ -1555,7 +1555,7 @@ function createSource(div, indicator) {
   var date = (sourceObj['#date']==undefined) ? '' : dateFormat(new Date(sourceObj['#date']));
   var sourceName = (sourceObj['#meta+source']==undefined) ? '' : sourceObj['#meta+source'];
   var sourceURL = (sourceObj['#meta+url']==undefined) ? '#' : sourceObj['#meta+url'];
-  div.append('<p class="small source"><span class="date">'+ date +'</span> | <span class="source-name">'+ sourceName +'</span> | <a href="'+ sourceURL +'" class="dataURL" target="_blank">DATA</a></p>');
+  div.append('<p class="small source"><span class="date">'+ date +'</span> | <span class="source-name">'+ sourceName +'</span> | <a href="'+ sourceURL +'" class="dataURL" target="_blank" rel="noopener">DATA</a></p>');
 }
 
 function updateSource(div, indicator) {
@@ -1679,12 +1679,23 @@ function displayMap() {
 
       map.addLayer(
         {
-          'id': id+'-popdensity',
-          'type': 'raster',
-          'source': id+'-pop-tileset'
+          id: id+'-popdensity',
+          type: 'raster',
+          source: {
+            type: 'raster',
+            tiles: ['https://api.mapbox.com/v4/humdata.'+raster+'/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2FvMW1wbDIwMzE2MnFwMW9teHQxOXhpIn0.Uri8IURftz3Jv5It51ISAA'],
+          }
         },
         countryBoundaryLayer
       );
+      // map.addLayer(
+      //   {
+      //     'id': id+'-popdensity',
+      //     'type': 'raster',
+      //     'source': id+'-pop-tileset'
+      //   },
+      //   countryBoundaryLayer
+      // );
 
       map.setLayoutProperty(id+'-popdensity', 'visibility', 'none');
     }
@@ -1716,6 +1727,25 @@ function displayMap() {
     closeOnClick: false,
     className: 'map-tooltip'
   });
+
+  //deeplink to country if parameter exists
+  if (viewInitialized==true) deepLinkCountryView();
+}
+
+function deepLinkCountryView() {
+  var location = window.location.search;
+  if (location.indexOf('?c=')>-1) {
+    var countryCode = location.split('=')[1].toUpperCase();
+    if (countryCodeList.hasOwnProperty(countryCode)) {    
+      $('.country-select').val(countryCode);
+      currentCountry.code = countryCode;
+      currentCountry.name = d3.select('.country-select option:checked').text();
+
+      //find matched features and zoom to country
+      var selectedFeatures = matchMapFeatures(currentCountry.code);
+      selectCountry(selectedFeatures);
+    }
+  }
 }
 
 
@@ -1797,6 +1827,7 @@ function createEvents() {
   //back to global event
   $('.country-panel h2').on('click', function() {
     resetMap();
+    window.history.replaceState(null, null, window.location.pathname);
   });
 
   //country panel indicator select event
@@ -1880,6 +1911,9 @@ function selectCountry(features) {
 
   map.once('moveend', initCountryView);
   mpTrack(currentCountry.code, currentCountryIndicator.name);
+
+  //append country code to url
+  window.history.replaceState(null, null, '?c='+currentCountry.code);
 }
 
 
@@ -2120,7 +2154,7 @@ function setGlobalLegend(scale) {
       }
     });
     //food methodology explanatory text
-    var foodMethodologyText = 'Methodology: Information about food prices is collected from data during the last 6 month moving window. The country ranking for food prices has been determined by calculating the ratio of the number of commodities in alert, stress or crisis and the total number of commodities. The commodity status comes from <a href="https://dataviz.vam.wfp.org" target="_blank">WFP’s model</a>.';
+    var foodMethodologyText = 'Methodology: Information about food prices is collected from data during the last 6 month moving window. The country ranking for food prices has been determined by calculating the ratio of the number of commodities in alert, stress or crisis and the total number of commodities. The commodity status comes from <a href="https://dataviz.vam.wfp.org" target="_blank" rel="noopener">WFP’s model</a>.';
     $('.map-legend.global').append('<p class="footnote food-methodology small">'+ truncateString(foodMethodologyText, 65) +' <a href="#" class="expand">MORE</a></p>');
     $('.map-legend.global .food-methodology').click(function() {
       if ($(this).find('a').hasClass('collapse')) {
@@ -2153,6 +2187,20 @@ function setGlobalLegend(scale) {
 
     markersvg.select('.legendSize')
       .call(legendSize);
+
+    //gender disaggregation explanatory text
+    var genderDataText = '*Distribution of COVID19 cases and deaths by gender are taken from Global Health 50/50 COVID-19 <a href="https://data.humdata.org/organization/global-health-50-50" target="_blank" rel="noopener">Sex-disaggregated Data Tracker</a>. Figures refer to the last date where sex-disaggregated data was available and in some cases the gender distribution may only refer to a portion of total cases or deaths. These proportions are intended to be used to understand the breakdown of cases and deaths by gender and not to monitor overall numbers per country. Definitions of COVID-19 cases and deaths recorded may vary by country. ';
+    $('.map-legend.global').append('<h4>(On hover) COVID-19 Sex-Disaggregated Data Tracker</h4>');
+    createSource($('.map-legend.global'), '#affected+killed+m+pct');
+    $('.map-legend.global').append('<p class="footnote gender-data small">'+ truncateString(genderDataText, 65) +' <a href="#" class="expand">MORE</a></p>');
+    $('.map-legend.global .gender-data').click(function() {
+      if ($(this).find('a').hasClass('collapse')) {
+        $(this).html(truncateString(genderDataText, 65) + ' <a href="#" class="expand">MORE</a>');
+      }
+      else {
+        $(this).html(genderDataText + ' <a href="#" class="collapse">LESS</a>');
+      }
+    });
 
     //boundaries disclaimer
     boundariesDisclaimer($('.map-legend.global'));
@@ -2608,8 +2656,14 @@ function createMapTooltip(country_code, country_name) {
     //covid cases and deaths
     var numCases = (isVal(country[0]['#affected+infected'])) ? numFormat(country[0]['#affected+infected']) : 'NA';
     var numDeaths = (isVal(country[0]['#affected+killed'])) ? numFormat(country[0]['#affected+killed']) : 'NA';
-    content += '<div class="cases">Total COVID-19 Cases: ' + numCases + '<br/>';
-    content += 'Total COVID-19 Deaths: ' + numDeaths + '</div>';
+    var genderCases = (country[0]['#affected+infected+m+pct']==undefined || country[0]['#affected+f+infected+pct']==undefined) ? 'Sex-disaggregation not reported' : percentFormat(country[0]['#affected+infected+m+pct']) + ' Male, ' + percentFormat(country[0]['#affected+f+infected+pct']) + ' Female';
+    var genderDeaths = (country[0]['#affected+killed+m+pct']==undefined || country[0]['#affected+f+killed+pct']==undefined) ? 'Sex-disaggregation not reported' : percentFormat(country[0]['#affected+killed+m+pct']) + ' Male, ' + percentFormat(country[0]['#affected+f+killed+pct']) + ' Female';
+    content += '<div class="cases-total">Total COVID-19 Cases: ' + numCases + '<br/>';
+    content += '<span>(*' + genderCases + ')</span>';
+    content += '</div>';
+    content += '<div class="deaths-total">Total COVID-19 Deaths: ' + numDeaths + '<br/>';
+    content += '<span>(*' + genderDeaths + ')</span>';
+    content += '</div>';
 
     //set content for tooltip
     tooltip.setHTML(content);
@@ -2681,7 +2735,7 @@ function createCountryMapTooltip(adm1_name) {
 
 
 function resetMap() {
-   if (currentCountry.code!=undefined) {
+  if (currentCountry.code!=undefined) {
     var id = currentCountry.code.toLowerCase()
     map.setLayoutProperty(id+'-popdensity', 'visibility', 'none');
   }
@@ -2792,6 +2846,7 @@ var colorNoData = '#FFF';
 var regionBoundaryData, regionalData, worldData, nationalData, subnationalData, vaccinationData, timeseriesData, covidTrendData, dataByCountry, countriesByRegion, colorScale, viewportWidth, viewportHeight, currentRegion = '';
 var mapLoaded = false;
 var dataLoaded = false;
+var viewInitialized = false;
 var zoomLevel = 1.4;
 
 var currentIndicator = {};
@@ -2847,7 +2902,7 @@ $( document ).ready(function() {
       d3.csv(timeseriesPath),
       d3.json('data/ocha-regions-bbox.geojson')
     ]).then(function(data) {
-      console.log('Data loaded')
+      console.log('Data loaded');
       $('.loader span').text('Initializing map...');
 
       //parse data
@@ -2935,7 +2990,6 @@ $( document ).ready(function() {
 
       dataLoaded = true;
       if (mapLoaded==true) displayMap();
-
       initView();
     });
   }
@@ -2971,6 +3025,12 @@ $( document ).ready(function() {
 
     //load timeseries for country view 
     initTimeseries(timeseriesData, '.country-timeseries-chart');
+
+    //check map loaded status
+    if (mapLoaded==true && viewInitialized==false)
+      deepLinkCountryView();
+
+    viewInitialized = true;
   }
 
 
