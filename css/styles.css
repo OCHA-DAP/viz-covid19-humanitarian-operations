@@ -1551,6 +1551,8 @@ a:visited {
           bottom: 10px;
           left: 125px;
           position: absolute; }
+        .global-figures .figures .key-figure .inner .small + .small {
+          margin-top: 6px; }
   .global-figures .date {
     padding-bottom: 10px; }
   .global-figures .num {
@@ -1762,7 +1764,7 @@ circle.swatch {
       margin-bottom: 10px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat {
       font-size: 32px;
-      margin: 10px 0;
+      margin: 8px 0;
       position: relative; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat > svg {
         bottom: 8px;
@@ -1787,6 +1789,10 @@ circle.swatch {
       margin-bottom: 10px; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content ul li {
         margin-left: 30px; }
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .gam {
+      margin-bottom: 15px; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .gam.small-pad {
+        margin-bottom: 6px; }
 
 .mapboxgl-ctrl-top-right {
   top: 84px;

@@ -1468,11 +1468,43 @@ function setGlobalFigures() {
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
 		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(data['#value+cerf+covid+funding+total+usd']));
+		if (data['#value+cerf+covid+funding+total+usd'] > 0) {
+			var gmText = '**Gender age marker: ';
+			for (var i=0;i<5;i++) {
+				var pct = (data['#value+cerf+covid+funding+gm'+ i +'+total+usd']!=undefined) ? percentFormat(data['#value+cerf+covid+funding+gm'+ i +'+total+usd'] / data['#value+cerf+covid+funding+total+usd']) : '0%';
+				gmText += '['+i+']: ' + pct;
+				if (i<4) gmText += ', ';
+			}
+			$('.figures .key-figure .inner').append('<div class="small">'+ gmText +'</div>');
+		}
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//CBPF
 	else if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd') {
 		createKeyFigure('.figures', 'Total CBPF COVID-19 Funding', '', formatValue(data['#value+cbpf+covid+funding+total+usd']));
+		
+		//gam
+		if (data['#value+cbpf+covid+funding+total+usd'] > 0) {
+			var gmText = '**Gender age marker: ';
+			for (var i=0;i<5;i++) {
+				var pct = (data['#value+cbpf+covid+funding+gm'+ i +'+total+usd']!=undefined) ? percentFormat(data['#value+cbpf+covid+funding+gm'+ i +'+total+usd'] / data['#value+cbpf+covid+funding+total+usd']) : '0%';
+				gmText += '['+i+']: ' + pct;
+				if (i<4) gmText += ', ';
+			}
+			$('.figures .key-figure .inner').append('<div class="small">'+ gmText +'</div>');
+		}
+
+		//beneficieries
+		if (data['#affected+cbpf+covid+funding+total'] > 0) {
+			var beneficiaryText = 'Beneficiary breakdown: ';
+			beneficiaryText += (data['#affected+cbpf+covid+funding+men']!=undefined) ? percentFormat(data['#affected+cbpf+covid+funding+men'] / data['#affected+cbpf+covid+funding+total']) + ' Male, ' : '0% Male, ';
+			beneficiaryText += (data['#affected+cbpf+covid+funding+women']!=undefined) ? percentFormat(data['#affected+cbpf+covid+funding+women'] / data['#affected+cbpf+covid+funding+total']) + ' Female, ' : '0% Female, ';
+			beneficiaryText += (data['#affected+boys+cbpf+covid+funding']!=undefined) ? percentFormat(data['#affected+boys+cbpf+covid+funding'] / data['#affected+cbpf+covid+funding+total']) + ' Boys, ' : '0% Boys, ';
+			beneficiaryText += (data['#affected+cbpf+covid+funding+girls']!=undefined) ? percentFormat(data['#affected+cbpf+covid+funding+girls'] / data['#affected+cbpf+covid+funding+total']) + ' Girls' : '0% Girls';
+			$('.figures .key-figure .inner').append('<div class="small">'+ beneficiaryText +'</div>');
+		}
+
+		//num countries
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//IFI
@@ -1503,8 +1535,8 @@ function setGlobalFigures() {
 			createKeyFigure('.figures', 'Weekly Number of New Cases', 'weekly-cases', shortenNumFormat(weeklyCases));
 			var sparklineArray = [];
 			covidGlobal.forEach(function(d) {
-	      var obj = {date: d.Date_reported, value: d.weekly_new_cases};
-	      sparklineArray.push(obj);
+	      	var obj = {date: d.Date_reported, value: d.weekly_new_cases};
+	     	sparklineArray.push(obj);
 	    });
 			createSparkline(sparklineArray, '.global-figures .weekly-cases');
 
@@ -2203,6 +2235,18 @@ function setGlobalLegend(scale) {
       }
     });
 
+    //GAM explanatory text
+    var gamDataText = '**Gender age marker: 0- Does not systematically link programming actions<br>1- Unlikely to contribute to gender equality (no gender equality measure and no age consideration)<br>2- Unlikely to contribute to gender equality (no gender equality measure but includes age consideration)<br>3- Likely to contribute to gender equality, but without attention to age groups<br>4- Likely to contribute to gender equality, including across age groups';
+    $('.map-legend.global').append('<p class="footnote gam-methodology small">'+ truncateString(gamDataText, 65) +' <a href="#" class="expand">MORE</a></p>');
+    $('.map-legend.global .gam-methodology').click(function() {
+      if ($(this).find('a').hasClass('collapse')) {
+        $(this).html(truncateString(gamDataText, 65) + ' <a href="#" class="expand">MORE</a>');
+      }
+      else {
+        $(this).html(gamDataText + ' <a href="#" class="collapse">LESS</a>');
+      }
+    });
+
     //boundaries disclaimer
     boundariesDisclaimer($('.map-legend.global'));
   }
@@ -2278,6 +2322,11 @@ function setGlobalLegend(scale) {
     $('.food-methodology').show();
   else
     $('.food-methodology').hide();
+
+  if (currentIndicator.id=='#value+cerf+covid+funding+total+usd' || currentIndicator.id=='#value+cbpf+covid+funding+total+usd')
+    $('.gam-methodology').show();
+  else
+    $('.gam-methodology').hide();
 
   //cases
   var maxCases = d3.max(nationalData, function(d) { 
@@ -2632,6 +2681,50 @@ function createMapTooltip(country_code, country_name) {
         });
       }
     }
+    //CERF
+    else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
+      content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
+      if (val!='No Data') {
+        if (country[0]['#value+cerf+covid+funding+total+usd'] > 0) {
+          var gmText = '**Gender age marker: ';
+          for (var i=0;i<5;i++) {
+            var pct = (country[0]['#value+cerf+covid+funding+gm'+i+'+total+usd']!=undefined) ? percentFormat(country[0]['#value+cerf+covid+funding+gm'+i+'+total+usd'] / country[0]['#value+cerf+covid+funding+total+usd']) : '0%';
+            gmText += '['+i+']: ' + pct;
+            if (i<4) gmText += ', ';
+          }
+          content += '<div class="gam small">'+ gmText +'</div>';
+        }
+      }
+    }
+    //CBPF
+    else if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd') {
+      content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
+      //hardcode value for CBPF Turkey
+      if (country_code=='TUR') content+='<span>(Syria Cross Border HF)</span>';
+
+      if (val!='No Data') {
+        //gam
+        if (country[0]['#value+cbpf+covid+funding+total+usd'] > 0) {
+          var gmText = '**Gender age marker: ';
+          for (var i=0;i<5;i++) {
+            var pct = (country[0]['#value+cbpf+covid+funding+gm'+i+'+total+usd']!=undefined) ? percentFormat(country[0]['#value+cbpf+covid+funding+gm'+i+'+total+usd'] / country[0]['#value+cbpf+covid+funding+total+usd']) : '0%';
+            gmText += '['+i+']: ' + pct;
+            if (i<4) gmText += ', ';
+          }
+          content += '<div class="gam small-pad small">'+ gmText +'</div>';
+        }
+
+        //beneficieries
+        if (country[0]['#affected+cbpf+covid+funding+total'] > 0) {
+          var beneficiaryText = 'Beneficiary breakdown: ';
+          beneficiaryText += (country[0]['#affected+cbpf+covid+funding+men']!=undefined) ? percentFormat(country[0]['#affected+cbpf+covid+funding+men'] / country[0]['#affected+cbpf+covid+funding+total']) + ' Male, ' : '0% Male, ';
+          beneficiaryText += (country[0]['#affected+cbpf+covid+funding+women']!=undefined) ? percentFormat(country[0]['#affected+cbpf+covid+funding+women'] / country[0]['#affected+cbpf+covid+funding+total']) + ' Female, ' : '0% Female, ';
+          beneficiaryText += (country[0]['#affected+boys+cbpf+covid+funding']!=undefined) ? percentFormat(country[0]['#affected+boys+cbpf+covid+funding'] / country[0]['#affected+cbpf+covid+funding+total']) + ' Boys, ' : '0% Boys, ';
+          beneficiaryText += (country[0]['#affected+cbpf+covid+funding+girls']!=undefined) ? percentFormat(country[0]['#affected+cbpf+covid+funding+girls'] / country[0]['#affected+cbpf+covid+funding+total']) + ' Girls' : '0% Girls';
+          content += '<div class="gam small">'+ beneficiaryText +'</div>';
+        }
+      }
+    }
     //IFI financing layer
     else if (currentIndicator.id=='#value+gdp+ifi+pct') {
       content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
@@ -2651,8 +2744,6 @@ function createMapTooltip(country_code, country_name) {
     //all other layers
     else {
       content += currentIndicator.name + ':<div class="stat">' + val + '</div>';
-      //hardcode value for CBPF Turkey
-      if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd' && country_code=='TUR') content+='<span>(Syria Cross Border HF)</span>';
     }
 
     //covid cases and deaths
