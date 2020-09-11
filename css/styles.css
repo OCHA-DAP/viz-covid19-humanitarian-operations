@@ -1693,6 +1693,8 @@ a:visited {
     .map-legend.global .source-secondary {
       margin-bottom: 10px;
       margin-top: -8px; }
+    .map-legend.global h4 i {
+      font-size: 10px; }
   .map-legend.country {
     height: auto;
     left: -215px;
@@ -1762,6 +1764,9 @@ circle.swatch {
     padding: 15px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content h2 {
       margin-bottom: 10px; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content h2 i {
+        font-size: 12px;
+        vertical-align: 1px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat {
       font-size: 32px;
       margin: 8px 0;
@@ -1772,7 +1777,8 @@ circle.swatch {
         position: absolute; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat + span {
       display: block;
-      margin-top: -10px; }
+      margin-top: -10px;
+      margin-bottom: 10px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total,
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .deaths-total {
       color: #333;
@@ -1781,8 +1787,10 @@ circle.swatch {
       margin-top: 8px; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total span,
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .deaths-total span {
-        color: #888;
-        font-size: 12px; }
+        color: #888; }
+        .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total span i,
+        .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .deaths-total span i {
+          font-size: 10px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content ul {
       color: #888;
       list-style-type: disc;
@@ -1790,6 +1798,8 @@ circle.swatch {
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content ul li {
         margin-left: 30px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .gam {
+      color: #888;
+      line-height: 16px;
       margin-bottom: 15px; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .gam.small-pad {
         margin-bottom: 6px; }
