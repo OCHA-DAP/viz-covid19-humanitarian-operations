@@ -109,42 +109,30 @@ function initTimeseries(data, div) {
 }
 
 function formatTimeseriesData(data) {
-  //group the data by country
-  var groupByCountry = d3.nest()
-    .key(function(d){ return d['Country']; })
-    .key(function(d) { return d['Date']; })
-    .entries(data);
-  groupByCountry.sort(compare);
-
-  //group the data by date
-  var groupByDate = d3.nest()
-    .key(function(d){ return d['Date']; })
-    .entries(data);
+  var dateSet = new Set();
+  var timeseriesArray = [];
+  var dataArray = Object.entries(data);
+  dataArray.forEach(function(d) {
+    var countryArray = [];
+    if (d[0]=='Syrian Arab Republic') d[0] = 'Syria';
+    if (d[0]=='Venezuela (Bolivarian Republic of)') d[0] = 'Venezuela';
+    countryArray.push(d[0])
+    var valueArray = d[1].reverse();
+    valueArray.forEach(function(val) {
+      dateSet.add(val['#date+reported']);
+      countryArray.push(val['#affected+infected'])
+    });
+    timeseriesArray.push(countryArray);
+  });
 
   var dateArray = ['x'];
-  groupByDate.forEach(function(d) {
-    var date = new Date(d.key);
+  dateSet.forEach(function(d) {
+    var date = new Date(d);
     var utcDate = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
     dateArray.push(utcDate);
   });
 
-  var timeseriesArray = [];
-  timeseriesArray.push(dateArray);
-
-  groupByCountry.forEach(function(country, index) {
-    var arr = [country.key];
-    var val = 0;
-    groupByDate.forEach(function(d) {
-      country.values.forEach(function(e) {
-        if (d.key == e.key) {
-          val = e.values[0]['confirmed cases'];
-        }
-      });
-      if (val!=undefined) arr.push(val);
-    });
-    timeseriesArray.push(arr);
-  });
-
+  timeseriesArray.unshift(dateArray)
   return timeseriesArray;
 }
 
@@ -212,14 +200,11 @@ function createTimeSeries(array, div) {
     transition: { duration: 300 }
 	});
 
-  var lastUpdated = new Date(Math.max.apply(null, timeseriesData.map(function(e) {
-    return new Date(e.Date);
-  })));
-
   if (div=='.country-timeseries-chart') {
     countryTimeseriesChart = chart;
-    $('.cases-timeseries').append('<p class="small"><span class="date">'+ dateFormat(lastUpdated) +'</span> | <span class="source-name">WHO</span> | <a href="https://data.humdata.org/dataset/coronavirus-covid-19-cases-and-deaths" class="dataURL" target="_blank" rel="noopener">DATA</a></p>');
+    createSource($('.cases-timeseries'), '#affected+infected');
   }
+
   createTimeseriesLegend(chart, div);
 }
 
@@ -252,7 +237,7 @@ function createTimeseriesLegend(chart, div, country) {
     });
 }
 
-function updateTimeseries(data, selected) {
+function updateTimeseries(selected) {
   if (selected=='Syrian Arab Republic') selected = 'Syria';
   if (selected=='Venezuela (Bolivarian Republic of)') selected = 'Venezuela';
 
@@ -380,9 +365,9 @@ function createRankingChart() {
   }
 
   //switch sort dropdown if on covid layer
-  if (currentIndicator.id=='#covid+cases+per+capita') {
+  if (currentIndicator.id=='#affected+infected+new+per100000+weekly') {
     $('.ranking-container').addClass('covid');
-    $('.ranking-select').val('#covid+cases+per+capita');
+    $('.ranking-select').val('#affected+infected+new+per100000+weekly');
   }
   else {
     $('.ranking-container').removeClass('covid');
@@ -1530,7 +1515,7 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
 	//covid figures
-	else if (currentIndicator.id=='#covid+cases+per+capita') {
+	else if (currentIndicator.id=='#affected+infected+new+per100000+weekly') {
 		var totalCases = d3.sum(nationalData, function(d) { 
 			if (regionMatch(d['#region+name']))
 				return d['#affected+infected']; 
@@ -1543,16 +1528,16 @@ function setGlobalFigures() {
 		createKeyFigure('.figures', 'Total Confirmed Deaths', 'deaths', shortenNumFormat(totalDeaths));
 
 		var covidGlobal = (currentRegion!='') ? covidTrendData[currentRegion] : covidTrendData.H63;
-		var weeklyCases = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1].weekly_new_cases : 0;
-		var weeklyDeaths = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1].weekly_new_deaths : 0;
-		var weeklyTrend = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1].weekly_new_cases_pc_change : 0;
+		var weeklyCases = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1]['#affected+infected+new+weekly'] : 0;
+		var weeklyDeaths = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1]['#affected+killed+new+weekly'] : 0;
+		var weeklyTrend = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1]['#affected+infected+new+pct+weekly'] : 0;
 		
 		if (covidGlobal!=undefined) {
 			//weekly new cases
 			createKeyFigure('.figures', 'Weekly Number of New Cases', 'weekly-cases', shortenNumFormat(weeklyCases));
 			var sparklineArray = [];
 			covidGlobal.forEach(function(d) {
-	      	var obj = {date: d.Date_reported, value: d.weekly_new_cases};
+	      	var obj = {date: d['#date+reported'], value: d['#affected+infected+new+weekly']};
 	     	sparklineArray.push(obj);
 	    });
 			createSparkline(sparklineArray, '.global-figures .weekly-cases');
@@ -1561,7 +1546,7 @@ function setGlobalFigures() {
 			createKeyFigure('.figures', 'Weekly Number of New Deaths', 'weekly-deaths', shortenNumFormat(weeklyDeaths));
 			var sparklineArray = [];
 			covidGlobal.forEach(function(d) {
-	      var obj = {date: d.Date_reported, value: d.weekly_new_deaths};
+	      var obj = {date: d['#date+reported'], value: d['#affected+killed+new+weekly']};
 	      sparklineArray.push(obj);
 	    });
 			createSparkline(sparklineArray, '.global-figures .weekly-deaths');
@@ -1570,7 +1555,7 @@ function setGlobalFigures() {
 			createKeyFigure('.figures', 'Weekly Trend<br>(new cases past week / prior week)', 'cases-trend', weeklyTrend.toFixed(1) + '%');
 	    var pctArray = [];
 	    covidGlobal.forEach(function(d) {
-	      var obj = {date: d.Date_reported, value: d.weekly_new_cases_pc_change};
+	      var obj = {date: d['#date+reported'], value: d['#affected+infected+new+pct+weekly']};
 	      pctArray.push(obj);
 	    });
 	    createTrendBarChart(pctArray, '.global-figures .cases-trend');
@@ -2085,7 +2070,7 @@ function updateGlobalLayer() {
       var val = d[currentIndicator.id];
       var color = colorDefault;
       
-      if (currentIndicator.id=='#covid+weekly+cases') {
+      if (currentIndicator.id=='#affected+infected+new+weekly') {
         color = (val==null) ? colorNoData : colorScale(val);
       }
       else if (currentIndicator.id=='#severity+inform+type' || currentIndicator.id=='#severity+access+category') {
@@ -2129,7 +2114,7 @@ function getGlobalLegendScale() {
 
   //set scale
   var scale;
-  if (currentIndicator.id=='#covid+cases+per+capita') {
+  if (currentIndicator.id=='#affected+infected+new+per100000+weekly') {
     var data = [];
     nationalData.forEach(function(d) {
       if (d[currentIndicator.id]!=null && regionMatch(d['#region+name']))
@@ -2301,7 +2286,7 @@ function setGlobalLegend(scale) {
     else {
       $('.legend-container').removeClass('access-severity');
       var legendFormat = (currentIndicator.id.indexOf('pct')>-1 || currentIndicator.id.indexOf('ratio')>-1) ? d3.format('.0%') : shortenNumFormat;
-      if (currentIndicator.id=='#covid+cases+per+capita') legendFormat = d3.format('.1f');
+      if (currentIndicator.id=='#affected+infected+new+per100000+weekly') legendFormat = d3.format('.1f');
       legend = d3.legendColor()
         .labelFormat(legendFormat)
         .cells(colorRange.length)
@@ -2604,10 +2589,10 @@ function createMapTooltip(country_code, country_name) {
     content += '</h2>';
 
     //COVID trend layer shows sparklines
-    if (currentIndicator.id=='#covid+cases+per+capita') {
-      content += "Weekly Number of New Cases per 100,000 People" + ':<div class="stat covid-cases-per-capita">' + d3.format('.1f')(country[0]['#covid+cases+per+capita']) + '</div>';
-      content += "Weekly Number of New Cases" + ':<div class="stat covid-cases">' + numFormat(country[0]['#covid+weekly+cases']) + '</div>';
-      content += "Weekly Number of New Deaths" + ':<div class="stat covid-deaths">' + numFormat(country[0]['#covid+weekly+deaths']) + '</div>';
+    if (currentIndicator.id=='#affected+infected+new+per100000+weekly') {
+      content += "Weekly Number of New Cases per 100,000 People" + ':<div class="stat covid-cases-per-capita">' + d3.format('.1f')(country[0]['#affected+infected+new+per100000+weekly']) + '</div>';
+      content += "Weekly Number of New Cases" + ':<div class="stat covid-cases">' + numFormat(country[0]['#affected+infected+new+weekly']) + '</div>';
+      content += "Weekly Number of New Deaths" + ':<div class="stat covid-deaths">' + numFormat(country[0]['#affected+killed+new+weekly']) + '</div>';
       content += "Weekly Trend (new cases past week / prior week)" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
     }
     //PIN layer shows refugees and IDPs
@@ -2776,11 +2761,11 @@ function createMapTooltip(country_code, country_name) {
     tooltip.setHTML(content);
 
     //COVID cases layer charts -- inject this after divs are created in tooltip
-    if (currentIndicator.id=='#covid+cases+per+capita' && val!='No Data') {
+    if (currentIndicator.id=='#affected+infected+new+per100000+weekly' && val!='No Data') {
       //weekly cases per capita sparkline
       var sparklineArray = [];
       covidTrendData[country_code].forEach(function(d) {
-        var obj = {date: d.Date_reported, value: d.weekly_new_cases_per_ht};
+        var obj = {date: d['#date+reported'], value: d['#affected+infected+new+per100000+weekly']};
         sparklineArray.push(obj);
       });
       createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-cases-per-capita');
@@ -2788,7 +2773,7 @@ function createMapTooltip(country_code, country_name) {
       //weekly cases sparkline
       var sparklineArray = [];
       covidTrendData[country_code].forEach(function(d) {
-        var obj = {date: d.Date_reported, value: d.weekly_new_cases};
+        var obj = {date: d['#date+reported'], value: d['#affected+infected+new+weekly']};
         sparklineArray.push(obj);
       });
       createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-cases');
@@ -2796,7 +2781,7 @@ function createMapTooltip(country_code, country_name) {
       //weekly deaths sparkline
       var sparklineArray = [];
       covidTrendData[country_code].forEach(function(d) {
-        var obj = {date: d.Date_reported, value: d.weekly_new_deaths};
+        var obj = {date: d['#date+reported'], value: d['#affected+killed+new+weekly']};
         sparklineArray.push(obj);
       });
       createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-deaths');
@@ -2805,7 +2790,7 @@ function createMapTooltip(country_code, country_name) {
       if (country[0]['#covid+trend+pct']!=undefined) {
         var pctArray = [];
         covidTrendData[country_code].forEach(function(d) {
-          var obj = {date: d.Date_reported, value: d.weekly_new_cases_pc_change};
+          var obj = {date: d['#date+reported'], value: d['#affected+infected+new+pct+weekly']};
           pctArray.push(obj);
         });
         createTrendBarChart(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
@@ -2878,7 +2863,7 @@ function initCountryPanel() {
   var data = dataByCountry[currentCountry.code][0];
 
   //timeseries
-  updateTimeseries(timeseriesData, data['#country+name']);
+  updateTimeseries(data['#country+name']);
 
   //set panel header
   $('.flag').attr('src', 'assets/flags/'+data['#country+code']+'.png');
@@ -2890,8 +2875,8 @@ function initCountryPanel() {
   createFigure(covidDiv, {className: 'cases', title: 'Total Confirmed Cases', stat: numFormat(data['#affected+infected']), indicator: '#affected+infected'});
   createFigure(covidDiv, {className: 'deaths', title: 'Total Confirmed Deaths', stat: numFormat(data['#affected+killed']), indicator: '#affected+killed'});
   var covidData = covidTrendData[currentCountry.code];
-  var weeklyCases = covidData[covidData.length-1].weekly_new_cases;
-  var weeklyDeaths = covidData[covidData.length-1].weekly_new_deaths;
+  var weeklyCases = covidData[covidData.length-1]['#affected+infected+new+weekly'];
+  var weeklyDeaths = covidData[covidData.length-1]['#affected+killed+new+weekly'];
   createFigure(covidDiv, {className: 'weekly-cases', title: 'Weekly Number of New Cases', stat: numFormat(weeklyCases), indicator: '#affected+killed'});
   createFigure(covidDiv, {className: 'weekly-deaths', title: 'Weekly Number of New Deaths', stat: numFormat(weeklyDeaths), indicator: '#affected+killed'});
 
@@ -2964,7 +2949,6 @@ $( document ).ready(function() {
   var prod = (window.location.href.indexOf('ocha-dap')>-1 || window.location.href.indexOf('data.humdata.org')) ? true : false;
   //console.log(prod);
   
-  var timeseriesPath = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vS23DBKc8c39Aq55zekL0GCu4I6IVnK4axkd05N6jUBmeJe9wA69s3CmMUiIvAmPdGtZPBd-cLS9YwS%2Fpub%3Fgid%3D1253093254%26single%3Dtrue%26output%3Dcsv';
   mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2FvMW1wbDIwMzE2MnFwMW9teHQxOXhpIn0.Uri8IURftz3Jv5It51ISAA';
   var tooltip = d3.select('.tooltip');
   var minWidth = 1000;
@@ -3006,7 +2990,6 @@ $( document ).ready(function() {
     console.log('Loading data...')
     Promise.all([
       d3.json('https://raw.githubusercontent.com/OCHA-DAP/hdx-scraper-covid-viz/master/out.json'),
-      d3.csv(timeseriesPath),
       d3.json('data/ocha-regions-bbox.geojson')
     ]).then(function(data) {
       console.log('Data loaded');
@@ -3014,14 +2997,14 @@ $( document ).ready(function() {
 
       //parse data
       var allData = data[0];
-      timeseriesData = data[1];
-      regionBoundaryData = data[2].features;
       worldData = allData.world_data[0];
+      regionBoundaryData = data[1].features;
+      timeseriesData = allData.covid_series_data;
       regionalData = allData.regional_data;
       nationalData = allData.national_data;
       subnationalData = allData.subnational_data;
       sourcesData = allData.sources_data;
-      covidTrendData = allData.covid_trend_data;
+      covidTrendData = allData.who_covid_data;
       vaccinationData = allData.vaccination_campaigns_data;
 
       //format data
@@ -3045,10 +3028,10 @@ $( document ).ready(function() {
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
-        item['#covid+trend+pct'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1].weekly_new_cases_pc_change/100;
-        item['#covid+cases+per+capita'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1].weekly_new_cases_per_ht;
-        item['#covid+weekly+cases'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1].weekly_new_cases;
-        item['#covid+weekly+deaths'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1].weekly_new_deaths;
+        item['#covid+trend+pct'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+infected+new+pct+weekly']/100;
+        item['#affected+infected+new+per100000+weekly'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+infected+new+per100000+weekly'];
+        item['#affected+infected+new+weekly'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+infected+new+weekly'];
+        item['#affected+killed+new+weekly'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+killed+new+weekly'];
         item['#covid+total+cases+per+capita'] = (item['#affected+infected'] / item['#population']) * 100000;
 
         //assign access categories
