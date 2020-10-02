@@ -294,7 +294,6 @@ function createTrendBarChart(data, div) {
   var total = data.length;
   var barMargin = 1;
   var barWidth = ($(div).width() - 130) / total - barMargin;//130 is svg left position + margin
-  console.log(div, $(div).width(), barWidth)
   var width = (barWidth+barMargin) * data.length;
   var height = 24;
   var parseDate = d3.timeParse("%Y-%m-%d");
@@ -348,8 +347,8 @@ function createTrendBarChart(data, div) {
 var rankingX, rankingY, rankingBars, rankingData, rankingBarHeight, valueFormat;
 function createRankingChart() {
   //set title
-  $('.global-figures .ranking-container').removeClass('access-severity');
-  $('.global-figures .ranking-title').text( $('.menu-indicators').find('.selected').attr('data-legend') + ' by Country' );
+  $('.secondary-panel .ranking-container').removeClass('access-severity');
+  $('.secondary-panel .ranking-title').text( $('.menu-indicators').find('.selected').attr('data-legend') + ' by Country' );
 
   var indicator;
   switch(currentIndicator.id) {
@@ -404,7 +403,7 @@ function createRankingChart() {
   $('.ranking-chart').css('height', rankingChartHeight);
 
   var margin = {top: 0, right: 70, bottom: 15, left: 100},
-      width = $('.global-figures').width() - margin.left - margin.right,
+      width = $('.secondary-panel').width() - margin.left - margin.right,
       height = (rankingBarHeight + barPadding) * rankingData.length;
 
   var svg = d3.select('.ranking-chart').append('svg')
@@ -1402,14 +1401,19 @@ const countryCodeList = {
 };
 
 
-function setGlobalFigures() {
-	var globalFigures = $('.global-figures');
-	var globalFiguresSource = $('.global-figures .source-container');
-	globalFigures.find('.figures, .source-container, .ranking-chart').empty();
-	globalFigures.find('.source-container').show();
+function setKeyFigures() {
+	var secondaryPanel = $('.secondary-panel');
+	var secondaryPanelSource = $('.secondary-panel .source-container');
+	secondaryPanel.find('.figures, .source-container, .ranking-chart').empty();
+	secondaryPanel.find('.source-container').show();
 
+	//source
 	var indicator = (currentIndicator.id=='#affected+inneed+pct') ? '#affected+inneed' : currentIndicator.id;
-	createSource(globalFiguresSource, indicator);
+	createSource(secondaryPanelSource, indicator);
+
+	//global stats
+	var globalData = regionalData.filter(function(region) { return region['#region+name']=='global'; });
+	secondaryPanel.find('.global-figures').html('Global Figures:<br>'+ numFormat(globalData[0]['#affected+infected']) +' total confirmed cases<br>'+ numFormat(globalData[0]['#affected+killed']) +' total confirmed deaths');
 
 	var data = worldData;
 	if (currentRegion!='') {
@@ -1542,7 +1546,7 @@ function setGlobalFigures() {
 	      	var obj = {date: d['#date+reported'], value: d['#affected+infected+new+weekly']};
 	     	sparklineArray.push(obj);
 	    });
-			createSparkline(sparklineArray, '.global-figures .weekly-cases');
+			createSparkline(sparklineArray, '.secondary-panel .weekly-cases');
 
 			//weekly new deaths
 			createKeyFigure('.figures', 'Weekly Number of New Deaths', 'weekly-deaths', shortenNumFormat(weeklyDeaths));
@@ -1551,7 +1555,7 @@ function setGlobalFigures() {
 	      var obj = {date: d['#date+reported'], value: d['#affected+killed+new+weekly']};
 	      sparklineArray.push(obj);
 	    });
-			createSparkline(sparklineArray, '.global-figures .weekly-deaths');
+			createSparkline(sparklineArray, '.secondary-panel .weekly-deaths');
 
 			//weekly trend
 			createKeyFigure('.figures', 'Weekly Trend<br>(new cases past week / prior week)', 'cases-trend', weeklyTrend.toFixed(1) + '%');
@@ -1560,7 +1564,7 @@ function setGlobalFigures() {
 	      var obj = {date: d['#date+reported'], value: d['#affected+infected+new+pct+weekly']};
 	      pctArray.push(obj);
 	    });
-	    createTrendBarChart(pctArray, '.global-figures .cases-trend');
+	    createTrendBarChart(pctArray, '.secondary-panel .cases-trend');
 		}
 	}
 	else {
@@ -1652,7 +1656,7 @@ function displayMap() {
   //position global figures
   if (window.innerWidth>=1440) {
     $('.menu-indicators li:first-child div').addClass('expand');
-    $('.global-figures').animate({
+    $('.secondary-panel').animate({
       left: 0
     }, 200);
   }
@@ -1804,11 +1808,11 @@ function createEvents() {
     $('.menu-indicators li div').removeClass('expand');
     $(this).addClass('selected');
     if (currentIndicator.id==$(this).attr('data-id')) {
-      toggleGlobalFigures(this);
+      toggleSecondaryPanel(this);
     }
     else {
       currentIndicator = {id: $(this).attr('data-id'), name: $(this).attr('data-legend')};
-      toggleGlobalFigures(this, 'open');
+      toggleSecondaryPanel(this, 'open');
 
       //set food prices view
       if (currentIndicator.id!='#value+food+num+ratio') {
@@ -1821,9 +1825,9 @@ function createEvents() {
   });
 
   //global figures close button
-  $('.global-figures .close-btn').on('click', function() {
+  $('.secondary-panel .close-btn').on('click', function() {
     var currentBtn = $('[data-id="'+currentIndicator.id+'"]');
-    toggleGlobalFigures(currentBtn);
+    toggleSecondaryPanel(currentBtn);
   });
 
   //ranking select event
@@ -1886,19 +1890,19 @@ function createEvents() {
   });
 }
 
-function toggleGlobalFigures(currentBtn, state) {
-  var width = $('.global-figures').outerWidth();
-  var pos = $('.global-figures').position().left;
+function toggleSecondaryPanel(currentBtn, state) {
+  var width = $('.secondary-panel').outerWidth();
+  var pos = $('.secondary-panel').position().left;
   var newPos = (pos<0) ? 0 : -width;
   if (state=='open') {
     newPos = 0;
   }
   
-  $('.global-figures').animate({
+  $('.secondary-panel').animate({
     left: newPos
   }, 200, function() {
     var div = $(currentBtn).find('div');
-    if ($('.global-figures').position().left==0) {
+    if ($('.secondary-panel').position().left==0) {
       div.addClass('expand');
     }
     else{
@@ -1912,7 +1916,7 @@ function selectRegion() {
   var regionFeature = regionBoundaryData.filter(d => d.properties.tbl_regcov_2020_ocha_Field3 == currentRegion);
   var offset = 50;
   map.fitBounds(regionFeature[0].bbox, {
-    padding: {top: offset, right: $('.map-legend').outerWidth()+offset, bottom: offset, left: $('.global-figures').outerWidth()+offset},
+    padding: {top: offset, right: $('.map-legend').outerWidth()+offset, bottom: offset, left: $('.secondary-panel').outerWidth()+offset},
     linear: true
   });
 
@@ -1998,7 +2002,7 @@ function initGlobalLayer() {
   handleGlobalEvents();
 
   //global figures
-  setGlobalFigures();
+  setKeyFigures();
 }
 
 function handleGlobalEvents(layer) {
@@ -2053,7 +2057,7 @@ function handleGlobalEvents(layer) {
 }
 
 function updateGlobalLayer() {
-  setGlobalFigures();
+  setKeyFigures();
 
   //color scales
   colorScale = getGlobalLegendScale();
@@ -2755,6 +2759,7 @@ function createMapTooltip(country_code, country_name) {
       ? '<i class="humanitarianicons-User"></i> (*' + percentFormat(country[0]['#affected+killed+m+pct']) + ' Male, ' + percentFormat(country[0]['#affected+f+killed+pct']) + ' Female)'
       : '(*Sex-disaggregation not reported)';
 
+    if (isVal(country[0]['#affected+tested+per1000'])) content += 'New Daily Tests per 1,000 People:<div class="stat covid-test-per-capita">'+ Math.round(country[0]['#affected+tested+per1000']) +'</div>';
     content += '<div class="cases-total">Total COVID-19 Cases: ' + numCases + '<br/>';
     content += '<span>' + genderCases + '</span></div>';
     content += '<div class="deaths-total">Total COVID-19 Deaths: ' + numDeaths + '<br/>';
@@ -2798,7 +2803,6 @@ function createMapTooltip(country_code, country_name) {
         });
         createTrendBarChart(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
       }
-      
     }
   }
   lastHovered = country_code;
@@ -2969,7 +2973,7 @@ $( document ).ready(function() {
     });
 
     //set content sizes based on viewport
-    $('.global-figures').height(viewportHeight-40);
+    $('.secondary-panel').height(viewportHeight-40);
     $('.content').width(viewportWidth + $('.content-left').innerWidth());
     $('.content').height(viewportHeight);
     $('.content-right').width(viewportWidth);

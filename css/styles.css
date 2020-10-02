@@ -1346,7 +1346,7 @@ a:visited {
   .content.country-view .description,
   .content.country-view .country-label,
   .content.country-view .map-legend.global,
-  .content.country-view .global-figures,
+  .content.country-view .secondary-panel,
   .content.country-view .layer-description {
     display: none; }
   .content.country-view .map-legend.country {
@@ -1514,7 +1514,7 @@ a:visited {
   padding: 0;
   width: auto; }
 
-.global-figures {
+.secondary-panel {
   background-color: rgba(255, 255, 255, 0.9);
   left: -255px;
   overflow: auto;
@@ -1523,55 +1523,56 @@ a:visited {
   top: 0;
   width: 255px;
   z-index: 3; }
-  .global-figures .close-btn {
+  .secondary-panel .close-btn {
     cursor: pointer;
     color: #888;
     right: 20px;
     position: absolute;
     top: 20px; }
-  .global-figures .source-container {
+  .secondary-panel .source-container .source {
+    padding-right: 50px; }
+  .secondary-panel .global-figures {
     border-bottom: 1px solid #CCC;
-    padding-bottom: 15px; }
-    .global-figures .source-container .source {
-      padding-right: 50px; }
-  .global-figures .figures {
+    line-height: 14px;
+    padding: 15px 0; }
+  .secondary-panel .figures {
     padding-top: 10px; }
-    .global-figures .figures .key-figure {
+    .secondary-panel .figures .key-figure {
       padding-bottom: 10px; }
-      .global-figures .figures .key-figure .inner {
+      .secondary-panel .figures .key-figure .inner {
         border-bottom: 1px solid #CCC;
         padding-bottom: 10px; }
-        .global-figures .figures .key-figure .inner h3 {
+        .secondary-panel .figures .key-figure .inner h3 {
           color: #000;
           font-size: 14px;
           line-height: 16px;
           margin: 10px 0; }
-        .global-figures .figures .key-figure .inner .num {
+        .secondary-panel .figures .key-figure .inner .num {
           position: relative; }
-        .global-figures .figures .key-figure .inner svg {
+        .secondary-panel .figures .key-figure .inner svg {
           bottom: 10px;
           left: 125px;
           position: absolute; }
-        .global-figures .figures .key-figure .inner .small + .small {
+        .secondary-panel .figures .key-figure .inner .small + .small {
           margin-top: 6px; }
-  .global-figures .date {
+  .secondary-panel .date {
     padding-bottom: 10px; }
-  .global-figures .num {
+  .secondary-panel .num {
     color: #000;
     font-family: 'Gotham-Light', sans-serif;
     font-size: 36px;
     line-height: 40px;
     padding: 5px 0; }
-    .global-figures .num span {
+    .secondary-panel .num span {
       font-size: 26px; }
-  .global-figures .access-figures {
+  .secondary-panel .access-figures {
     border-bottom: 1px solid #CCC;
     margin: 10px 0;
     padding-bottom: 10px; }
-    .global-figures .access-figures li {
+    .secondary-panel .access-figures li {
       display: flex;
       font-size: 14px; }
-    .global-figures .access-figures .pct {
+    .secondary-panel .access-figures .pct {
       flex: 0 0 40px; }
 
 .ranking-container .ranking-chart {
