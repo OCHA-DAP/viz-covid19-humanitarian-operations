@@ -2135,6 +2135,9 @@ function getGlobalLegendScale() {
   else if (currentIndicator.id=='#severity+access+category') {
     scale = d3.scaleOrdinal().domain(['Low', 'Medium', 'High']).range(accessColorRange);
   }
+  else if (currentIndicator.id=='#severity+stringency+num') {
+    scale = d3.scaleQuantize().domain([0, 100]).range(oxfordColorRange);
+  }
   else if (currentIndicator.id=='#severity+inform+type') {
     scale = d3.scaleOrdinal().domain(['Very Low', 'Low', 'Medium', 'High', 'Very High']).range(informColorRange);
   }
@@ -2601,7 +2604,14 @@ function createMapTooltip(country_code, country_name) {
       content += "Weekly Number of New Cases" + ':<div class="stat covid-cases">' + numFormat(country[0]['#affected+infected+new+weekly']) + '</div>';
       content += "Weekly Number of New Deaths" + ':<div class="stat covid-deaths">' + numFormat(country[0]['#affected+killed+new+weekly']) + '</div>';
       content += "Weekly Trend (new cases past week / prior week)" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
+
+      //testing data
+      if (country[0]['#affected+tested+per1000']!=undefined) {
+        var testingVal = Math.round(country[0]['#affected+tested+per1000']);
+        content += 'New Daily Tests per 1,000 People:<div class="stat covid-test-per-capita">'+ testingVal +'</div>';
+      }
     }
+
     //PIN layer shows refugees and IDPs
     else if (currentIndicator.id=='#affected+inneed+pct') {
       if (val!='No Data') {
@@ -2759,7 +2769,6 @@ function createMapTooltip(country_code, country_name) {
       ? '<i class="humanitarianicons-User"></i> (*' + percentFormat(country[0]['#affected+killed+m+pct']) + ' Male, ' + percentFormat(country[0]['#affected+f+killed+pct']) + ' Female)'
       : '(*Sex-disaggregation not reported)';
 
-    if (isVal(country[0]['#affected+tested+per1000'])) content += 'New Daily Tests per 1,000 People:<div class="stat covid-test-per-capita">'+ Math.round(country[0]['#affected+tested+per1000']) +'</div>';
     content += '<div class="cases-total">Total COVID-19 Cases: ' + numCases + '<br/>';
     content += '<span>' + genderCases + '</span></div>';
     content += '<div class="deaths-total">Total COVID-19 Deaths: ' + numDeaths + '<br/>';
@@ -2940,6 +2949,7 @@ var informColorRange = ['#FFE8DC','#FDCCB8','#FC8F6F','#F43C27','#961518'];
 var immunizationColorRange = ['#CCE5F9','#99CBF3','#66B0ED','#3396E7','#027CE1'];
 var populationColorRange = ['#FFE281','#FDB96D','#FA9059','#F27253','#E9554D'];
 var accessColorRange = ['#79B89A','#F6B98E','#C74B4F'];
+var oxfordColorRange = ['#ffffd9','#c7e9b4','#41b6c4','#225ea8','#172976'];
 var colorDefault = '#F2F2EF';
 var colorNoData = '#FFF';
 var regionBoundaryData, regionalData, worldData, nationalData, subnationalData, vaccinationData, timeseriesData, covidTrendData, dataByCountry, countriesByRegion, colorScale, viewportWidth, viewportHeight, currentRegion = '';
