@@ -254,9 +254,9 @@ function updateTimeseries(selected) {
 /******************/
 /*** SPARKLINES ***/
 /******************/
-function createSparkline(data, div) {
-  var width = $(div).width() - 130;//130 is svg left position + margin
-  var height = 24;
+function createSparkline(data, div, size) {
+  var width = $(div).width() - 6;
+  var height = (size=='large') ? 25 : 15;
   var x = d3.scaleLinear().range([0, width]);
   var y = d3.scaleLinear().range([height, 0]);
   var parseDate = d3.timeParse("%Y-%m-%d");
@@ -279,7 +279,7 @@ function createSparkline(data, div) {
     .attr('width', width)
     .attr('height', height+5)
     .append('g')
-      .attr('transform', 'translate(0,0)');
+      .attr('transform', 'translate(0,4)');
     
   svg.append('path')
    .datum(data)
@@ -293,9 +293,9 @@ function createSparkline(data, div) {
 function createTrendBarChart(data, div) {
   var total = data.length;
   var barMargin = 1;
-  var barWidth = ($(div).width() - 130) / total - barMargin;//130 is svg left position + margin
+  var barWidth = ($(div).width() - 6) / total - barMargin;
   var width = (barWidth+barMargin) * data.length;
-  var height = 24;
+  var height = 20;
   var parseDate = d3.timeParse("%Y-%m-%d");
 
   data.forEach(function(d) {
@@ -2024,7 +2024,7 @@ function handleGlobalEvents(layer) {
       if (target!=undefined) {
         tooltip.setLngLat(e.lngLat);
         if (target.properties.Terr_Name=='CuraÃ§ao') target.properties.Terr_Name = 'Curaçao';
-        createMapTooltip(target.properties.ISO_3, target.properties.Terr_Name)
+        createMapTooltip(target.properties.ISO_3, target.properties.Terr_Name, e.point);
       }
     }
   });
@@ -2577,7 +2577,7 @@ function boundariesDisclaimer(target) {
 /*** TOOLTIP FUNCTIONS ***/
 /*************************/
 var lastHovered = '';
-function createMapTooltip(country_code, country_name) {
+function createMapTooltip(country_code, country_name, point) {
   var country = nationalData.filter(c => c['#country+code'] == country_code);
   var val = country[0][currentIndicator.id];
 
@@ -2600,15 +2600,15 @@ function createMapTooltip(country_code, country_name) {
 
     //COVID trend layer shows sparklines
     if (currentIndicator.id=='#affected+infected+new+per100000+weekly') {
-      content += "Weekly Number of New Cases per 100,000 People" + ':<div class="stat covid-cases-per-capita">' + d3.format('.1f')(country[0]['#affected+infected+new+per100000+weekly']) + '</div>';
-      content += "Weekly Number of New Cases" + ':<div class="stat covid-cases">' + numFormat(country[0]['#affected+infected+new+weekly']) + '</div>';
-      content += "Weekly Number of New Deaths" + ':<div class="stat covid-deaths">' + numFormat(country[0]['#affected+killed+new+weekly']) + '</div>';
-      content += "Weekly Trend (new cases past week / prior week)" + ':<div class="stat covid-pct">' + percentFormat(country[0]['#covid+trend+pct']) + '</div>';
+      content += '<div class="stat-container covid-cases-per-capita"><div class="stat-title">Weekly Number of New Cases per 100,000 People:</div><div class="stat">' + d3.format('.1f')(country[0]['#affected+infected+new+per100000+weekly']) + '</div><div class="sparkline-container"></div></div>';
+      content += '<div class="stat-container condensed-stat covid-cases"><div class="stat-title">Weekly Number of New Cases:</div><div class="stat">' + numFormat(country[0]['#affected+infected+new+weekly']) + '</div><div class="sparkline-container"></div></div>';
+      content += '<div class="stat-container condensed-stat covid-deaths"><div class="stat-title">Weekly Number of New Deaths:</div><div class="stat">' + numFormat(country[0]['#affected+killed+new+weekly']) + '</div><div class="sparkline-container"></div></div>';
+      content += '<div class="stat-container condensed-stat covid-pct"><div class="stat-title">Weekly Trend (new cases past week / prior week):</div><div class="stat">' + percentFormat(country[0]['#covid+trend+pct']) + '</div><div class="sparkline-container"></div></div>';
 
       //testing data
       if (country[0]['#affected+tested+per1000']!=undefined) {
         var testingVal = Number(country[0]['#affected+tested+per1000']).toFixed(2);
-        content += 'New Daily Tests per 1,000 People:<div class="stat covid-test-per-capita">'+ testingVal +'</div>';
+        content += '<div class="stat-container condensed-stat covid-test-per-capita"><div class="stat-title">New Daily Tests per 1,000 People:</div><div class="stat">'+ testingVal +'</div><div class="sparkline-container"></div></div>';
       }
     }
 
@@ -2785,7 +2785,7 @@ function createMapTooltip(country_code, country_name) {
         var obj = {date: d['#date+reported'], value: d['#affected+infected+new+per100000+weekly']};
         sparklineArray.push(obj);
       });
-      createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-cases-per-capita');
+      createSparkline(sparklineArray, '.mapboxgl-popup-content .covid-cases-per-capita .sparkline-container', 'large');
 
       //weekly cases sparkline
       var sparklineArray = [];
@@ -2793,7 +2793,7 @@ function createMapTooltip(country_code, country_name) {
         var obj = {date: d['#date+reported'], value: d['#affected+infected+new+weekly']};
         sparklineArray.push(obj);
       });
-      createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-cases');
+      createSparkline(sparklineArray, '.mapboxgl-popup-content .covid-cases .sparkline-container');
 
       //weekly deaths sparkline
       var sparklineArray = [];
@@ -2801,7 +2801,7 @@ function createMapTooltip(country_code, country_name) {
         var obj = {date: d['#date+reported'], value: d['#affected+killed+new+weekly']};
         sparklineArray.push(obj);
       });
-      createSparkline(sparklineArray, '.mapboxgl-popup-content .stat.covid-deaths');
+      createSparkline(sparklineArray, '.mapboxgl-popup-content .covid-deaths .sparkline-container');
       
       //weekly trend bar charts
       if (country[0]['#covid+trend+pct']!=undefined) {
@@ -2810,11 +2810,43 @@ function createMapTooltip(country_code, country_name) {
           var obj = {date: d['#date+reported'], value: d['#affected+infected+new+pct+weekly']};
           pctArray.push(obj);
         });
-        createTrendBarChart(pctArray, '.mapboxgl-popup-content .stat.covid-pct');
+        createSparkline(pctArray, '.mapboxgl-popup-content .covid-pct .sparkline-container');
+        //createTrendBarChart(pctArray, '.mapboxgl-popup-content .covid-pct .sparkline-container');
       }
     }
   }
   lastHovered = country_code;
+
+  setTooltipPosition(point);
+}
+
+function setTooltipPosition(point) {
+  var tooltipWidth = $('.map-tooltip').width();
+  var tooltipHeight = $('.map-tooltip').height();
+  var anchorDirection = (point.x + tooltipWidth > viewportWidth) ? 'right' : 'left';
+  var yOffset = 0;
+  if (point.y + tooltipHeight/2 > viewportHeight) yOffset = viewportHeight - (point.y + tooltipHeight/2);
+  if (point.y - tooltipHeight/2 < 0) yOffset = tooltipHeight/2 - point.y;
+  var popupOffsets = {
+    'right': [0, yOffset],
+    'left': [0, yOffset]
+  };
+  tooltip.options.offset = popupOffsets;
+  tooltip.options.anchor = anchorDirection;
+
+  if (yOffset>0) {
+    $('.mapboxgl-popup-tip').css('align-self', 'flex-start');
+    $('.mapboxgl-popup-tip').css('margin-top', point.y);
+  }
+  else if (yOffset<0)  {
+    $('.mapboxgl-popup-tip').css('align-self', 'flex-end');
+    $('.mapboxgl-popup-tip').css('margin-bottom', viewportHeight-point.y-10);
+  }
+  else {
+    $('.mapboxgl-popup-tip').css('align-self', 'center');
+    $('.mapboxgl-popup-tip').css('margin-top', 0);
+    $('.mapboxgl-popup-tip').css('margin-bottom', 0);
+  }
 }
 
 

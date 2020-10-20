@@ -1754,7 +1754,7 @@ circle.swatch {
   display: none; }
 
 .mapboxgl-popup.map-tooltip {
-  max-width: 250px !important;
+  max-width: 330px !important;
   z-index: 4; }
   .mapboxgl-popup.map-tooltip .mapboxgl-popup-content {
     border-radius: 8px;
@@ -1769,10 +1769,36 @@ circle.swatch {
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content h2 i {
         font-size: 12px;
         vertical-align: 1px; }
-    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat {
-      font-size: 32px;
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat-container {
+      border-bottom: 1px solid #cdcdcd;
       margin: 8px 0;
       position: relative; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat-container .stat {
+        display: inline-block;
+        width: 70%; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat-container .sparkline-container {
+        display: inline-block;
+        width: 30%; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat-container.condensed-stat {
+        align-items: center;
+        display: flex;
+        flex-flow: row;
+        padding-bottom: 8px; }
+        .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat-container.condensed-stat .stat-title {
+          line-height: 16px;
+          width: 70%; }
+        .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat-container.condensed-stat .stat {
+          font-family: 'Source Sans Pro', sans-serif;
+          font-size: 14px;
+          line-height: 14px;
+          margin: 0;
+          text-align: right;
+          width: 15%; }
+        .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat-container.condensed-stat .sparkline-container {
+          width: 15%; }
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat {
+      font-size: 32px;
+      margin: 5px 0; }
       .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat > svg {
         bottom: 8px;
         left: 125px;
