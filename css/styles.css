@@ -1677,6 +1677,19 @@ a:visited {
   .map-legend svg {
     margin-top: 5px;
     width: 190px; }
+  .map-legend .toggle-icon:before {
+    color: #000;
+    content: '\e94b';
+    cursor: pointer;
+    font-family: 'Humanitarian-Icons-v02';
+    position: absolute;
+    right: 10px;
+    top: 9px; }
+  .map-legend .toggle-icon:hover:before {
+    color: #007CE1; }
+  .map-legend .collapsed-title {
+    cursor: pointer;
+    display: none; }
   .map-legend .no-data-key {
     height: 20px; }
     .map-legend .no-data-key rect {
@@ -1718,6 +1731,16 @@ a:visited {
           display: none; }
     .map-legend.country .source-container {
       margin-left: 18px; }
+  .map-legend.collapsed {
+    height: 35px !important;
+    overflow-y: hidden;
+    padding-top: 12px; }
+    .map-legend.collapsed .collapsed-title {
+      display: block; }
+    .map-legend.collapsed .indicator-title {
+      opacity: 0; }
+    .map-legend.collapsed .toggle-icon:before {
+      content: '\ea2a'; }
 
 .country-label,
 .adm1-label,
@@ -2011,7 +2034,7 @@ table {
 
 @media only screen and (max-height: 850px) {
   .map-legend {
-    max-height: 595px;
+    max-height: 570px;
     overflow-x: hidden;
     overflow-y: auto; } }
 
