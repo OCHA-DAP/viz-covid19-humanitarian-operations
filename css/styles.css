@@ -1687,6 +1687,8 @@ a:visited {
     top: 9px; }
   .map-legend .toggle-icon:hover:before {
     color: #007CE1; }
+  .map-legend .indicator-title {
+    padding-right: 4px; }
   .map-legend .collapsed-title {
     cursor: pointer;
     display: none; }

@@ -1340,7 +1340,7 @@ function hasGamData(data, indicator) {
 }
 
 function getGamText(data, indicator) {
-  var gmText = '**Gender age marker: ';
+  var gmText = '**Gender-Age Marker: ';
   for (var i=0;i<5;i++) {
     var pct = (data['#value+'+ indicator + '+covid+funding+gm'+ i +'+total+usd']!=undefined) ? percentFormat(data['#value+'+ indicator + '+covid+funding+gm'+ i +'+total+usd'] / data['#value+'+ indicator + '+covid+funding+total+usd']) : '0%';
     gmText += '['+i+']: ' + pct;
@@ -1413,7 +1413,7 @@ function setKeyFigures() {
 
 	//global stats
 	var globalData = regionalData.filter(function(region) { return region['#region+name']=='global'; });
-	secondaryPanel.find('.global-figures').html('<b>Global Figures:</b><br>'+ shortenNumFormat(globalData[0]['#affected+infected']) +' total confirmed cases<br>'+ shortenNumFormat(globalData[0]['#affected+killed']) +' total confirmed deaths');
+	secondaryPanel.find('.global-figures').html('<b>Global COVID-19 Figures:</b><br>'+ shortenNumFormat(globalData[0]['#affected+infected']) +' total confirmed cases<br>'+ shortenNumFormat(globalData[0]['#affected+killed']) +' total confirmed deaths');
 
 	var data = worldData;
 	if (currentRegion!='') {
@@ -1447,6 +1447,7 @@ function setKeyFigures() {
 		// 		return +d['#affected+inneed']; 
 		// 	}
 		// });
+		//hardcoding PIN to match OCHA data
 		createKeyFigure('.figures', 'Total Number of People in Need', 'pin', '431M');//(d3.format('.4s'))(totalPIN)
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 	}
@@ -2221,6 +2222,17 @@ function setGlobalLegend(scale) {
         $(this).html(foodMethodologyText + ' <a href="#" class="collapse">LESS</a>');
       }
     });
+    //oxford methodology text
+    var oxfordMethodologyText = 'Methodology: This is a composite measure based on nine response indicators including school closures, workplace closures, and travel bans, rescaled to a value from 0 to 100 (100 = strictest)';
+    $('.map-legend.global').append('<p class="footnote oxford-methodology small">'+ truncateString(oxfordMethodologyText, 65) +' <a href="#" class="expand">MORE</a></p>');
+    $('.map-legend.global .oxford-methodology').click(function() {
+      if ($(this).find('a').hasClass('collapse')) {
+        $(this).html(truncateString(oxfordMethodologyText, 65) + ' <a href="#" class="expand">MORE</a>');
+      }
+      else {
+        $(this).html(oxfordMethodologyText + ' <a href="#" class="collapse">LESS</a>');
+      }
+    });
 
     //cases
     $('.map-legend.global').append('<h4>Number of COVID-19 Cases</h4>');
@@ -2260,7 +2272,7 @@ function setGlobalLegend(scale) {
     });
 
     //GAM explanatory text
-    var gamDataText = '**Gender age marker: 0- Does not systematically link programming actions<br>1- Unlikely to contribute to gender equality (no gender equality measure and no age consideration)<br>2- Unlikely to contribute to gender equality (no gender equality measure but includes age consideration)<br>3- Likely to contribute to gender equality, but without attention to age groups<br>4- Likely to contribute to gender equality, including across age groups';
+    var gamDataText = '**Gender-Age Marker: 0- Does not systematically link programming actions<br>1- Unlikely to contribute to gender equality (no gender equality measure and no age consideration)<br>2- Unlikely to contribute to gender equality (no gender equality measure but includes age consideration)<br>3- Likely to contribute to gender equality, but without attention to age groups<br>4- Likely to contribute to gender equality, including across age groups';
     $('.map-legend.global').append('<p class="footnote gam-methodology small">'+ truncateString(gamDataText, 65) +' <a href="#" class="expand">MORE</a></p>');
     $('.map-legend.global .gam-methodology').click(function() {
       if ($(this).find('a').hasClass('collapse')) {
@@ -2346,7 +2358,7 @@ function setGlobalLegend(scale) {
     $('.test-methodology').show();
   else
     $('.test-methodology').hide();
-  
+
   if (currentIndicator.id=='#vaccination+num+ratio')
     $('.vacc-methodology').show();
   else
@@ -2361,6 +2373,11 @@ function setGlobalLegend(scale) {
     $('.gam-methodology').show();
   else
     $('.gam-methodology').hide();
+
+  if (currentIndicator.id=='#severity+stringency+num')
+    $('.oxford-methodology').show();
+  else
+    $('.oxford-methodology').hide();
 
   //cases
   var maxCases = d3.max(nationalData, function(d) { 
