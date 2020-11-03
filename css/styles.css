@@ -1325,9 +1325,12 @@ a:visited {
   color: #007CE1; }
 
 .footnote {
+  color: #888;
+  font-family: 'Source Sans Pro', sans-serif;
   font-size: 10px;
   font-style: italic;
   line-height: 12px;
+  margin: 0;
   padding-bottom: 10px; }
   .footnote.gender-data {
     margin-top: 10px; }
