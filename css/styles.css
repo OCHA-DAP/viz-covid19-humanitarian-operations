@@ -1475,6 +1475,8 @@ a:visited {
   padding: 20px 0; }
   .logos img {
     margin-top: 12px; }
+  .logos .footnote {
+    padding: 10px 20px; }
 
 .menu h4 {
   padding: 10px 20px 6px;
