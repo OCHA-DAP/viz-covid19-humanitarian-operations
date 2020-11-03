@@ -242,7 +242,7 @@ function createTimeSeries(array, div) {
     transition: { duration: 300 }
 	});
 
-  createTimeseriesLegend(chart, div);
+  createTimeseriesLegend(chart);
 
   if (isGlobal) {
     globalTimeseriesChart = chart;
@@ -254,8 +254,9 @@ function createTimeSeries(array, div) {
 }
 
 
-function createTimeseriesLegend(chart, div, country) {
-  var isGlobal = (div.indexOf('global')>-1) ? true : false;
+function createTimeseriesLegend(chart, country) {
+  var element = $(chart.element).attr('class');
+  var isGlobal = (element.indexOf('global')>-1) ? true : false;
   if (isGlobal && $('.timeseries-legend').length>0) {
     $('.global-timeseries-chart .timeseries-legend').remove();
   }
@@ -266,7 +267,7 @@ function createTimeseriesLegend(chart, div, country) {
   });
 
   //custom legend
-  d3.select(div).insert('div').attr('class', 'timeseries-legend').selectAll('div')
+  d3.select(chart.element).insert('div').attr('class', 'timeseries-legend').selectAll('div')
     .data(names)
     .enter().append('div')
     .attr('data-id', function(id) {
@@ -288,7 +289,7 @@ function createTimeseriesLegend(chart, div, country) {
 
   //set max height for legend
   if (isGlobal) {
-    var chartHeight = $(div).parent().height()-200;
+    var chartHeight = $(chart.element).parent().height()-200;
     var itemHeight = 18;
     var numItems = Math.round((chartHeight-160)/itemHeight);
     var availSpace = itemHeight*numItems;
@@ -307,7 +308,7 @@ function updateTimeseries(selected) {
   $('.country-timeseries-chart .c3-chart-lines .c3-line-'+selected).css('stroke', '#007CE1');
 
   $('.country-timeseries-chart .timeseries-legend').remove();
-  createTimeseriesLegend(countryTimeseriesChart, '.country-timeseries-chart', selected);
+  createTimeseriesLegend(countryTimeseriesChart, selected);
 }
 
 
@@ -1888,17 +1889,13 @@ function createEvents() {
 
     //handle tab views
     if (currentIndicator.id=='#affected+infected+new+per100000+weekly') {
-      // $('.tab-menubar .tab-button').removeClass('active');
-      // $('.tab-menubar .tab-button:first-child').addClass('active')
+      $('.content').addClass('tab-view');
       $('.tab-menubar').show();
-      $('#countrySelect').css('top', '80px');
-      $('.mapboxgl-ctrl-top-right').css('top', '134px');
     }
     else {
+      $('.content').removeClass('tab-view');
       $('.tab-menubar').hide();
       $('#chart-view').hide();
-      $('#countrySelect').css('top', '30px');
-      $('.mapboxgl-ctrl-top-right').css('top', '84px');
     }
   });
 
@@ -1944,7 +1941,7 @@ function createEvents() {
   });
   
   //back to global event
-  $('.country-panel h2').on('click', function() {
+  $('.backtoGlobal').on('click', function() {
     resetMap();
     window.history.replaceState(null, null, window.location.pathname);
   });
@@ -2193,7 +2190,7 @@ function updateGlobalLayer() {
   //update global timeseries chart
   globalTimeseriesChart.hide();
   globalTimeseriesChart.show(countryList);
-  createTimeseriesLegend(globalTimeseriesChart, '.global-timeseries-chart');
+  createTimeseriesLegend(globalTimeseriesChart);
 }
 
 function getGlobalLegendScale() {
@@ -2483,7 +2480,7 @@ function setGlobalLegend(scale) {
 /*** COUNTRY MAP FUNCTIONS ***/
 /*****************************/
 function initCountryView() {
-  $('.content').addClass('country-view');
+  $('.content').removeClass('tab-view').addClass('country-view');
   $('.country-panel').scrollTop(0);
 
   initCountryPanel();
@@ -3056,6 +3053,7 @@ function resetMap() {
   $('.content').removeClass('country-view');
   $('.country-select').val('');
 
+  //reset region
   if (currentRegion!='') {
     selectRegion();
     map.setLayoutProperty(globalLayer, 'visibility', 'visible');
@@ -3071,6 +3069,11 @@ function resetMap() {
     map.once('moveend', function() {
       map.setLayoutProperty(globalLayer, 'visibility', 'visible');
     });
+  }
+
+  //reset tab view
+  if (currentIndicator.id=='#affected+infected+new+per100000+weekly') {
+    $('.content').addClass('tab-view');
   }
 }
 
