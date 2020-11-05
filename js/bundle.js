@@ -3132,7 +3132,12 @@ $( document ).ready(function() {
       var staticURL = 'https://api.mapbox.com/styles/v1/humdata/ckb843tjb46fy1ilaw49redy7/static/-25,0,'+zoomLevel+'/'+viewportWidth+'x'+viewportHeight+'?access_token='+mapboxgl.accessToken;
       $('#static-map').css('background-image', 'url('+staticURL+')');
     }
-  
+
+    //set daily download date
+    var today = new Date();
+    $('.download-link .today-date').text(dateFormat(today));
+
+
     getData();
     initMap();
   }
