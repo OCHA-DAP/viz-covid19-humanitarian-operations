@@ -1335,6 +1335,9 @@ a:visited {
   .footnote.gender-data {
     margin-top: 10px; }
 
+.source + .footnote {
+  padding-top: 10px; }
+
 .content {
   display: flex;
   flex-flow: row; }
