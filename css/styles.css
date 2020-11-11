@@ -1244,7 +1244,7 @@ h1 {
   font-size: 16px;
   font-weight: normal;
   line-height: 18px;
-  padding: 15px 5px 10px 20px; }
+  padding: 5px 5px 10px 20px; }
 
 h2 {
   font-family: 'Gotham-Bold', sans-serif;
@@ -1301,11 +1301,17 @@ h6 {
   color: #888; }
 
 .table-display .table-row {
+  align-items: center;
   display: flex;
   justify-content: space-between; }
-  .table-display .table-row span {
-    display: block;
-    padding-left: 5px; }
+  .table-display .table-row div:last-child {
+    padding-left: 5px;
+    text-align: right; }
+  .table-display .table-row.row-separator {
+    border-bottom: 1px solid #CCC;
+    padding: 8px 0; }
+    .table-display .table-row.row-separator:first-child {
+      border-top: 1px solid #CCC; }
 
 .stat {
   font-family: 'Gotham-Light', sans-serif;
@@ -1347,7 +1353,7 @@ a:visited {
     display: flex;
     flex-flow: column;
     overflow: auto;
-    padding: 12px 0;
+    padding: 20px 0 10px;
     min-width: 255px;
     width: 255px;
     z-index: 2; }
@@ -1470,7 +1476,8 @@ a:visited {
   right: 20px;
   top: 18px; }
 
-.hdx-logo {
+.org-logo {
+  display: flex;
   padding-left: 15px; }
 
 .logos {
@@ -1903,13 +1910,12 @@ circle.swatch {
       color: #333;
       font-size: 14px;
       line-height: 15px;
+      margin-top: 2px; }
+    .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total {
       margin-top: 8px; }
-      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total span,
-      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .deaths-total span {
-        color: #888; }
-        .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total span i,
-        .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .deaths-total span i {
-          font-size: 10px; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total .subtext {
+        display: block;
+        margin-bottom: 8px; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content ul {
       color: #888;
       list-style-type: disc;
@@ -1942,14 +1948,14 @@ table {
   background-color: #FFF;
   bottom: 0;
   overflow: hidden;
-  padding: 12px 30px 30px;
+  padding: 20px 30px 30px;
   position: absolute;
   top: 0;
   left: -416px;
   width: 416px;
   z-index: 3;
   transition: left 0.3s ease-in; }
-  .country-panel .hdx-logo,
+  .country-panel .org-logo,
   .country-panel h1 {
     padding-left: 0; }
   .country-panel h2 {
