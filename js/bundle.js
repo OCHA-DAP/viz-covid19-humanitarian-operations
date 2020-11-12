@@ -1484,7 +1484,8 @@ function setKeyFigures() {
 	//source
 	var indicator = currentIndicator.id;
 	if (indicator=='#affected+inneed+pct') indicator = '#affected+inneed';
-	if (indicator=='#event+year+todate+num') indicator = '#access+data';
+	if (indicator=='#event+year+todate+num') indicator = '#access-data';
+	console.log(indicator)
 	createSource(secondaryPanelSource, indicator);
 
 	//global stats
