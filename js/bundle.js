@@ -1485,7 +1485,6 @@ function setKeyFigures() {
 	var indicator = currentIndicator.id;
 	if (indicator=='#affected+inneed+pct') indicator = '#affected+inneed';
 	if (indicator=='#event+year+todate+num') indicator = '#access-data';
-	console.log(indicator)
 	createSource(secondaryPanelSource, indicator);
 
 	//global stats
@@ -1692,7 +1691,7 @@ function updateSource(div, indicator) {
 
 function getSource(indicator) {
 	if (indicator=='#affected+food+p3plus+pct') indicator = '#affected+food+ipc+p3plus+pct';
-	if (indicator=='#affected+infected+gender+new+per100000+weekly') indicator = '#affected+infected+new+per100000+weekly';
+	if (indicator=='#affected+infected+gender+new+per100000+weekly') indicator = '#affected+infected+m+pct';
   var obj = {};
   sourcesData.forEach(function(item) {
     if (item['#indicator+name']==indicator) {
