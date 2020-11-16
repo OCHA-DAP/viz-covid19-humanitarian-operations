@@ -1304,7 +1304,7 @@ h6 {
   align-items: center;
   display: flex;
   justify-content: space-between; }
-  .table-display .table-row div:last-child {
+  .table-display .table-row .val {
     padding-left: 5px;
     text-align: right; }
   .table-display .table-row.row-separator {
@@ -1479,6 +1479,8 @@ a:visited {
 .org-logo {
   display: flex;
   padding-left: 15px; }
+  .org-logo a:first-child {
+    margin-right: 20px; }
 
 .logos {
   align-items: center;

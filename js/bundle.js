@@ -2713,7 +2713,6 @@ function createMapTooltip(country_code, country_name, point) {
     //PIN layer shows refugees and IDPs
     else if (currentIndicator.id=='#affected+inneed+pct') {
       if (val!='No Data') {
-        if (parseFloat(val)>100) val = '100.0%';
         content += currentIndicator.name + ':<div class="stat">' + val + '</div>';
       }
 
@@ -2748,7 +2747,7 @@ function createMapTooltip(country_code, country_name, point) {
         var data = (country[0][row.value]==undefined) ? 'N/A' : country[0][row.value];
         var val = (row.label.indexOf('%')>-1 && !isNaN(data)) ? percentFormat(data) : data;
         var sourceObj = getSource(row.value);
-        content += '<div class="table-row row-separator"><div>'+ row.label +':<br><span class="subtext">'+ sourceObj['#meta+source'] +'</span></div><div>'+ val +'</div></div>';
+        content += '<div class="table-row row-separator"><div>'+ row.label +':<div class="small">'+ sourceObj['#meta+source'] +'</div></div><div class="val">'+ val +'</div></div>';
       });
       content += '</div>';
     }
@@ -3142,7 +3141,7 @@ var currentCountry = {};
 $( document ).ready(function() {
   var prod = (window.location.href.indexOf('ocha-dap')>-1 || window.location.href.indexOf('data.humdata.org')>-1) ? true : false;
   //console.log(prod);
-  
+
   mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2hnbWs5NzkxMXh2MnNvcmF6dXIxMWE0In0.0GfmJoEJyWFQ5UzNxl2WgA';
   var tooltip = d3.select('.tooltip');
   var minWidth = 1000;
@@ -3225,6 +3224,7 @@ $( document ).ready(function() {
 
         //calculate and inject PIN percentage
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || item['#population']=='') ? '' : item['#affected+inneed']/item['#population'];
+        if (item['#affected+inneed+pct']>1) item['#affected+inneed+pct'] = 1; //limit value to 100%
 
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
@@ -3291,7 +3291,7 @@ $( document ).ready(function() {
       });
 
       //console.log(nationalData)
-      //console.log(subnationalData)
+      //console.log(covidTrendData)
 
       dataLoaded = true;
       if (mapLoaded==true) displayMap();
