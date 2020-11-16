@@ -2916,7 +2916,7 @@ function createMapTooltip(country_code, country_name, point) {
     tooltip.setHTML(content);
 
     //COVID cases layer charts -- inject this after divs are created in tooltip
-    if (currentIndicator.id=='#affected+infected+new+per100000+weekly' || currentIndicator.id=='#affected+infected+sex+new+avg+per100000' && val!='No Data') {
+    if ((currentIndicator.id=='#affected+infected+new+per100000+weekly' || currentIndicator.id=='#affected+infected+sex+new+avg+per100000') && val!='No Data' && val>0) {
       //weekly cases per capita sparkline
       var sparklineArray = [];
       covidTrendData[country_code].forEach(function(d) {
@@ -3235,6 +3235,11 @@ $( document ).ready(function() {
         item['#affected+infected+new+weekly'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+infected+new+weekly'];
         item['#affected+killed+new+weekly'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+killed+new+weekly'];
         item['#covid+total+cases+per+capita'] = (item['#affected+infected'] / item['#population']) * 100000;
+
+        //hardcode DPRK covid trend data
+        if (item['#country+code']=='PRK') {
+          item['#affected+infected+new+per100000+weekly'] = 0;
+        }
 
         //create cases by gender indicator
         item['#affected+infected+sex+new+avg+per100000'] = (item['#affected+infected+m+pct']!=undefined || item['#affected+f+infected+pct']!=undefined) ? item['#affected+infected+new+per100000+weekly'] : null;
