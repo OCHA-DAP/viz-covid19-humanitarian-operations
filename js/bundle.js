@@ -3350,6 +3350,16 @@ $( document ).ready(function() {
       });
     });
 
+    //track monthly pdf download
+    $('.download-monthly').on('click', function() {  
+      mixpanel.track('link click', {
+        'embedded in': window.location.href,
+        'destination url': $(this).attr('href'),
+        'link type': 'download report',
+        'page title': document.title
+      });
+    });
+
     //load timeseries for global view 
     createSource($('#chart-view .source-container'), '#affected+infected');
     initTimeseries(timeseriesData, '.global-timeseries-chart');
