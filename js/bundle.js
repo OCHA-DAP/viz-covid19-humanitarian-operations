@@ -2755,7 +2755,6 @@ function createMapTooltip(country_code, country_name, point) {
     }
     //IPC layer
     else if (currentIndicator.id=='#affected+food+p3plus+pct') {
-      console.log(country[0]['#affected+food+analysed+pct'])
       var dateSpan = '';
       if (country[0]['#date+ipc+start']!=undefined) {
         var startDate = new Date(country[0]['#date+ipc+start']);
@@ -3146,7 +3145,7 @@ $( document ).ready(function() {
   var prod = (window.location.href.indexOf('ocha-dap')>-1 || window.location.href.indexOf('data.humdata.org')>-1) ? true : false;
   //console.log(prod);
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2FvMW1wbDIwMzE2MnFwMW9teHQxOXhpIn0.Uri8IURftz3Jv5It51ISAA';
+  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2hnbWs5NzkxMXh2MnNvcmF6dXIxMWE0In0.0GfmJoEJyWFQ5UzNxl2WgA';
   var tooltip = d3.select('.tooltip');
   var minWidth = 1000;
   viewportWidth = (window.innerWidth<minWidth) ? minWidth - $('.content-left').innerWidth() : window.innerWidth - $('.content-left').innerWidth();
