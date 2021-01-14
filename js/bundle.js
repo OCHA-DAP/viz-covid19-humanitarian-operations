@@ -207,7 +207,6 @@ function createTimeSeries(array, div) {
           outer: false,
           values: dateArray,
           format: function(d, i) {
-            console.log(i)
             var date = dateFormat(d);
             if (!isGlobal) {
               //display every third month for country view
@@ -2803,7 +2802,7 @@ function createMapTooltip(country_code, country_name, point) {
     //INFORM layer
     else if (currentIndicator.id=='#severity+inform+type') {
       var numVal = (isVal(country[0]['#severity+inform+num'])) ? country[0]['#severity+inform+num'] : 'No Data';
-      content += 'INFORM COVID-19 Risk Index:<div class="stat">' + numVal + '</div>';
+      content += 'INFORM Severity Index:<div class="stat">' + numVal + '</div>';
       if (numVal!='No Data') {
         var tableArray = [{label: 'Lack of Coping Capacity', value: country[0]['#severity+coping+inform+num']},
                           {label: 'COVID-19 Hazard & Exposure', value: country[0]['#severity+hazard+inform+num']},
@@ -3148,7 +3147,7 @@ $( document ).ready(function() {
   var prod = (window.location.href.indexOf('ocha-dap')>-1 || window.location.href.indexOf('data.humdata.org')>-1) ? true : false;
   //console.log(prod);
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2hnbWs5NzkxMXh2MnNvcmF6dXIxMWE0In0.0GfmJoEJyWFQ5UzNxl2WgA';
+  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2FvMW1wbDIwMzE2MnFwMW9teHQxOXhpIn0.Uri8IURftz3Jv5It51ISAA';
   var tooltip = d3.select('.tooltip');
   var minWidth = 1000;
   viewportWidth = (window.innerWidth<minWidth) ? minWidth - $('.content-left').innerWidth() : window.innerWidth - $('.content-left').innerWidth();
