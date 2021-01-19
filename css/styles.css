@@ -1305,7 +1305,8 @@ h6 {
   display: flex;
   justify-content: space-between; }
   .table-display .table-row .val {
-    padding-left: 5px;
+    min-width: 58px;
+    padding-left: 7px;
     text-align: right; }
   .table-display .table-row.row-separator {
     border-bottom: 1px solid #CCC;
