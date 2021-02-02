@@ -1839,6 +1839,9 @@ function displayMap() {
     }
   });
 
+  //deeplink to country if parameter exists
+  if (viewInitialized==true) deepLinkCountryView();
+
   //init global and country layers
   initGlobalLayer();
   initCountryLayer();
@@ -1849,9 +1852,6 @@ function displayMap() {
     closeOnClick: false,
     className: 'map-tooltip'
   });
-
-  //deeplink to country if parameter exists
-  if (viewInitialized==true) deepLinkCountryView();
 }
 
 function deepLinkCountryView() {
@@ -2460,7 +2460,7 @@ function initCountryLayer() {
 
 function updateCountryLayer() {
   colorNoData = '#FFF';
-  if (currentCountryIndicator.id=='#affected+food+ipc+p3plus+pct') checkIPCData();
+  if (currentCountryIndicator.id=='#affected+food+ipc+p3plus+pct') currentCountryIndicator.id = getIPCDataSource();
   $('.map-legend.country .legend-container').removeClass('no-data');
 
   //max
@@ -2534,23 +2534,14 @@ function updateCountryLayer() {
     $('.map-legend.country .legend-container').addClass('no-data');
 }
 
-function checkIPCData() {
-  //swap food security data source if empty
-  var index = 0;
-  var isEmpty = false;
-  subnationalData.forEach(function(d) {
-    if (d['#country+code']==currentCountry.code) {
-      var val = +d[currentCountryIndicator.id];
-      if (index==0 && (!isVal(val) || isNaN(val))) {
-        isEmpty = true;
-      }
-      if (index==1 && isEmpty && isVal(val) && !isNaN(val)) {
-        isEmpty = false;
-      }
-      index++;
+function getIPCDataSource() {
+  var source = '';
+  subnationalDataByCountry.forEach(function(d) {
+    if (d.key==currentCountry.code) {
+      source = d['#ipc+source'];
     }
   });
-  if (isEmpty) currentCountryIndicator.id = '#affected+ch+food+p3plus+pct';
+  return source;
 }
 
 function getCountryIndicatorMax() {
@@ -2565,7 +2556,7 @@ function getCountryIndicatorMax() {
 function createCountryLegend(scale) {
   createSource($('.map-legend.country .population-source'), '#population');
   createSource($('.map-legend.country .idps-source'), '#affected+idps+ind');
-  createSource($('.map-legend.country .food-security-source'), '#affected+food+ipc+p3plus+pct');
+  createSource($('.map-legend.country .food-security-source'), getIPCDataSource());
   createSource($('.map-legend.country .orgs-source'), '#org+count+num');
   createSource($('.map-legend.country .health-facilities-source'), '#loc+count+health');
   createSource($('.map-legend.country .immunization-source'), '#population+ipv1+pct+vaccinated');
@@ -2606,10 +2597,8 @@ function createCountryLegend(scale) {
 }
 
 function updateCountryLegend(scale) {
-  //if (currentCountryIndicator.id=='#affected+ch+food+p3plus+pct' || currentCountryIndicator.id=='#affected+food+ipc+p3plus+pct') {
-    //$('.map-legend.country .food-security-source').empty();
-    //createSource($('.map-legend.country .food-security-source'), '#affected+food+ipc+p3plus+pct');
-  //}
+  //update IPC source based on current country
+  updateSource($('.map-legend.country .food-security-source'), getIPCDataSource());
   
   //special case for IPC source date in legend
   var data = dataByCountry[currentCountry.code][0];
@@ -3142,7 +3131,7 @@ var accessColorRange = ['#79B89A','#F6B98E','#C74B4F'];
 var oxfordColorRange = ['#ffffd9','#c7e9b4','#41b6c4','#225ea8','#172976'];
 var colorDefault = '#F2F2EF';
 var colorNoData = '#FFF';
-var regionBoundaryData, regionalData, worldData, nationalData, subnationalData, vaccinationData, timeseriesData, covidTrendData, dataByCountry, countriesByRegion, colorScale, viewportWidth, viewportHeight, currentRegion = '';
+var regionBoundaryData, regionalData, worldData, nationalData, subnationalData, subnationalDataByCountry, vaccinationData, timeseriesData, covidTrendData, dataByCountry, countriesByRegion, colorScale, viewportWidth, viewportHeight, currentRegion = '';
 var globalTimeseriesChart, countryTimeseriesChart = '';
 var mapLoaded = false;
 var dataLoaded = false;
@@ -3158,7 +3147,7 @@ $( document ).ready(function() {
   var prod = (window.location.href.indexOf('ocha-dap')>-1 || window.location.href.indexOf('data.humdata.org')>-1) ? true : false;
   //console.log(prod);
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2FvMW1wbDIwMzE2MnFwMW9teHQxOXhpIn0.Uri8IURftz3Jv5It51ISAA';
+  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2hnbWs5NzkxMXh2MnNvcmF6dXIxMWE0In0.0GfmJoEJyWFQ5UzNxl2WgA';
   var tooltip = d3.select('.tooltip');
   var minWidth = 1000;
   viewportWidth = (window.innerWidth<minWidth) ? minWidth - $('.content-left').innerWidth() : window.innerWidth - $('.content-left').innerWidth();
@@ -3249,22 +3238,23 @@ $( document ).ready(function() {
         
         //consolidate IPC data
         if (item['#affected+food+ipc+analysed+pct'] || item['#affected+ch+food+analysed+pct']) {
-          item['#affected+food+analysed+pct'] = (item['#affected+ch+food+analysed+pct']) ? item['#affected+ch+food+analysed+pct'] : item['#affected+food+ipc+analysed+pct'];
+          item['#affected+food+analysed+pct'] = (item['#affected+food+ipc+analysed+pct']) ? item['#affected+food+ipc+analysed+pct'] : item['#affected+ch+food+analysed+pct'];
         }
         if (item['#affected+food+ipc+p3+pct'] || item['#affected+ch+food+p3+pct']) {
-          item['#affected+food+p3+pct'] = (item['#affected+ch+food+p3+pct']) ? item['#affected+ch+food+p3+pct'] : item['#affected+food+ipc+p3+pct'];
+          item['#affected+food+p3+pct'] = (item['#affected+food+ipc+p3+pct']) ? item['#affected+food+ipc+p3+pct'] : item['#affected+ch+food+p3+pct'];
         }
         if (item['#affected+food+ipc+p3plus+pct'] || item['#affected+ch+food+p3plus+pct']) {
-          item['#affected+food+p3plus+pct'] = (item['#affected+ch+food+p3plus+pct']) ? item['#affected+ch+food+p3plus+pct'] : item['#affected+food+ipc+p3plus+pct'];
+          item['#affected+food+p3plus+pct'] = (item['#affected+food+ipc+p3plus+pct']) ? item['#affected+food+ipc+p3plus+pct'] : item['#affected+ch+food+p3plus+pct'];
+          //item['#ipc-source'] = (item['#affected+food+ipc+p3plus+pct']) ? '#affected+food+ipc+p3plus+pct' : '#affected+ch+food+p3plus+pct';
         }
         if (item['#affected+food+ipc+p4+pct'] || item['#affected+ch+food+p4+pct']) {
-          item['#affected+food+p4+pct'] = (item['#affected+ch+food+p4+pct']) ? item['#affected+ch+food+p4+pct'] : item['#affected+food+ipc+p4+pct'];
+          item['#affected+food+p4+pct'] = (item['#affected+food+ipc+p4+pct']) ? item['#affected+food+ipc+p4+pct'] : item['#affected+ch+food+p4+pct'];
         }
         if (item['#affected+food+ipc+p5+pct'] || item['#affected+ch+food+p5+pct']) {
-          item['#affected+food+p5+pct'] = (item['#affected+ch+food+p5+pct']) ? item['#affected+ch+food+p5+pct'] : item['#affected+food+ipc+p5+pct'];
+          item['#affected+food+p5+pct'] = (item['#affected+food+ipc+p5+pct']) ? item['#affected+food+ipc+p5+pct'] : item['#affected+ch+food+p5+pct'];
         }
         if (item['#affected+food+ipc+analysed+num'] || item['#affected+ch+food+analysed+num']) {
-          item['#affected+food+analysed+num'] = (item['#affected+ch+food+analysed+num']) ? item['#affected+ch+food+analysed+num'] : item['#affected+food+ipc+analysed+num'];
+          item['#affected+food+analysed+num'] = (item['#affected+food+ipc+analysed+num']) ? item['#affected+food+ipc+analysed+num'] : item['#affected+ch+food+analysed+num'];
         }
       });
 
@@ -3272,6 +3262,26 @@ $( document ).ready(function() {
       dataByCountry = d3.nest()
         .key(function(d) { return d['#country+code']; })
         .object(nationalData);
+
+      //consolidate subnational IPC data
+      subnationalDataByCountry = d3.nest()
+        .key(function(d) { return d['#country+code']; })
+        .entries(subnationalData);
+      subnationalDataByCountry.forEach(function(country) {
+        var index = 0;
+        var isEmpty = false;
+        //check first two data points to choose btwn IPC and CH datasets
+        for (var i=0; i<2; i++) {
+          var val = country.values[i]['#affected+food+ipc+p3plus+pct'];
+          if (i==0 && (!isVal(val) || isNaN(val))) {
+            isEmpty = true;
+          }
+          if (i==1 && isEmpty && isVal(val) && !isNaN(val)) {
+            isEmpty = false;
+          }
+        }
+        country['#ipc+source'] = (isEmpty) ? '#affected+ch+food+p3plus+pct' : '#affected+food+ipc+p3plus+pct';
+      });
 
       //group countries by region    
       countriesByRegion = d3.nest()
