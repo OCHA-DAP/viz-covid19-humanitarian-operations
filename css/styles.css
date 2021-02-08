@@ -1498,20 +1498,6 @@ a:visited {
   padding: 0 20px 6px;
   text-transform: uppercase; }
 
-.menu .download-link {
-  padding: 0 20px;
-  text-transform: uppercase; }
-  .menu .download-link a {
-    display: flex;
-    line-height: 16px;
-    margin-bottom: 15px;
-    text-decoration: none;
-    width: 100%; }
-  .menu .download-link i {
-    font-size: 16px;
-    margin-left: auto;
-    padding-top: 3px; }
-
 .menu .global-menu {
   display: block;
   margin-top: 10px; }
@@ -1520,6 +1506,20 @@ a:visited {
     line-height: 12px;
     padding: 15px 0 10px 20px;
     text-transform: uppercase; }
+
+.download-link {
+  padding: 0 20px;
+  text-transform: uppercase; }
+  .download-link a {
+    display: flex;
+    line-height: 16px;
+    margin-bottom: 15px;
+    text-decoration: none;
+    width: 100%; }
+  .download-link i {
+    font-size: 16px;
+    margin-left: auto;
+    padding-top: 3px; }
 
 .menu-indicators li {
   color: #888;
@@ -1974,6 +1974,11 @@ table {
       height: 35px;
       margin-right: 10px;
       width: 35px; }
+    .country-panel .panel-header .download-link {
+      padding: 0; }
+    .country-panel .panel-header h4 {
+      padding: 0 0 6px;
+      text-transform: uppercase; }
   .country-panel .panel-content {
     height: 100%;
     overflow-x: hidden;
