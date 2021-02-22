@@ -1312,19 +1312,21 @@ label.label-small {
 .subtext {
   color: #888; }
 
-.table-display .table-row {
-  align-items: center;
-  display: flex;
-  justify-content: space-between; }
-  .table-display .table-row .val {
-    min-width: 58px;
-    padding-left: 7px;
-    text-align: right; }
-  .table-display .table-row.row-separator {
-    border-bottom: 1px solid #CCC;
-    padding: 8px 0; }
-    .table-display .table-row.row-separator:first-child {
-      border-top: 1px solid #CCC; }
+.table-display {
+  margin: 5px 0 20px; }
+  .table-display .table-row {
+    align-items: center;
+    display: flex;
+    justify-content: space-between; }
+    .table-display .table-row .val {
+      min-width: 58px;
+      padding-left: 7px;
+      text-align: right; }
+    .table-display .table-row.row-separator {
+      border-bottom: 1px solid #CCC;
+      padding: 8px 0; }
+      .table-display .table-row.row-separator:first-child {
+        border-top: 1px solid #CCC; }
 
 .stat {
   font-family: 'Gotham-Light', sans-serif;
@@ -1556,8 +1558,8 @@ a:visited {
   .menu-indicators li i {
     flex: 0 0 18px;
     font-size: 18px;
-    margin-right: 22px;
-    text-align: center; }
+    text-align: center;
+    margin: 0 14px 0 7px; }
   .menu-indicators li:hover, .menu-indicators li.selected {
     background-color: #F1F1F1;
     color: #000;
@@ -1681,7 +1683,8 @@ a:visited {
   margin-top: 10px; }
   .ranking-container .ranking-select-container .default-select {
     display: block; }
-  .ranking-container .ranking-select-container .covid-select {
+  .ranking-container .ranking-select-container .covid-select,
+  .ranking-container .ranking-select-container .vaccine-select {
     display: none; }
 
 .ranking-container.covid .ranking-title {
@@ -1697,29 +1700,18 @@ a:visited {
     white-space: pre-wrap;
     width: 100%; }
 
-.ranking-container.access-severity .ranking-chart {
-  height: auto !important; }
-
-.ranking-container.access-severity .ranking-select-container {
+.ranking-container.ranking-vaccine .ranking-title {
   display: none; }
 
-.ranking-container.access-severity .access-category {
-  color: #FFF;
-  display: inline-block;
-  font-family: 'Gotham-Bold', sans-serif;
-  font-size: 12px;
-  margin-bottom: 5px;
-  padding: 5px 6px 4px; }
-  .ranking-container.access-severity .access-category.high {
-    background-color: #C74B4F; }
-  .ranking-container.access-severity .access-category.medium {
-    background-color: #F6B98E; }
-  .ranking-container.access-severity .access-category.low {
-    background-color: #79B89A; }
+.ranking-container.ranking-vaccine .ranking-select-container .default-select {
+  display: none; }
 
-.ranking-container.access-severity ul {
-  list-style-type: none;
-  margin: 0 0 10px; }
+.ranking-container.ranking-vaccine .ranking-select-container .vaccine-select {
+  display: block; }
+  .ranking-container.ranking-vaccine .ranking-select-container .vaccine-select .ranking-select {
+    height: 30px;
+    white-space: pre-wrap;
+    width: 100%; }
 
 .label-header {
   display: block;
@@ -1790,7 +1782,7 @@ a:visited {
     display: block; }
     .map-legend.global .legend-container {
       height: 83px; }
-      .map-legend.global .legend-container.vaccination-campaign {
+      .map-legend.global .legend-container.immunization-campaign {
         height: 32px; }
       .map-legend.global .legend-container.access-severity {
         height: 50px; }
