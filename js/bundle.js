@@ -427,7 +427,7 @@ function createRankingChart() {
       indicator = '#value+food+num+ratio';
       break;
     case '#targeted+doses+delivered+pct':
-      indicator = '#capacity+doses+forecast+covax';
+      indicator = '#capacity+doses+delivered+total';
       break;
     default:
       indicator = currentIndicator.id;
@@ -440,7 +440,7 @@ function createRankingChart() {
   }
   else if (currentIndicator.id=='#targeted+doses+delivered+pct') {
     $('.ranking-container').addClass('ranking-vaccine');
-    $('.ranking-select').val('#capacity+doses+forecast+covax');
+    $('.ranking-select').val(indicator);
   }
   else {
     $('.ranking-select').val('descending');
@@ -1612,7 +1612,7 @@ function setKeyFigures() {
 	//vaccine rollout
 	else if (currentIndicator.id=='#targeted+doses+delivered+pct') {
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
-		createKeyFigure('.figures', 'COVAX Interim Forecast (Number of Doses)', '', data['#capacity+doses+forecast+covax']==undefined ? 'NA' : shortenNumFormat(data['#capacity+doses+forecast+covax']));
+		createKeyFigure('.figures', 'COVAX First Allocations (Number of Doses)', '', data['#capacity+doses+forecast+covax']==undefined ? 'NA' : shortenNumFormat(data['#capacity+doses+forecast+covax']));
 		var covaxDelivered = data['#capacity+doses+delivered+covax'];
 		covaxDelivered = (covaxDelivered > 0) ? shortenNumFormat(covaxDelivered) : covaxDelivered;
 		createKeyFigure('.figures', 'COVAX Delivered (Number of Doses)', '', covaxDelivered);
@@ -2852,7 +2852,7 @@ function createMapTooltip(country_code, country_name, point) {
         content += 'Breakdown (doses):<div class="table-display">';
         tableArray.forEach(function(row, index) {
           if (row.value!=undefined) {
-            var status = (row.label=='Other - Source Country' || row.label=='COVAX') ? '(delivered)' : '(forecasted)';
+            var status = (row.label=='Other - Source Country' || row.label=='COVAX') ? '(delivered)' : '(allocated)';
             var otherSource = (row.label=='Other - Source Country' && country[0]['#meta+source+doses+country+name']!=undefined) ? '<div class="small">'+ country[0]['#meta+source+doses+country+name'] +'</div>' : '';
             content += '<div class="table-row row-separator"><div>'+ row.label +' '+ status +':'+ otherSource +'</div><div>'+ numFormat(row.value) +'</div></div>';
           }
