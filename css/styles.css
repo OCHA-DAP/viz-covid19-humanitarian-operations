@@ -1327,6 +1327,12 @@ label.label-small {
       padding: 8px 0; }
       .table-display .table-row.row-separator:first-child {
         border-top: 1px solid #CCC; }
+  .table-display.layer-covax .table-row {
+    color: #888; }
+    .table-display.layer-covax .table-row.row-separator {
+      border-top: 0;
+      color: #000;
+      margin: 6px 0; }
 
 .stat {
   font-family: 'Gotham-Light', sans-serif;
