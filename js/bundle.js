@@ -1574,7 +1574,7 @@ function setKeyFigures() {
 	
 	//show global vax stat only on covax layer
 	if (currentIndicator.id=='#targeted+doses+delivered+pct' && worldData['#capacity+doses+administered+total']!=undefined) {
-		var totalAdministeredVal = '283M';//shortenNumFormat(worldData['#capacity+doses+administered+total']);
+		var totalAdministeredVal = shortenNumFormat(worldData['#capacity+doses+administered+total']);
 		globalFigures += '<br><br><b>Global vaccines administered: '+ totalAdministeredVal +'</b>';
 	}
 	
@@ -3379,7 +3379,7 @@ $( document ).ready(function() {
       sourcesData = allData.sources_data;
       covidTrendData = allData.who_covid_data;
       immunizationData = allData.vaccination_campaigns_data;
-
+      
       //format data
       subnationalData.forEach(function(item) {
         var pop = item['#population'];
