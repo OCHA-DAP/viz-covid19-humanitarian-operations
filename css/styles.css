@@ -1310,7 +1310,8 @@ label.label-small {
     margin-top: 2px; }
 
 .subtext {
-  color: #888; }
+  color: #888;
+  text-transform: capitalize; }
 
 .table-display {
   margin: 5px 0 20px; }
@@ -1923,6 +1924,8 @@ circle.swatch {
       display: block;
       margin-top: -10px;
       margin-bottom: 10px; }
+      .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .stat + span.inline {
+        display: inline-block; }
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .cases-total,
     .mapboxgl-popup.map-tooltip .mapboxgl-popup-content .deaths-total {
       color: #333;
