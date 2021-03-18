@@ -421,7 +421,7 @@ function createRankingChart() {
       indicator = '#severity+inform+num';
       break;
     case '#immunization-campaigns':
-      indicator = '#vaccination+num+ratio';
+      indicator = '#vaccination+postponed+num';
       break;
     case '#food-prices':
       indicator = '#value+food+num+ratio';
@@ -2348,6 +2348,11 @@ function getGlobalLegendScale() {
     else
       scale = d3.scaleQuantile().domain(data).range(colorRange);
   }
+  else if (currentIndicator.id=='#vaccination+postponed+num') {
+    //set the max to at least 5
+    max = (max>5) ? max : 5;
+    scale = d3.scaleQuantize().domain([0, max]).range(colorRange);
+  }
   else if (currentIndicator.id=='#severity+stringency+num') {
     scale = d3.scaleQuantize().domain([0, 100]).range(oxfordColorRange);
   }
@@ -2428,7 +2433,7 @@ function setGlobalLegend(scale) {
     //pin footnote
     createFootnote('.map-legend.global', 'Population percentages greater than 100% include refugees, migrants, and/or asylum seekers.', '#affected+inneed+pct');
     //vacc footnote
-    createFootnote('.map-legend.global', 'Methodology: Information about interrupted immunization campaigns contains both official and unofficial information sources. The country ranking has been determined by calculating the ratio of total number of postponed or cancelled campaigns and total immunization campaigns. Note: data collection is ongoing and may not reflect all the campaigns in every country.', '#vaccination+num+ratio');
+    createFootnote('.map-legend.global', 'Methodology: Information about interrupted immunization campaigns contains both official and unofficial information sources. The country ranking has been determined by calculating the ratio of total number of postponed or cancelled campaigns and total immunization campaigns. Note: data collection is ongoing and may not reflect all the campaigns in every country.', '#vaccination+postponed+num');
     //food prices footnote
     createFootnote('.map-legend.global', 'Methodology: Information about food prices is collected from data during the last 6 month moving window. The country ranking for food prices has been determined by calculating the ratio of the number of commodities in alert, stress or crisis and the total number of commodities. The commodity status comes from <a href="https://dataviz.vam.wfp.org" target="_blank" rel="noopener">WFP’s model</a>.', '#value+food+num+ratio');
     //oxford footnote
@@ -2618,7 +2623,7 @@ function updateCountryLayer() {
     case '#population':
       clrRange = populationColorRange;
       break;
-    case '#vaccination+num+ratio':
+    case '#vaccination+postponed+num':
       clrRange = immunizationColorRange;
       break;
     default:
@@ -2953,7 +2958,7 @@ function createMapTooltip(country_code, country_name, point) {
       content += currentIndicator.name + ':<div class="stat">' + val + '</div>';
     }
     //Immunization campaigns layer
-    else if (currentIndicator.id=='#vaccination+num+ratio') {
+    else if (currentIndicator.id=='#vaccination+postponed+num') {
       var vaccData = [];
       immunizationDataByCountry.forEach(function(country) {
         if (country.key==country_code) {
