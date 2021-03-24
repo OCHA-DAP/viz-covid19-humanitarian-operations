@@ -2012,8 +2012,8 @@ function createEvents() {
 
     //reset any deep links
     var layer = $(this).attr('data-layer');
-    var location = (layer!=undefined) ? window.location.pathname+'?layer='+layer : window.location.pathname;
-    window.history.replaceState(null, null, location);
+    //var location = (layer!=undefined) ? window.location.pathname+'?layer='+layer : window.location.pathname;
+    window.history.replaceState(null, null, window.location.pathname+'?layer='+layer);
   });
 
   //global figures close button
