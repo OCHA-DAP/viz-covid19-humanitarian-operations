@@ -413,25 +413,21 @@ function createRankingChart() {
   $('.ranking-container').removeClass('ranking-vaccine');
 
   //set title
-  var rankingTitle = (currentIndicator.id=='#impact+type') ? 'Total Number of Affected Learners' : $('.menu-indicators').find('.selected').attr('data-legend') + ' by Country'
-  $('.secondary-panel .ranking-title').text(rankingTitle);
+  $('.secondary-panel .ranking-title').text( $('.menu-indicators').find('.selected').attr('data-legend') + ' by Country' );
 
   var indicator;
   switch(currentIndicator.id) {
     case '#severity+inform+type':
       indicator = '#severity+inform+num';
       break;
-    case '#targeted+doses+delivered+pct':
-      indicator = '#capacity+doses+delivered+total';
-      break;
-    case '#impact+type':
-      indicator = '#affected+learners';
-      break;
     case '#immunization-campaigns':
       indicator = '#vaccination+postponed+num';
       break;
     case '#food-prices':
       indicator = '#value+food+num+ratio';
+      break;
+    case '#targeted+doses+delivered+pct':
+      indicator = '#capacity+doses+delivered+total';
       break;
     default:
       indicator = currentIndicator.id;
@@ -515,7 +511,7 @@ function createRankingChart() {
     .attr('class', 'bar')
     .attr('height', rankingBarHeight)
     .attr('width', function (d) {
-      return (d.value<=0) ? 0 : rankingX(d.value);
+      return (d.value<0) ? 0 : rankingX(d.value);
     });
 
   //add country names
@@ -532,8 +528,7 @@ function createRankingChart() {
     .attr('class', 'label')
     .attr('y', 9)
     .attr('x', function (d) {
-      var xpos = (d.value<=0) ? 0 : rankingX(d.value);
-      return xpos + 3;
+      return rankingX(d.value) + 3;
     })
     .text(function (d) {
       return valueFormat(d.value);
@@ -583,7 +578,7 @@ function updateRankingChart(sortMode) {
     });
 
     if (rankingData.length<1) {
-      $('.ranking-chart').append('<p>No Data</p>');
+      $('.ranking-chart').append('<p>No Doses Delivered</p>');
       $('.ranking-chart > p').css('text-align', 'center');
     }
 
@@ -640,7 +635,7 @@ function updateRankingChart(sortMode) {
       .transition()
         .duration(400)
       .attr('width', function (d) {
-        return (d.value<=0) ? 0 : rankingX(d.value);
+        return (d.value<0) ? 0 : rankingX(d.value);
       });
 
     //add country names
@@ -657,8 +652,7 @@ function updateRankingChart(sortMode) {
       .attr('class', 'label')
       .attr('y', 9)
       .attr('x', function (d) {
-        var xpos = (d.value<=0) ? 0 : rankingX(d.value);
-        return xpos + 3;
+        return rankingX(d.value) + 3;
       })
       .text(function (d) {
         return valueFormat(d.value);
@@ -1605,7 +1599,7 @@ function setKeyFigures() {
 	nationalData.forEach(function(d) {
 		if (regionMatch(d['#region+name'])) {
 			var val = d[currentIndicator.id];
-			if (currentIndicator.id=='#severity+inform+type' || currentIndicator.id=='#impact+type') {
+			if (currentIndicator.id=='#severity+inform+type') {
 				if (val!=undefined)
 					totalCountries++;
 			}
@@ -1647,16 +1641,6 @@ function setKeyFigures() {
 		if (data['#access+travel+pct']!=undefined) createKeyFigure('.figures', 'Average of Travel Authorizations Denied', '', percentFormat(data['#access+travel+pct']));
 		if (data['#activity+cerf+project+insecurity+pct']!=undefined) createKeyFigure('.figures', 'Average of CERF Projects Affected by Access Constraints', '', percentFormat(data['#activity+cerf+project+insecurity+pct']));
 		if (data['#activity+cbpf+project+insecurity+pct']!=undefined) createKeyFigure('.figures', 'Average of CBPF Projects Affected by Access Constraints', '', percentFormat(data['#activity+cbpf+project+insecurity+pct']));
-	}
-	//school closures
-	else if (currentIndicator.id=='#impact+type') {
-		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
-		var affectedLearners = (data['#affected+learners']==undefined) ? 0 : shortenNumFormat(data['#affected+learners']);
-		var affectedLearnersPct = (data['#affected+learners+pct']==undefined) ? '0%' : percentFormat(data['#affected+learners+pct']);
-		var statusClosed = (data['#status+country+closed']==undefined) ? 0 : data['#status+country+closed'];
-		createKeyFigure('.figures', 'Number of Affected Learners', '', affectedLearners);
-		createKeyFigure('.figures', 'Percentage of Affected Learners in GHO countries', '', affectedLearnersPct);
-		createKeyFigure('.figures', 'Number of Country-Wide Closures', '', statusClosed);
 	}
 	//humanitarian funding
 	else if (currentIndicator.id=='#value+funding+hrp+pct') {
@@ -2012,7 +1996,6 @@ function createEvents() {
 
     //reset any deep links
     var layer = $(this).attr('data-layer');
-    //var location = (layer!=undefined) ? window.location.pathname+'?layer='+layer : window.location.pathname;
     window.history.replaceState(null, null, window.location.pathname+'?layer='+layer);
   });
 
@@ -2312,7 +2295,7 @@ function updateGlobalLayer() {
       if (currentIndicator.id=='#affected+infected+new+weekly') {
         color = (val==null) ? colorNoData : colorScale(val);
       }
-      else if (currentIndicator.id=='#severity+inform+type' || currentIndicator.id=='#impact+type') {
+      else if (currentIndicator.id=='#severity+inform+type') {
         color = (!isVal(val)) ? colorNoData : colorScale(val);
       }
       else if (currentIndicator.id=='#targeted+doses+delivered+pct') {
@@ -2367,7 +2350,7 @@ function getGlobalLegendScale() {
   
   if (currentIndicator.id=='#severity+economic+num') max = 10;
   else if (currentIndicator.id=='#affected+inneed') max = roundUp(max, 1000000);
-  else if (currentIndicator.id=='#severity+inform+type' || currentIndicator.id=='#impact+type') max = 0;
+  else if (currentIndicator.id=='#severity+inform+type') max = 0;
   else if (currentIndicator.id=='#targeted+doses+delivered+pct') max = 0.2;
   else max = max;
 
@@ -2384,15 +2367,10 @@ function getGlobalLegendScale() {
     else
       scale = d3.scaleQuantile().domain(data).range(colorRange);
   }
-<<<<<<< HEAD
   else if (currentIndicator.id=='#vaccination+postponed+num') {
     //set the max to at least 5
     max = (max>5) ? max : 5;
     scale = d3.scaleQuantize().domain([0, max]).range(colorRange);
-=======
-  else if (currentIndicator.id=='#impact+type') {
-    scale = d3.scaleOrdinal().domain(['Fully open', 'Partially open', 'Closed due to COVID-19', 'Academic Break']).range(schoolClosureColorRange);
->>>>>>> school-closures
   }
   else if (currentIndicator.id=='#severity+stringency+num') {
     scale = d3.scaleQuantize().domain([0, 100]).range(oxfordColorRange);
@@ -2539,9 +2517,6 @@ function setGlobalLegend(scale) {
   }
   else {
     $('.map-legend.global .legend-container').show();
-    var layerID = currentIndicator.id.replaceAll('+','-').replace('#','');
-    $('.map-legend.global .legend-container').attr('class', 'legend-container '+ layerID);
-
     var legend;
     if (currentIndicator.id=='#value+gdp+ifi+pct' || currentIndicator.id=='#targeted+doses+delivered+pct') {
       var legendFormat = d3.format('.0%');
@@ -2555,7 +2530,6 @@ function setGlobalLegend(scale) {
     else {
       var legendFormat = (currentIndicator.id.indexOf('pct')>-1 || currentIndicator.id.indexOf('ratio')>-1) ? d3.format('.0%') : shortenNumFormat;
       if (currentIndicator.id=='#affected+infected+new+per100000+weekly' || currentIndicator.id=='#affected+infected+sex+new+avg+per100000') legendFormat = d3.format('.1f');
-      
       legend = d3.legendColor()
         .labelFormat(legendFormat)
         .cells(colorRange.length)
@@ -3002,17 +2976,6 @@ function createMapTooltip(country_code, country_name, point) {
       val = (val!='No Data') ? numFormat(val) : val;
       content += currentIndicator.name + ':<div class="stat">' + val + '</div>';
     }
-    //School closures layer
-    else if (currentIndicator.id=='#impact+type') {
-      content += currentIndicator.name + ':<div class="stat">' + val + '</div>';
-      var tableArray = [{label: 'Number of learners enrolled from pre-primary to upper-secondary education', value: country[0]['#population+learners+pre_primary_to_secondary']},
-                        {label: 'Number of learners enrolled in tertiary education programmes', value: country[0]['#population+learners+tertiary']}];
-      content += '<div class="table-display">';
-      tableArray.forEach(function(row) {
-        if (row.value!=undefined) content += '<div class="table-row row-separator"><div>'+ row.label +':</div><div>'+ numFormat(row.value) +'</div></div>';
-      });
-      content += '</div>';
-    }
     //Immunization campaigns layer
     else if (currentIndicator.id=='#vaccination+postponed+num') {
       var vaccData = [];
@@ -3050,7 +3013,7 @@ function createMapTooltip(country_code, country_name, point) {
         tableArray.forEach(function(row) {
           if (isVal(row.value)) {
             var value = (row.label=='HRP Funding Level for COVID-19 GHRP') ? percentFormat(row.value) : formatValue(row.value);
-            content += '<div class="table-row"><div>'+ row.label +':</div><div>'+ value +'</div></div>';
+            content += '<div class="table-row"><div>'+ row.label +':</div><div class="val">'+ value +'</div></div>';
           }
         });
         content += '</div>';
@@ -3112,8 +3075,8 @@ function createMapTooltip(country_code, country_name, point) {
       content +=  currentIndicator.name + ':<div class="stat">' + val + '</div>';
       if (val!='No Data') {
         content += '<div class="table-display">';
-        if (isVal(country[0]['#value+ifi+percap'])) content += '<div class="table-row"><div>Total IFI Funding per Capita:</div><div>'+ d3.format('$,.2f')(country[0]['#value+ifi+percap']) +'</div></div>';
-        if (isVal(country[0]['#value+ifi+total'])) content += '<div class="table-row"><div>Total Amount Combined:</div><div>'+ formatValue(country[0]['#value+ifi+total']) +'</div></div>';
+        if (isVal(country[0]['#value+ifi+percap'])) content += '<div class="table-row"><div>Total IFI Funding per Capita:&nbsp;</div><div>'+ d3.format('$,.2f')(country[0]['#value+ifi+percap']) +'</div></div>';
+        if (isVal(country[0]['#value+ifi+total'])) content += '<div class="table-row"><div>Total Amount Combined:&nbsp;</div><div>'+ formatValue(country[0]['#value+ifi+total']) +'</div></div>';
         content += '</div>';
 
         if (parseFloat(val)>0) {
@@ -3121,7 +3084,7 @@ function createMapTooltip(country_code, country_name, point) {
           var fundingArray = ['adb','afdb','eib', 'ebrd', 'idb','ifc','imf','isdb','unmptf','wb'];
           fundingArray.forEach(function(fund) {
             var fundName = (fund=='wb') ? 'World Bank' : fund.toUpperCase(); 
-            if (isVal(country[0]['#value+'+fund+'+total'])) content += '<div class="table-row"><div>'+ fundName +':</div><div>'+ formatValue(country[0]['#value+'+fund+'+total']) +'</div></div>';
+            if (isVal(country[0]['#value+'+fund+'+total'])) content += '<div class="table-row"><div>'+ fundName +':&nbsp;</div><div>'+ formatValue(country[0]['#value+'+fund+'+total']) +'</div></div>';
           });
           content += '</div>';
         }
@@ -3335,7 +3298,6 @@ var shortenNumFormat = d3.format('.2s');
 var percentFormat = d3.format('.1%');
 var dateFormat = d3.utcFormat("%b %d, %Y");
 var colorRange = ['#F7DBD9', '#F6BDB9', '#F5A09A', '#F4827A', '#F2645A'];
-var schoolClosureColorRange = ['#D8EEBF','#FFF5C2','#F6BDB9','#CCCCCC'];
 var informColorRange = ['#FFE8DC','#FDCCB8','#FC8F6F','#F43C27','#961518'];
 var immunizationColorRange = ['#CCE5F9','#99CBF3','#66B0ED','#3396E7','#027CE1'];
 var populationColorRange = ['#FFE281','#FDB96D','#FA9059','#F27253','#E9554D'];
@@ -3449,9 +3411,6 @@ $( document ).ready(function() {
         //create cases by gender indicator
         item['#affected+infected+sex+new+avg+per100000'] = (item['#affected+infected+m+pct']!=undefined || item['#affected+f+infected+pct']!=undefined) ? item['#affected+infected+new+per100000+weekly'] : null;
         
-        //tally total affected learners for school closures
-        item['#affected+learners'] = (item['#affected+learners']==undefined) ? 0 : item['#affected+learners'];
-
         //consolidate IPC data
         if (item['#affected+food+ipc+analysed+pct'] || item['#affected+ch+food+analysed+pct']) {
           item['#affected+food+analysed+pct'] = (item['#affected+food+ipc+analysed+pct']) ? item['#affected+food+ipc+analysed+pct'] : item['#affected+ch+food+analysed+pct'];
