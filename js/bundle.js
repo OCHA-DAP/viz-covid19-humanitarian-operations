@@ -1673,7 +1673,7 @@ function setKeyFigures() {
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+covid+funding+total+usd') {
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
-		createKeyFigure('.figures', 'Total CERF COVID-19 Funding', '', formatValue(data['#value+cerf+covid+funding+total+usd']));
+		createKeyFigure('.figures', 'Total CERF Funding', '', formatValue(data['#value+cerf+covid+funding+total+usd']));
 		if (data['#value+cerf+covid+funding+total+usd'] > 0) {
 			var gmText = getGamText(data, 'cerf');
 			$('.figures .key-figure .inner').append('<div class="small">'+ gmText +'</div>');
@@ -1683,7 +1683,7 @@ function setKeyFigures() {
 	else if (currentIndicator.id=='#value+cbpf+covid+funding+total+usd') {
 		//num countries
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
-		createKeyFigure('.figures', 'Total CBPF COVID-19 Funding', '', formatValue(data['#value+cbpf+covid+funding+total+usd']));
+		createKeyFigure('.figures', 'Total CBPF Funding', '', formatValue(data['#value+cbpf+covid+funding+total+usd']));
 		
 		//gam
 		if (data['#value+cbpf+covid+funding+total+usd'] > 0) {
@@ -3303,8 +3303,8 @@ function initCountryPanel() {
   hrpDiv.children().remove();
   createFigure(hrpDiv, {className: 'funding-required', title: 'HRP Requirement', stat: formatValue(data['#value+funding+hrp+required+usd']), indicator: '#value+funding+hrp+required+usd'});
   createFigure(hrpDiv, {className: 'funding-covid-allocation', title: 'HRP Allocation for COVID-19 GHRP', stat: formatValue(data['#value+covid+funding+hrp+total+usd']), indicator: '#value+covid+funding+hrp+total+usd'});
-  createFigure(hrpDiv, {className: 'funding-covid-cerf-allocation', title: 'CERF COVID-19 Allocation', stat: formatValue(data['#value+cerf+covid+funding+total+usd']), indicator: '#value+cerf+covid+funding+total+usd'});
-  createFigure(hrpDiv, {className: 'funding-covid-cbpf-allocation', title: 'CBPF COVID Allocation', stat: formatValue(data['#value+cbpf+covid+funding+total+usd']), indicator: '#value+cbpf+covid+funding+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-cerf-allocation', title: 'CERF Allocation', stat: formatValue(data['#value+cerf+covid+funding+total+usd']), indicator: '#value+cerf+covid+funding+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-covid-cbpf-allocation', title: 'CBPF Allocation', stat: formatValue(data['#value+cbpf+covid+funding+total+usd']), indicator: '#value+cbpf+covid+funding+total+usd'});
 
   //inform
   var informDiv = $('.country-panel .inform .panel-inner');
