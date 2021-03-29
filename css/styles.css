@@ -1526,6 +1526,16 @@ a:visited {
     padding: 15px 0 10px 20px;
     text-transform: uppercase; }
 
+.btn-subscription {
+  background-color: #007CE1;
+  border: 0;
+  color: #FFF;
+  cursor: pointer;
+  border-radius: 0;
+  font-size: 12px;
+  margin: 0 20px 10px;
+  padding: 5px 10px; }
+
 .download-link {
   padding: 0 20px;
   text-transform: uppercase; }
