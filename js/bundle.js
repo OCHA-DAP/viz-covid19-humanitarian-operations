@@ -1547,8 +1547,10 @@ const countryCodeList = {
   LBY: '0o4l8ysb',
   MLI: '17y8a20i',
   MMR: '7wk9p4wu',
+  MOZ: '5jojox7h',
   NER: '9gbs4a2a',
   NGA: '3ceksugh',
+  //PAK: '94y0veay',
   PSE: '1emy37d7',
   SDN: 'a2zw3leb',
   SOM: '3s7xeitz',
@@ -1823,7 +1825,7 @@ function initMap() {
   console.log('Loading map...')
   map = new mapboxgl.Map({
     container: 'global-map',
-    style: 'mapbox://styles/humdata/ckb843tjb46fy1ilaw49redy7/',
+    style: 'mapbox://styles/humdata/ckb843tjb46fy1ilaw49redy7',
     center: [-25, 0],
     minZoom: 1,
     zoom: zoomLevel,
@@ -1884,17 +1886,17 @@ function displayMap() {
         countryLayer = layer.id;
         map.setLayoutProperty(countryLayer, 'visibility', 'none');
         break;
-      case 'adm1-boundaries':
-        countryBoundaryLayer = layer.id;
-        map.setLayoutProperty(countryBoundaryLayer, 'visibility', 'none');
-        break;
-      case 'hrp25-centroid-adm1-simplified-o':
+      case 'adm1-label':
         countryLabelLayer = layer.id;
         map.setLayoutProperty(countryLabelLayer, 'visibility', 'none');
         break;
       case 'adm1-marker-points':
         countryMarkerLayer = layer.id;
         map.setLayoutProperty(countryMarkerLayer, 'visibility', 'none');
+        break;
+      case 'adm1-boundaries':
+        countryBoundaryLayer = layer.id;
+        map.setLayoutProperty(countryBoundaryLayer, 'visibility', 'none');
         break;
       default:
         //do nothing
@@ -3332,7 +3334,6 @@ var shortenNumFormat = d3.format('.2s');
 var percentFormat = d3.format('.1%');
 var dateFormat = d3.utcFormat("%b %d, %Y");
 var colorRange = ['#F7DBD9', '#F6BDB9', '#F5A09A', '#F4827A', '#F2645A'];
-var schoolClosureColorRange = ['#D8EEBF','#FFF5C2','#F6BDB9','#CCCCCC'];
 var informColorRange = ['#FFE8DC','#FDCCB8','#FC8F6F','#F43C27','#961518'];
 var immunizationColorRange = ['#CCE5F9','#99CBF3','#66B0ED','#3396E7','#027CE1'];
 var populationColorRange = ['#FFE281','#FDB96D','#FA9059','#F27253','#E9554D'];
@@ -3446,9 +3447,6 @@ $( document ).ready(function() {
         //create cases by gender indicator
         item['#affected+infected+sex+new+avg+per100000'] = (item['#affected+infected+m+pct']!=undefined || item['#affected+f+infected+pct']!=undefined) ? item['#affected+infected+new+per100000+weekly'] : null;
         
-        //tally total affected learners for school closures
-        item['#affected+learners'] = (item['#affected+learners']==undefined) ? 0 : item['#affected+learners'];
-
         //consolidate IPC data
         if (item['#affected+food+ipc+analysed+pct'] || item['#affected+ch+food+analysed+pct']) {
           item['#affected+food+analysed+pct'] = (item['#affected+food+ipc+analysed+pct']) ? item['#affected+food+ipc+analysed+pct'] : item['#affected+ch+food+analysed+pct'];
