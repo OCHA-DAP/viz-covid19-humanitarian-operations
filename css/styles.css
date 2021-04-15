@@ -1531,10 +1531,13 @@ a:visited {
   border: 0;
   color: #FFF;
   cursor: pointer;
-  border-radius: 0;
+  display: inline-block;
   font-size: 12px;
   margin: 0 20px 10px;
-  padding: 5px 10px; }
+  padding: 5px 10px;
+  text-decoration: none; }
+  .btn-subscription:visited {
+    color: #FFF; }
 
 .download-link {
   padding: 0 20px;
