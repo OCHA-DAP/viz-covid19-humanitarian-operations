@@ -1336,8 +1336,8 @@ label.label-small {
 .stat {
   font-family: 'Gotham-Light', sans-serif;
   font-size: 29px;
-  line-height: 40px;
-  margin: 30px 0; }
+  line-height: 35px;
+  margin: 20px 0; }
 
 ul {
   list-style-type: none;
@@ -1588,7 +1588,8 @@ a:visited {
 .region-select,
 .country-select,
 .indicator-select,
-.ranking-select {
+.ranking-select,
+.trendseries-select {
   background-color: #FFF;
   border-color: #FFF;
   border-radius: 8px;
@@ -1618,6 +1619,9 @@ a:visited {
   height: 30px;
   margin-left: 8px;
   padding: 0;
+  width: auto; }
+
+.trendseries-select {
   width: auto; }
 
 .secondary-panel {
@@ -2059,7 +2063,6 @@ table {
 .cases-timeseries p {
   margin-top: 0; }
 
-.global-timeseries-chart .timeseries-legend,
 .country-timeseries-chart .timeseries-legend {
   background-color: rgba(255, 255, 255, 0.5);
   border: 1px solid #CCC;
@@ -2069,10 +2072,8 @@ table {
   padding: 5px 10px 3px 0;
   position: absolute;
   top: 30px; }
-  .global-timeseries-chart .timeseries-legend > div,
   .country-timeseries-chart .timeseries-legend > div {
     cursor: pointer; }
-  .global-timeseries-chart .timeseries-legend span,
   .country-timeseries-chart .timeseries-legend span {
     display: inline-block;
     margin-left: 7px;
@@ -2143,13 +2144,54 @@ table {
   background-color: #FFF;
   display: none;
   left: 0;
+  overflow: auto;
   padding: 15px 30px;
   position: absolute;
   top: 50px;
   width: 100%;
   z-index: 3; }
   #chart-view .source-container {
-    margin-bottom: 40px; }
+    margin-bottom: 20px; }
+  #chart-view .cases-title,
+  #chart-view .deaths-title {
+    border-top: 1px solid #CCC;
+    margin-top: 30px; }
+    #chart-view .cases-title h6,
+    #chart-view .deaths-title h6 {
+      margin-top: 25px; }
+    #chart-view .cases-title .num,
+    #chart-view .deaths-title .num {
+      color: #000;
+      font-family: 'Gotham-Light', sans-serif;
+      font-size: 42px;
+      line-height: 40px;
+      padding: 10px 0; }
+  #chart-view .c3-bar._expanded_ {
+    fill: #F2645B !important;
+    fill-opacity: 1 !important; }
+
+.trendseries-tooltip {
+  background-color: #FFF;
+  border: 1px solid #E2E2E2;
+  border-collapse: collapse;
+  border-spacing: 0; }
+  .trendseries-tooltip th {
+    background-color: #B3B3B3;
+    border: 1px solid #B3B3B3;
+    color: #FFF;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    padding: 6px 6px; }
+  .trendseries-tooltip td {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 13px;
+    font-weight: normal !important;
+    padding: 4px 7px; }
+    .trendseries-tooltip td:last-child {
+      border-left: 1px solid #E2E2E2;
+      text-align: right; }
 
 .visuallyhidden {
   border: 0;

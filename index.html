@@ -200,7 +200,7 @@
           <div id='global-map'>
             <div class='tab-menubar'>
               <div class='tab-button active' data-id='map-view'>Map View</div>
-              <div class='tab-button' data-id='chart-view'>Chart View</div>
+              <div class='tab-button' data-id='chart-view'><label class="label-small">NEW</label> Chart View</div>
             </div>
             <div class='map-legend global'>
               <div class='toggle-icon'></div>
@@ -253,7 +253,13 @@
 
           <div id='chart-view'>
             <div class='source-container'></div>
-            <div class='global-timeseries-chart'></div>
+            <div class='trendseries-container'>
+              <select id='trendseriesSelect' class='trendseries-select'></select>
+              <div class='cases-title'></div>
+              <div class='cases-trend-chart'></div>
+              <div class='deaths-title'></div>
+              <div class='deaths-trend-chart'></div>
+            </div>
           </div>
 
           <div class='loader'>
