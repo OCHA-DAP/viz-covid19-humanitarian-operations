@@ -1724,7 +1724,7 @@ function setKeyFigures() {
 		var covidGlobal = (currentRegion!='') ? covidTrendData[currentRegion] : covidTrendData.GHO;
 		var weeklyCases = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1]['#affected+infected+new+weekly'] : 0;
 		var weeklyDeaths = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1]['#affected+killed+new+weekly'] : 0;
-		var weeklyTrend = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1]['#affected+infected+new+pct+weekly'] : 0;
+		var weeklyTrend = (covidGlobal!=undefined) ? covidGlobal[covidGlobal.length-1]['#affected+infected+new+pct+weekly']*100 : 0;
 		
 		if (covidGlobal!=undefined) {
 			//weekly new cases
@@ -1749,7 +1749,7 @@ function setKeyFigures() {
 			createKeyFigure('.figures', 'Weekly Trend<br>(new cases past week / prior week)', 'cases-trend', weeklyTrend.toFixed(1) + '%');
 	    var pctArray = [];
 	    covidGlobal.forEach(function(d) {
-	      var obj = {date: d['#date+reported'], value: d['#affected+infected+new+pct+weekly']};
+	      var obj = {date: d['#date+reported'], value: d['#affected+infected+new+pct+weekly']*100};
 	      pctArray.push(obj);
 	    });
 			createSparkline(pctArray, '.secondary-panel .cases-trend');
@@ -3178,7 +3178,7 @@ function createMapTooltip(country_code, country_name, point) {
       if (country[0]['#covid+trend+pct']!=undefined) {
         var pctArray = [];
         covidTrendData[country_code].forEach(function(d) {
-          var obj = {date: d['#date+reported'], value: d['#affected+infected+new+pct+weekly']};
+          var obj = {date: d['#date+reported'], value: d['#affected+infected+new+pct+weekly']*100};
           pctArray.push(obj);
         });
         createSparkline(pctArray, '.mapboxgl-popup-content .covid-pct .sparkline-container');
@@ -3445,7 +3445,7 @@ $( document ).ready(function() {
         
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
-        item['#covid+trend+pct'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+infected+new+pct+weekly']/100;
+        item['#covid+trend+pct'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+infected+new+pct+weekly'];
         item['#affected+infected+new+per100000+weekly'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+infected+new+per100000+weekly'];
         item['#affected+infected+new+weekly'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+infected+new+weekly'];
         item['#affected+killed+new+weekly'] = (covidByCountry==undefined) ? null : covidByCountry[covidByCountry.length-1]['#affected+killed+new+weekly'];
