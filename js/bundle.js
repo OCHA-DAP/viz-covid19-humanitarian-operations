@@ -1977,7 +1977,7 @@ function updateSource(div, indicator) {
 }
 
 function getSource(indicator) {
-	if (indicator=='#affected+food+p3plus+num') indicator = '#affected+food+ipc+p3plus+num';
+	//if (indicator=='#affected+food+p3plus+num') indicator = '#affected+food+ipc+p3plus+num';
   var obj = {};
   sourcesData.forEach(function(item) {
     if (item['#indicator+name']==indicator) {
@@ -3000,7 +3000,7 @@ function updateCountryLegend(scale) {
     $('.map-legend.country').find('.food-security-source .source .date').text(dateRange);
   }
   else {
-    var sourceObj = getSource('#affected+food+ipc+p3plus+num');
+    var sourceObj = getSource(getIPCDataSource());
     var date = (sourceObj['#date']==undefined) ? '' : dateFormat(new Date(sourceObj['#date']));
     $('.map-legend.country').find('.food-security-source .source .date').text(date);
   }
