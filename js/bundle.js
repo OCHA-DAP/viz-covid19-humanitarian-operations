@@ -1780,7 +1780,7 @@ function setKeyFigures() {
 	//PIN
 	if (currentIndicator.id=='#affected+inneed+pct') {
 		var affectedPIN = (data[indicator]==undefined) ? 0 : (d3.format('.4s'))(data[indicator]);
-		if (currentRegion=='') affectedPIN = '431M';//hardcode global PIN to match OCHA data
+		if (currentRegion=='') affectedPIN = '237.1M';//hardcode global PIN to match OCHA data
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 		createKeyFigure('.figures', 'Total Number of People in Need', 'pin', affectedPIN);
 	}
@@ -3232,7 +3232,7 @@ function createMapTooltip(country_code, country_name, point) {
         var content = '<h2>' + country_name + '</h2>';
         content += '<table><tr><th>Campaign Immunization:</th><th>Planned Start Date:</th><th>Status:</th></tr>';
         vaccData.forEach(function(row) {
-          var className = (row['#status+name'].indexOf('Postpone')>-1 && row['#status+name'].indexOf('COVID')>-1) ? 'covid-postpone' : '';
+          var className = (row['#status+name'].indexOf('Postponed COVID')>-1 || row['#status+name'].indexOf('Cancelled')>-1) ? 'covid-postpone' : '';
           content += '<tr class="'+className+'"><td>'+row['#service+name']+'</td><td>'+row['#date+start']+'</td><td>'+row['#status+name']+'</td></tr>';
         });
         content += '</table>';
