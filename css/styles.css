@@ -1397,7 +1397,8 @@ a:visited {
   .content.country-view .map-legend.global,
   .content.country-view .secondary-panel,
   .content.country-view .layer-description,
-  .content.country-view .tab-menubar {
+  .content.country-view .tab-menubar,
+  .content.country-view .comparison-panel {
     display: none; }
   .content.country-view .map-legend.country {
     left: auto;
