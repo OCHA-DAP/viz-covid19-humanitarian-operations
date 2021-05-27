@@ -1500,7 +1500,8 @@ a:visited {
   width: 840px;
   z-index: 101; }
 
-.modal-close-btn {
+.modal-close-btn,
+.panel-close-btn {
   cursor: pointer;
   position: absolute;
   right: 20px;
@@ -1995,15 +1996,15 @@ circle.swatch {
   top: 84px;
   right: 16px; }
 
-table {
+table.immunization-table {
   font-size: 12px;
   line-height: 14px; }
-  table th {
+  table.immunization-table th {
     text-align: left;
     vertical-align: bottom; }
-  table tr td:first-child, table tr td:last-child {
+  table.immunization-table tr td:first-child, table.immunization-table tr td:last-child {
     font-weight: 700; }
-  table tr.covid-postpone td:first-child, table tr.covid-postpone td:last-child {
+  table.immunization-table tr.covid-postpone td:first-child, table.immunization-table tr.covid-postpone td:last-child {
     color: #F2645A; }
 
 .country-panel {
@@ -2220,6 +2221,58 @@ table {
     .trendseries-tooltip td:last-child {
       border-left: 1px solid #E2E2E2;
       text-align: right; }
+
+.comparison-panel {
+  background-color: #F5FBFC;
+  bottom: 0;
+  font-family: 'Source Sans Pro', sans-serif;
+  height: 35px;
+  left: 0;
+  margin-left: 20px;
+  padding-top: 25px;
+  width: 500px;
+  position: absolute;
+  z-index: 3; }
+  .comparison-panel.expand {
+    height: 205px; }
+  .comparison-panel .message {
+    left: 15px;
+    position: absolute;
+    top: 10px; }
+  .comparison-panel .panel-close-btn,
+  .comparison-panel .row-close-btn {
+    color: #888;
+    cursor: pointer; }
+    .comparison-panel .panel-close-btn:hover,
+    .comparison-panel .row-close-btn:hover {
+      color: #007CE1; }
+  .comparison-panel .panel-close-btn {
+    right: 15px;
+    top: 10px; }
+  .comparison-panel .comparison-table {
+    border-collapse: collapse;
+    width: 100%; }
+    .comparison-panel .comparison-table tr {
+      border-bottom: 1px solid #CCC; }
+      .comparison-panel .comparison-table tr td {
+        padding: 2px 4px;
+        text-align: right; }
+        .comparison-panel .comparison-table tr td:first-child {
+          padding-left: 15px;
+          text-align: left; }
+        .comparison-panel .comparison-table tr td:last-child {
+          padding-right: 15px; }
+    .comparison-panel .comparison-table thead {
+      font-weight: 700;
+      line-height: 15px;
+      vertical-align: bottom; }
+      .comparison-panel .comparison-table thead td {
+        padding: 5px 4px; }
+    .comparison-panel .comparison-table tbody td {
+      max-width: 100px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
 
 .visuallyhidden {
   border: 0;
