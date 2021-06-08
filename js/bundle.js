@@ -135,6 +135,7 @@ function formatTrendseriesData(countryCode, indicator) {
           obj['new_per_capita'] = +val['#affected+'+indicator+'+new+per100000+weekly'];
           obj['weekly_trend'] = +val['#affected+'+indicator+'+new+change+weekly'];
           obj['weekly_trend_pct'] = +val['#affected+'+indicator+'+new+pct+weekly'];
+          obj['weekly_cumulative'] = + val['#affected+'+indicator+'+cumulative+weekly'];
           trendArray.push(obj);
         }
       });
@@ -212,6 +213,7 @@ function createTrendseries(array, div) {
         content += '<tr><td>New '+indicator+' per 100,000</td><td>' + d3.format('.1f')(currentArray[index]['new_per_capita']) + '</td></tr>';
         content += '<tr><td>Weekly Trend</td><td>' + numFormat(currentArray[index]['weekly_trend']) + '</td></tr>';
         content += '<tr><td>Weekly Trend in %</td><td>' + percentFormat(currentArray[index]['weekly_trend_pct']) + '</td></tr>';
+        content += '<tr><td>Weekly Number of Cumulative '+indicator+'</td><td>' + numFormat(currentArray[index]['weekly_cumulative']) + '</td></tr>';
         content += '</table>';
         return content;
       }
@@ -3672,7 +3674,7 @@ $( document ).ready(function() {
   var prod = (window.location.href.indexOf('ocha-dap')>-1 || window.location.href.indexOf('data.humdata.org')>-1) ? true : false;
   //console.log(prod);
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2hnbWs5NzkxMXh2MnNvcmF6dXIxMWE0In0.0GfmJoEJyWFQ5UzNxl2WgA';
+  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2FvMW1wbDIwMzE2MnFwMW9teHQxOXhpIn0.Uri8IURftz3Jv5It51ISAA';
   var tooltip = d3.select('.tooltip');
   var minWidth = 1000;
   viewportWidth = (window.innerWidth<minWidth) ? minWidth - $('.content-left').innerWidth() : window.innerWidth - $('.content-left').innerWidth();
