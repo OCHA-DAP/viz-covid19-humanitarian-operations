@@ -850,7 +850,7 @@ function createComparison(object) {
           (country['#affected+tested+positive+pct']==undefined) ? 'No Data' : percentFormat(country['#affected+tested+positive+pct'])
         ];
 
-        $('.comparison-panel .message').remove();
+        $('.comparison-panel .message').hide();
 
         //add table headers
         if ($('.comparison-table').children().length<1) {
@@ -912,7 +912,8 @@ function removeRow(e) {
 }
 
 function resetComparison() {
-  $('.comparison-panel').hide();
+  $('.comparison-panel').removeClass('expand').hide();
+  $('.comparison-panel .message').show();
   $('.comparison-table').empty();
   comparisonList = [];
 }
@@ -2291,8 +2292,9 @@ function createEvents() {
     var location = (layer==undefined) ? window.location.pathname : window.location.pathname+'?layer='+layer;
     window.history.replaceState(null, null, location);
 
-    //reset comparison list
-    if (currentIndicator.id!=='#affected+infected+new+per100000+weekly') resetComparison();
+    //handle comparison list
+    if (currentIndicator.id=='#affected+infected+new+per100000+weekly') $('.comparison-panel').show();
+    else resetComparison();
   });
 
   //global figures close button
@@ -3680,7 +3682,7 @@ $( document ).ready(function() {
   var prod = (window.location.href.indexOf('ocha-dap')>-1 || window.location.href.indexOf('data.humdata.org')>-1) ? true : false;
   //console.log(prod);
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2hnbWs5NzkxMXh2MnNvcmF6dXIxMWE0In0.0GfmJoEJyWFQ5UzNxl2WgA';
+  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2FvMW1wbDIwMzE2MnFwMW9teHQxOXhpIn0.Uri8IURftz3Jv5It51ISAA';
   var tooltip = d3.select('.tooltip');
   var minWidth = 1000;
   viewportWidth = (window.innerWidth<minWidth) ? minWidth - $('.content-left').innerWidth() : window.innerWidth - $('.content-left').innerWidth();
