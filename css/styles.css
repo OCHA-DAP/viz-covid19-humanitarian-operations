@@ -2227,7 +2227,7 @@ table.immunization-table {
   background-color: #F5FBFC;
   bottom: 0;
   font-family: 'Source Sans Pro', sans-serif;
-  height: 35px;
+  height: 40px;
   left: 0;
   margin-left: 20px;
   padding-top: 25px;
@@ -2237,9 +2237,10 @@ table.immunization-table {
   .comparison-panel.expand {
     height: 205px; }
   .comparison-panel .message {
+    font-size: 15px;
     left: 15px;
     position: absolute;
-    top: 10px; }
+    top: 12px; }
   .comparison-panel .panel-close-btn,
   .comparison-panel .row-close-btn {
     color: #888;
