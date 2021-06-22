@@ -1564,6 +1564,8 @@ a:visited {
     font-size: 16px;
     margin-left: auto;
     padding-top: 3px; }
+  .download-link .download-monthly label {
+    display: none; }
 
 .menu-indicators li {
   color: #888;
@@ -1631,7 +1633,7 @@ a:visited {
   font-size: 14px;
   font-weight: normal;
   height: 30px;
-  margin-left: 0;
+  margin-left: 4px;
   padding: 0;
   width: auto; }
 
@@ -1645,14 +1647,6 @@ a:visited {
 
 .trendseries-select {
   width: auto; }
-
-.sorting-select-container {
-  align-items: center;
-  display: flex;
-  flex-wrap: nowrap;
-  margin-top: 10px; }
-  .sorting-select-container p {
-    margin-right: 5px; }
 
 .secondary-panel {
   background-color: rgba(255, 255, 255, 0.9);
@@ -1736,7 +1730,8 @@ a:visited {
   .ranking-container .ranking-select-container .default-select {
     display: block; }
   .ranking-container .ranking-select-container .covid-select,
-  .ranking-container .ranking-select-container .vaccine-select {
+  .ranking-container .ranking-select-container .vaccine-select,
+  .ranking-container .ranking-select-container .inform-select {
     display: none; }
 
 .ranking-container.covid .ranking-title {
@@ -1764,6 +1759,16 @@ a:visited {
     height: 30px;
     white-space: pre-wrap;
     width: 100%; }
+
+.ranking-container.ranking-inform .ranking-select-container .default-select {
+  display: none; }
+
+.ranking-container.ranking-inform .ranking-select-container .inform-select {
+  display: block; }
+  .ranking-container.ranking-inform .ranking-select-container .inform-select .ranking-select {
+    height: 30px;
+    white-space: pre-wrap;
+    width: auto; }
 
 .label-header {
   display: block;
