@@ -1945,7 +1945,7 @@ function setKeyFigures() {
 	else if (currentIndicator.id=='#vaccination+postponed+num') {
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 		var postponedNum = (data[indicator]==undefined) ? 0 : data[indicator];
-		createKeyFigure('.figures', 'Total number of immunization campaigns canceled or postponed due to COVID', '', postponedNum);
+		createKeyFigure('.figures', 'Total number of immunization campaigns postponed due to COVID', '', postponedNum);
 	}
 	//humanitarian funding
 	else if (currentIndicator.id=='#value+funding+hrp+pct') {
@@ -2806,7 +2806,7 @@ function setGlobalLegend(scale) {
     //pin footnote
     createFootnote('.map-legend.global', '#affected+inneed+pct', 'The Total Number of People in Need figure corresponds to 27 HRPs and 7 Regional Appeals. Population percentages greater than 100% include refugees, migrants, and/or asylum seekers.');
     //vacc footnote
-    createFootnote('.map-legend.global', '#vaccination+postponed+num', 'Methodology: Information about interrupted immunization campaigns contains both official and unofficial information sources. The country ranking has been determined by calculating the ratio of total number of postponed or cancelled campaigns and total immunization campaigns. Note: data collection is ongoing and may not reflect all the campaigns in every country.');
+    createFootnote('.map-legend.global', '#vaccination+postponed+num', 'Methodology: Information about interrupted immunization campaigns contains both official and unofficial information sources. The country ranking has been determined by calculating the ratio of total number of postponed campaigns and total immunization campaigns. Note: data collection is ongoing and may not reflect all the campaigns in every country.');
     //food prices footnote
     createFootnote('.map-legend.global', '#value+food+num+ratio', 'Methodology: Information about food prices is collected from data during the last 6 month moving window. The country ranking for food prices has been determined by calculating the ratio of the number of commodities in alert, stress or crisis and the total number of commodities. The commodity status comes from <a href="https://dataviz.vam.wfp.org" target="_blank" rel="noopener">WFP’s model</a>.');
     //oxford footnote
@@ -3244,9 +3244,9 @@ function createMapTooltip(country_code, country_name, point) {
         else if (currentIndicator.id=='#targeted+doses+delivered+pct') {
           if (val!='No Data') {
             //allocated data
-            // var covaxAllocatedTotal = 0;
-            // if (country[0]['#capacity+doses+forecast+covax']!=undefined) covaxAllocatedTotal += country[0]['#capacity+doses+forecast+covax'];
-            // var allocatedArray = [{label: 'COVAX', value: covaxAllocatedTotal}];
+            var covaxAllocatedTotal = 0;
+            if (country[0]['#capacity+doses+forecast+covax']!=undefined) covaxAllocatedTotal += country[0]['#capacity+doses+forecast+covax'];
+            var allocatedArray = [{label: 'COVAX', value: covaxAllocatedTotal}];
 
             //delivered data
             var funderArray = (country[0]['#meta+vaccine+funder']!=undefined) ? country[0]['#meta+vaccine+funder'].split('|') : [];
@@ -3256,15 +3256,17 @@ function createMapTooltip(country_code, country_name, point) {
 
             content += currentIndicator.name + ':<div class="stat">' + val + '</div>';
             content += '<div class="table-display layer-covax">';
-            // content += '<div class="table-row row-separator"><div>Allocated (doses)</div><div>'+ numFormat(covaxAllocatedTotal) +'</div></div>';
-            // allocatedArray.forEach(function(row, index) {
-            //   if (row.value!=undefined) {
-            //     content += '<div class="table-row"><div>'+ row.label +'</div><div>'+ numFormat(row.value) +'</div></div>';
-            //   }
-            // });
+            content += '<div class="table-row row-separator"><div>Allocated (doses)</div><div>'+ numFormat(covaxAllocatedTotal) +'</div></div>';
+            allocatedArray.forEach(function(row, index) {
+              if (row.value!=undefined) {
+                content += '<div class="table-row"><div>'+ row.label +'</div><div>'+ numFormat(row.value) +'</div></div>';
+              }
+            });
             content += '<div class="table-row row-separator"><div>Delivered (doses)</div><div>'+ numFormat(totalDelivered) +'</div></div>';
             dosesArray.forEach(function(doses, index) {
-              content += '<div class="table-row"><div>'+ funderArray[index] + ' – ' + producerArray[index] +'</div><div>'+ numFormat(doses) +'</div></div>';
+              content += '<div class="table-row"><div>'+ funderArray[index];
+              content += (producerArray[index] != '') ? ' – ' + producerArray[index] : '';
+              content += '</div><div>'+ numFormat(doses) +'</div></div>';
             });
             content += '</div>';
           }
@@ -3370,7 +3372,7 @@ function createMapTooltip(country_code, country_name, point) {
             var content = '<h2>' + country_name + '</h2>';
             content += '<table class="immunization-table"><tr><th>Campaign Immunization:</th><th>Planned Start Date:</th><th>Status:</th></tr>';
             vaccData.forEach(function(row) {
-              var className = (row['#status+name'].indexOf('Postponed COVID')>-1 || row['#status+name'].indexOf('Cancelled')>-1) ? 'covid-postpone' : '';
+              var className = (row['#status+name'].indexOf('Postponed COVID')>-1) ? 'covid-postpone' : '';
               content += '<tr class="'+className+'"><td>'+row['#service+name']+'</td><td>'+row['#date+start']+'</td><td>'+row['#status+name']+'</td></tr>';
             });
             content += '</table>';
