@@ -1811,6 +1811,8 @@ const countryCodeList = {
   COD: '70s1gowk',
   COL: 'awxirkoh',
   ETH: '8l382re2',
+  GTM: '3cyria8u',
+  HND: '8kvvnawe',
   HTI: '4in4ae66',
   IRQ: '079oa80i',
   LBY: '0o4l8ysb',
@@ -1824,6 +1826,7 @@ const countryCodeList = {
   SDN: 'a2zw3leb',
   SOM: '3s7xeitz',
   SSD: '3556pb27',
+  SLV: '77ydes06',
   SYR: '2qt39dhl',
   TCD: 'd6tya3am',
   UKR: 'adkwa0bw',
@@ -1893,7 +1896,7 @@ function setKeyFigures() {
 		var affectedPIN = (data[indicator]==undefined) ? 0 : (d3.format('.4s'))(data[indicator]);
 		if (currentRegion=='') {
 			//hardcode global PIN to match OCHA data
-			affectedPIN = (d3.format('.4s'))(210369488.53);
+			affectedPIN = (d3.format('.4s'))(220173345);
 			totalCountries = 56;
 		}
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
