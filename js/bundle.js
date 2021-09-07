@@ -527,7 +527,7 @@ function createTrendBarChart(data, div) {
 var rankingX, rankingY, rankingBars, rankingData, rankingBarHeight, valueFormat;
 function createRankingChart() {
   //reset
-  $('.ranking-container').removeClass('covid ranking-vaccine ranking-inform');
+  $('.ranking-container').removeClass('covid ranking-vaccine ranking-vaccine-financing ranking-inform');
 
   //set title
   var rankingTitle = $('.menu-indicators').find('.selected').attr('data-legend') + ' by Country';
@@ -567,6 +567,10 @@ function createRankingChart() {
   }
   else if (currentIndicator.id=='#targeted+doses+delivered+pct') {
     $('.ranking-chart').append('<p>Sort by:</p>');
+  }
+  else if (currentIndicator.id=='#value+financing+approved') {
+    $('.ranking-container').addClass('ranking-vaccine-financing');
+    $('.ranking-select').val(indicator);
   }
   else if (currentIndicator.id=='#severity+inform+type') {
     $('.ranking-container').addClass('ranking-inform');
@@ -1956,6 +1960,14 @@ function setKeyFigures() {
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 		var postponedNum = (data[indicator]==undefined) ? 0 : data[indicator];
 		createKeyFigure('.figures', 'Total number of immunization campaigns postponed due to COVID', '', postponedNum);
+	}
+	//vaccine financing
+	else if (currentIndicator.id=='#value+financing+approved') {
+		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
+		createKeyFigure('.figures', 'Total Approved Funding (World Bank and GAVI)', '', formatValue(data['#value+financing+approved']));
+		createKeyFigure('.figures', 'GAVI CDS (Early Access / Approved)', '', formatValue(data['#value+financing+gavi+approved']));
+		createKeyFigure('.figures', 'GAVI CDS (Early Access / Disbursed)', '', formatValue(data['#value+financing+gavi+disbursed']));
+		createKeyFigure('.figures', 'World Bank (Approved)', '', formatValue(data['#value+financing+worldbank+approved']));
 	}
 	//humanitarian funding
 	else if (currentIndicator.id=='#value+funding+hrp+pct') {
@@ -3394,6 +3406,27 @@ function createMapTooltip(country_code, country_name, point) {
           var informClass = country[0]['#severity+inform+type'];
           var informTrend = country[0]['#severity+inform+trend'];
           content += 'INFORM Severity Index: <div><span class="stat">' + numVal + '</span> <span class="subtext inline">(' + informClass + ' / ' + informTrend + ')</span></div>';
+        }
+        //Vaccine Financing layer
+        else if (currentIndicator.id=='#value+financing+approved') {
+          if (val!='No Data') {
+            var gaviDisbursed = (country[0]['#value+financing+gavi+disbursed']!=undefined) ? country[0]['#value+financing+gavi+disbursed'] : 0;
+            var gaviApproved = (country[0]['#value+financing+gavi+approved']!=undefined) ? country[0]['#value+financing+gavi+approved'] : 0;
+            var wbApproved = (country[0]['#value+financing+worldbank+approved']!=undefined) ? country[0]['#value+financing+worldbank+approved'] : 0;
+
+            content += currentIndicator.name + ':<div class="stat">' + formatValue(val) + '</div>';
+            content += '<div class="table-display layer-covax">';
+            content += '<div class="table-row row-separator"><div>Disbursed:</div></div>';
+            content += '<div class="table-row"><div>GAVI CDS (Early Access)</div><div>'+ d3.format('$,')(gaviDisbursed) +'</div></div>';
+
+            content += '<div class="table-row row-separator"><div>Approved:</div></div>';
+            content += '<div class="table-row"><div>GAVI CDS (Early Access)</div><div>'+ d3.format('$,')(gaviApproved) +'</div></div>';
+            content += '<div class="table-row"><div>World Bank</div><div>'+ d3.format('$,')(wbApproved) +'</div></div>';
+            content += '</div>';
+          }
+          else {
+            content += currentIndicator.name + ':<div class="stat">' + formatValue(val) + '</div>';
+          }
         }
         //Humanitarian Funding Level layer
         else if (currentIndicator.id=='#value+funding+hrp+pct') {

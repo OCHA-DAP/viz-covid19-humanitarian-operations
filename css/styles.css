@@ -1731,6 +1731,7 @@ a:visited {
     display: block; }
   .ranking-container .ranking-select-container .covid-select,
   .ranking-container .ranking-select-container .vaccine-select,
+  .ranking-container .ranking-select-container .vaccine-financing-select,
   .ranking-container .ranking-select-container .inform-select {
     display: none; }
 
@@ -1756,6 +1757,19 @@ a:visited {
 .ranking-container.ranking-vaccine .ranking-select-container .vaccine-select {
   display: block; }
   .ranking-container.ranking-vaccine .ranking-select-container .vaccine-select .ranking-select {
+    height: 30px;
+    white-space: pre-wrap;
+    width: 100%; }
+
+.ranking-container.ranking-vaccine-financing .ranking-title {
+  display: none; }
+
+.ranking-container.ranking-vaccine-financing .ranking-select-container .default-select {
+  display: none; }
+
+.ranking-container.ranking-vaccine-financing .ranking-select-container .vaccine-financing-select {
+  display: block; }
+  .ranking-container.ranking-vaccine-financing .ranking-select-container .vaccine-financing-select .ranking-select {
     height: 30px;
     white-space: pre-wrap;
     width: 100%; }
