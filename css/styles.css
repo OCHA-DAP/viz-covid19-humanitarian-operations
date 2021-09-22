@@ -2214,7 +2214,7 @@ table.immunization-table {
       font-family: 'Gotham-Light', sans-serif;
       font-size: 42px;
       line-height: 40px;
-      padding: 10px 0; }
+      padding: 10px 0 3px; }
   #chart-view .c3-bar._expanded_ {
     fill: #F2645B !important;
     fill-opacity: 1 !important; }
