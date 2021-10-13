@@ -776,7 +776,7 @@ function updateRankingChart(sortMode, secondarySortMode) {
     }
 
     var valueMax = d3.max(rankingData, function(d) { return +d.value; });
-    valueFormat = d3.format(',.0f');
+    valueFormat = (sortMode.indexOf('pct')>-1) ? d3.format('.2%') : d3.format(',.0f');
 
     //draw chart
     rankingBarHeight = 13;
