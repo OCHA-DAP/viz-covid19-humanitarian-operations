@@ -1239,7 +1239,7 @@ body {
 main {
   transition: 0.5s all ease; }
 
-h1 {
+h1, .h1 {
   font-family: 'Gotham-Bold', sans-serif;
   font-size: 16px;
   font-weight: normal;
@@ -1664,6 +1664,9 @@ a:visited {
     position: absolute;
     right: 20px;
     top: 20px; }
+  .secondary-panel .secondary-panel-title {
+    padding-left: 0;
+    padding-right: 18px; }
   .secondary-panel .source-container .source {
     padding-right: 50px; }
   .secondary-panel .global-figures {
