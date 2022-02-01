@@ -1838,7 +1838,7 @@ const countryCodeList = {
   MOZ: '5jojox7h',
   NER: '9gbs4a2a',
   NGA: '3ceksugh',
-  PAK: '94y0veay',
+  //PAK: '94y0veay',
   PSE: '1emy37d7',
   SDN: 'a2zw3leb',
   SOM: '3s7xeitz',
@@ -1849,7 +1849,7 @@ const countryCodeList = {
   UKR: 'adkwa0bw',
   VEN: '9vcajdlr',
   YEM: '3m20d1v8',
-  ZWE: '1ry8x8ul'
+  //ZWE: '1ry8x8ul'
 };
 
 
@@ -1987,14 +1987,14 @@ function setKeyFigures() {
 			}
 		});
 		createKeyFigure('.figures', 'Number of Countries', '', numCountries);
-		createKeyFigure('.figures', 'Total Funding Required (GHO 2021)', '', formatValue(data['#value+funding+hrp+required+usd']));
+		createKeyFigure('.figures', 'Total Funding Required (GHO 2022)', '', formatValue(data['#value+funding+hrp+required+usd']));
 		createKeyFigure('.figures', 'Total Funding Level', '', percentFormat(data['#value+funding+hrp+pct']));
 	}
 	//CERF
 	else if (currentIndicator.id=='#value+cerf+funding+total+usd') {
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 		if (data['#value+cerf+contributions+total+usd']!=undefined) createKeyFigure('.figures', 'Total Contribution', '', formatValue(data['#value+cerf+contributions+total+usd']));
-		createKeyFigure('.figures', 'Total CERF Funding 2021', 'total-funding', formatValue(data['#value+cerf+funding+total+usd']));
+		createKeyFigure('.figures', 'Total CERF Funding 2022', 'total-funding', formatValue(data['#value+cerf+funding+total+usd']));
 		if (data['#value+cerf+funding+total+usd'] > 0) {
 			var gmText = getGamText(data, 'cerf');
 			$('.figures .key-figure .inner .total-funding').append('<div class="small">'+ gmText +'</div>');
@@ -2005,7 +2005,7 @@ function setKeyFigures() {
 		//num countries
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 		if (data['#value+cbpf+contributions+total+usd']!=undefined) createKeyFigure('.figures', 'Total Contribution', '', formatValue(data['#value+cbpf+contributions+total+usd']));
-		createKeyFigure('.figures', 'Total CBPF Funding 2021', 'total-funding', formatValue(data['#value+cbpf+funding+total+usd']));
+		createKeyFigure('.figures', 'Total CBPF Funding 2022', 'total-funding', formatValue(data['#value+cbpf+funding+total+usd']));
 		
 		//gam
 		if (data['#value+cbpf+funding+total+usd'] > 0) {
@@ -2139,13 +2139,13 @@ function getSource(indicator) {
 
 
 var map, mapFeatures, globalLayer, globalLabelLayer, globalMarkerLayer, countryLayer, countryBoundaryLayer, countryLabelLayer, countryMarkerLayer, tooltip, markerScale, countryMarkerScale;
-var adm0SourceLayer = '63_polbnda_int_uncs-29lk4r';
+var adm0SourceLayer = 'polbnda_int_uncs-6zgtye';
 var hoveredStateId = null;
 function initMap() {
   console.log('Loading map...')
   map = new mapboxgl.Map({
     container: 'global-map',
-    style: 'mapbox://styles/humdata/ckb843tjb46fy1ilaw49redy7',
+    style: 'mapbox://styles/humdata/ckyw4l9z9002f14p3cyt9g2t0',
     center: [-25, 0],
     minZoom: 1,
     zoom: zoomLevel,
@@ -2842,7 +2842,7 @@ function setGlobalLegend(scale) {
     //vaccine footnote
     createFootnote('.map-legend.global', '#targeted+doses+delivered+pct', 'Note: Data refers to doses delivered to country not administered to people. Only countries with a Humanitarian Response Plan are included');
     //pin footnote
-    createFootnote('.map-legend.global', '#affected+inneed+pct', 'The Total Number of People in Need figure corresponds to 30 HRPs and 7 Regional Appeals. Population percentages greater than 100% include refugees, migrants, and/or asylum seekers.');
+    createFootnote('.map-legend.global', '#affected+inneed+pct', 'The Total Number of People in Need figure corresponds to 28 HRPs and 7 Regional Appeals. Population percentages greater than 100% include refugees, migrants, and/or asylum seekers.');
     //vacc footnote
     createFootnote('.map-legend.global', '#vaccination+postponed+num', 'Methodology: Information about interrupted immunization campaigns contains both official and unofficial information sources. The country ranking has been determined by calculating the ratio of total number of postponed campaigns and total immunization campaigns. Note: data collection is ongoing and may not reflect all the campaigns in every country.');
     //food prices footnote
@@ -2850,9 +2850,9 @@ function setGlobalLegend(scale) {
     //oxford footnote
     createFootnote('.map-legend.global', '#severity+stringency+num', 'Note: This is a composite measure based on nine response indicators including school closures, workplace closures, and travel bans, rescaled to a value from 0 to 100 (100 = strictest)');
     //CERF footnote
-    createFootnote('.map-legend.global', '#value+cerf+funding+total+usd', 'The Total CERF Funding 2021 figure refers to the Global CERF Allocations, including some non-GHO locations which are not listed on this dashboard.');
+    createFootnote('.map-legend.global', '#value+cerf+funding+total+usd', 'The Total CERF Funding 2022 figure refers to the Global CERF Allocations, including some non-GHO locations which are not listed on this dashboard.');
     //CBPF footnote
-    createFootnote('.map-legend.global', '#value+cbpf+funding+total+usd', 'The Total CBPF Funding 2021 figure refers to the Global CBPF Allocations, including some non-GHO locations which are not listed on this dashboard.');
+    createFootnote('.map-legend.global', '#value+cbpf+funding+total+usd', 'The Total CBPF Funding 2022 figure refers to the Global CBPF Allocations, including some non-GHO locations which are not listed on this dashboard.');
     //access footnote
     // createFootnote('.map-legend.global', '#event+year+todate+num', '1. Access data is collected by OCHA and is based on information provided by humanitarian partners. 2. CERF and CBPF access data is collected by OCHA at country level and includes all projects affected by security incidents, access constraints or other bureaucratic impediments. 3. In order to ensure coherence and consistency in the analysis of security incidents, a single source of information has been used (AWSD). OCHA acknowledges that other sources of information are available at country level to complement the security analysis.');
 
@@ -3710,8 +3710,8 @@ function initCountryPanel() {
   hrpDiv.children().remove();
   createFigure(hrpDiv, {className: 'funding-required', title: 'HRP Requirement', stat: formatValue(data['#value+funding+hrp+required+usd']), indicator: '#value+funding+hrp+required+usd'});
   createFigure(hrpDiv, {className: 'funding-covid-allocation', title: 'HRP Funding', stat: formatValue(data['#value+funding+hrp+total+usd']), indicator: '#value+funding+hrp+total+usd'});
-  createFigure(hrpDiv, {className: 'funding-cerf-allocation', title: 'CERF Allocation 2021', stat: formatValue(data['#value+cerf+funding+total+usd']), indicator: '#value+cerf+funding+total+usd'});
-  createFigure(hrpDiv, {className: 'funding-cbpf-allocation', title: 'CBPF Allocation 2021', stat: formatValue(data['#value+cbpf+funding+total+usd']), indicator: '#value+cbpf+funding+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-cerf-allocation', title: 'CERF Allocation 2022', stat: formatValue(data['#value+cerf+funding+total+usd']), indicator: '#value+cerf+funding+total+usd'});
+  createFigure(hrpDiv, {className: 'funding-cbpf-allocation', title: 'CBPF Allocation 2022', stat: formatValue(data['#value+cbpf+funding+total+usd']), indicator: '#value+cbpf+funding+total+usd'});
 
   //inform
   var informDiv = $('.country-panel .inform .panel-inner');
@@ -3794,9 +3794,11 @@ $( document ).ready(function() {
       zoomLevel = 1.4;
     }
 
+    //ckb843tjb46fy1ilaw49redy7
+
     //load static map -- will only work for screens smaller than 1280
     if (viewportWidth<=1280) {
-      var staticURL = 'https://api.mapbox.com/styles/v1/humdata/ckb843tjb46fy1ilaw49redy7/static/-25,0,'+zoomLevel+'/'+viewportWidth+'x'+viewportHeight+'?access_token='+mapboxgl.accessToken;
+      var staticURL = 'https://api.mapbox.com/styles/v1/humdata/ckyw4l9z9002f14p3cyt9g2t0/static/-25,0,'+zoomLevel+'/'+viewportWidth+'x'+viewportHeight+'?access_token='+mapboxgl.accessToken;
       $('#static-map').css('background-image', 'url('+staticURL+')');
     }
 
