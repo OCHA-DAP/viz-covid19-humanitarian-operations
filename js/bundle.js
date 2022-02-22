@@ -1974,8 +1974,10 @@ function setKeyFigures() {
 	else if (currentIndicator.id=='#value+financing+approved') {
 		createKeyFigure('.figures', 'Number of Countries', '', totalCountries);
 		createKeyFigure('.figures', 'Total Approved Funding (World Bank and GAVI)', '', formatValue(data['#value+financing+approved']));
-		createKeyFigure('.figures', 'GAVI CDS (Early Access / Approved)', '', formatValue(data['#value+financing+gavi+approved']));
-		createKeyFigure('.figures', 'GAVI CDS (Early Access / Disbursed)', '', formatValue(data['#value+financing+gavi+disbursed']));
+		createKeyFigure('.figures', 'GAVI CDS (Early Access / Approved)', '', formatValue(data['#value+financing+gavi+earlyaccess+approved']));
+		createKeyFigure('.figures', 'GAVI CDS (Needs Based / Approved)', '', formatValue(data['#value+financing+gavi+needs+approved']));
+		createKeyFigure('.figures', 'GAVI CDS (Early Access / Disbursed)', '', formatValue(data['#value+financing+gavi+earlyaccess+disbursed']));
+		createKeyFigure('.figures', 'GAVI CDS (Needs Based / Disbursed)', '', formatValue(data['#value+financing+gavi+needs+disbursed']));
 		createKeyFigure('.figures', 'World Bank (Approved)', '', formatValue(data['#value+financing+worldbank+approved']));
 	}
 	//humanitarian funding
@@ -3427,17 +3429,21 @@ function createMapTooltip(country_code, country_name, point) {
         //Vaccine Financing layer
         else if (currentIndicator.id=='#value+financing+approved') {
           if (val!='No Data') {
-            var gaviDisbursed = (country[0]['#value+financing+gavi+disbursed']!=undefined) ? country[0]['#value+financing+gavi+disbursed'] : 0;
-            var gaviApproved = (country[0]['#value+financing+gavi+approved']!=undefined) ? country[0]['#value+financing+gavi+approved'] : 0;
+            var gaviEarlyAccessDisbursed = (country[0]['#value+financing+gavi+earlyaccess+disbursed']!=undefined) ? country[0]['#value+financing+gavi+earlyaccess+disbursed'] : 0;
+            var gaviNeedsDisbursed = (country[0]['#value+financing+gavi+needs+disbursed']!=undefined) ? country[0]['#value+financing+gavi+needs+disbursed'] : 0;
+            var gaviEarlyAccessApproved = (country[0]['#value+financing+gavi+earlyaccess+approved']!=undefined) ? country[0]['#value+financing+gavi+earlyaccess+approved'] : 0;
+            var gaviNeedsApproved = (country[0]['#value+financing+gavi+needs+approved']!=undefined) ? country[0]['#value+financing+gavi+needs+approved'] : 0;
             var wbApproved = (country[0]['#value+financing+worldbank+approved']!=undefined) ? country[0]['#value+financing+worldbank+approved'] : 0;
 
             content += currentIndicator.name + ':<div class="stat">' + formatValue(val) + '</div>';
             content += '<div class="table-display layer-covax">';
             content += '<div class="table-row row-separator"><div>Disbursed:</div></div>';
-            content += '<div class="table-row"><div>GAVI CDS (Early Access)</div><div>'+ d3.format('$,')(gaviDisbursed) +'</div></div>';
+            content += '<div class="table-row"><div>GAVI CDS (Early Access)</div><div>'+ d3.format('$,')(gaviEarlyAccessDisbursed) +'</div></div>';
+            content += '<div class="table-row"><div>GAVI CDS (Needs Based)</div><div>'+ d3.format('$,')(gaviNeedsDisbursed) +'</div></div>';
 
             content += '<div class="table-row row-separator"><div>Approved:</div></div>';
-            content += '<div class="table-row"><div>GAVI CDS (Early Access)</div><div>'+ d3.format('$,')(gaviApproved) +'</div></div>';
+            content += '<div class="table-row"><div>GAVI CDS (Early Access)</div><div>'+ d3.format('$,')(gaviEarlyAccessApproved) +'</div></div>';
+            content += '<div class="table-row"><div>GAVI CDS (Needs Based)</div><div>'+ d3.format('$,')(gaviNeedsApproved) +'</div></div>';
             content += '<div class="table-row"><div>World Bank</div><div>'+ d3.format('$,')(wbApproved) +'</div></div>';
             content += '</div>';
           }
