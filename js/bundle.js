@@ -1668,7 +1668,13 @@ function transitionBarChart(data){
 
 
 
+function vizTrack(view, content) {
+  mpTrack(view, content);
+  gaTrack('viz interaction', 'switch viz', 'oad covid-19 / '+view, content);
+}
+
 function mpTrack(view, content) {
+  //mixpanel event
   mixpanel.track('viz interaction', {
     'page title': document.title,
     'embedded in': window.location.href,
@@ -1676,6 +1682,15 @@ function mpTrack(view, content) {
     'viz type': 'oad covid-19',
     'current view': view,
     'content': content
+  });
+}
+
+function gaTrack(eventCategory, eventAction, eventLabel, type) {
+  ga('send', 'event', eventCategory, eventAction, eventLabel, {
+    'dimension2': type,
+    hitCallback: function() {
+      console.log('Finishing sending click event to GA')
+    }
   });
 }
 
@@ -2439,7 +2454,7 @@ function createEvents() {
     var selected = $('input[name="countryIndicators"]:checked');
     currentCountryIndicator = {id: selected.val(), name: selected.parent().text()};
     updateCountryLayer();
-    mpTrack(currentCountry.code, currentCountryIndicator.name);
+    vizTrack(currentCountry.code, currentCountryIndicator.name);
   });
 }
 
@@ -2464,7 +2479,7 @@ function selectLayer(menuItem) {
       $('.vaccine-sorting-container').show();
     }
 
-    mpTrack('wrl', $(menuItem).find('div').text());
+    vizTrack('wrl', $(menuItem).find('div').text());
     updateGlobalLayer();
   }
 
@@ -2515,7 +2530,7 @@ function selectRegion() {
     linear: true
   });
 
-  mpTrack(currentRegion, currentIndicator.name);
+  vizTrack(currentRegion, currentIndicator.name);
   updateGlobalLayer();
 }
 
@@ -2547,7 +2562,7 @@ function selectCountry(features) {
   });
 
   map.once('moveend', initCountryView);
-  mpTrack(currentCountry.code, currentCountryIndicator.name);
+  vizTrack(currentCountry.code, currentCountryIndicator.name);
 
   //append country code to url
   window.history.replaceState(null, null, '?c='+currentCountry.code);
@@ -4011,19 +4026,23 @@ $( document ).ready(function() {
       else {
         $('#chart-view').hide();
       }
-      mpTrack($(this).data('id'), currentIndicator.name);
+      vizTrack($(this).data('id'), currentIndicator.name);
     });
 
     //set daily download date
     var today = new Date();
     $('.download-link .today-date').text(dateFormat(today));
     $('.download-daily').on('click', function() {  
+      //mixpanel event
       mixpanel.track('link click', {
         'embedded in': window.location.href,
         'destination url': $(this).attr('href'),
         'link type': 'download report',
         'page title': document.title
       });
+
+      //google analytics event
+      gaTrack('oad covid-19 link', $(this).attr('href'), 'download report', document.title);
     });
 
     //show/hide NEW label for monthly report
@@ -4041,12 +4060,16 @@ $( document ).ready(function() {
 
     //track monthly pdf download
     $('.download-monthly').on('click', function() {  
+      //mixpanel event
       mixpanel.track('link click', {
         'embedded in': window.location.href,
         'destination url': $(this).attr('href'),
         'link type': 'download report',
         'page title': document.title
       });
+
+      //google analytics event
+      gaTrack('oad covid-19 link', $(this).attr('href'), 'download report', document.title);
     });
 
     //load trenseries for global view
