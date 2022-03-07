@@ -3992,6 +3992,10 @@ $( document ).ready(function() {
     //create hrp country select
     var countryArray = Object.keys(countryCodeList);
     hrpData = nationalData.filter((row) => countryArray.includes(row['#country+code']));
+    
+    //remove UKR from country pages for now
+    hrpData = hrpData.filter((item) => item['#country+code']!=='UKR');
+
     hrpData.sort(function(a, b){
       return d3.ascending(a['#country+name'].toLowerCase(), b['#country+name'].toLowerCase());
     })
