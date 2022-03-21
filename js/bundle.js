@@ -849,6 +849,7 @@ function updateRankingChart(sortMode, secondarySortMode) {
         return xpos + 3;
       })
       .text(function (d) {
+        if (sortMode.indexOf('pct')>-1 && d.value>1) d.value = 1;
         return valueFormat(d.value);
       });
   }
@@ -3077,6 +3078,10 @@ function updateCountryLayer() {
     if (d['#country+code']==currentCountry.code) {
       var val = +d[currentCountryIndicator.id];
       color = (val<0 || !isVal(val) || isNaN(val)) ? colorNoData : countryColorScale(val);
+
+      //turn off choropleth for population layer
+      color = (currentCountryIndicator.id=='#population') ? colorDefault : color;
+
       boundaryColor = (currentCountryIndicator.id=='#population') ? '#FFF' : '#E0E0E0';
       layerOpacity = 1;
     }
@@ -3300,7 +3305,11 @@ function createMapTooltip(country_code, country_name, point) {
           if (val!='No Data') {
             //allocated data
             var covaxAllocatedTotal = 0;
-            if (country[0]['#capacity+doses+forecast+covax']!=undefined) covaxAllocatedTotal += country[0]['#capacity+doses+forecast+covax'];
+            var administeredTotal = 0;
+            var administeredPercentage = 0;
+            if (country[0]['#capacity+doses+forecast+covax']!=undefined) covaxAllocatedTotal = country[0]['#capacity+doses+forecast+covax'];
+            if (country[0]['#capacity+doses+administered+total']!=undefined) administeredTotal = country[0]['#capacity+doses+administered+total'];
+
             var allocatedArray = [{label: 'COVAX', value: covaxAllocatedTotal}];
 
             //delivered data
@@ -3323,6 +3332,8 @@ function createMapTooltip(country_code, country_name, point) {
               content += (producerArray[index] != '') ? ' – ' + producerArray[index] : '';
               content += '</div><div>'+ numFormat(doses) +'</div></div>';
             });
+            content += '<div class="table-row row-separator"><div>Administered (doses)</div><div>'+ numFormat(administeredTotal) +'</div></div>';
+            content += '<div class="table-row"><div>Population coverage</div><div>'+ percentFormat(country[0]['#capacity+doses+administered+coverage+pct']) +'</div></div>';
             content += '</div>';
           }
           else {

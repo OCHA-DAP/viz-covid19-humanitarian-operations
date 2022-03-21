@@ -1760,7 +1760,7 @@ a:visited {
 .ranking-container.ranking-vaccine .ranking-select-container .vaccine-select {
   display: block; }
   .ranking-container.ranking-vaccine .ranking-select-container .vaccine-select .ranking-select {
-    height: 30px;
+    height: 40px;
     white-space: pre-wrap;
     width: 100%; }
 
