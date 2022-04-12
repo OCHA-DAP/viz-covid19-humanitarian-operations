@@ -4065,11 +4065,12 @@ $( document ).ready(function() {
       if (item['#indicator+name']=='#meta+report') {
         var today = new Date();
         var newDate = new Date(item['#date'])
+        console.log(today, newDate)
         newDate.setDate(newDate.getDate() + 7) //leave NEW tag up for 1 week
         if (today > newDate)
-          $('.download-monthly').find('label').hide()
+          $('.download-quarterly').find('label').hide()
         else
-          $('.download-monthly').find('label').show()
+          $('.download-quarterly').find('label').show()
       }
     })
 
