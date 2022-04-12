@@ -4064,8 +4064,7 @@ $( document ).ready(function() {
     sourcesData.forEach(function(item) {
       if (item['#indicator+name']=='#meta+report') {
         var today = new Date();
-        var newDate = new Date(item['#date'])
-        console.log(today, newDate)
+        var newDate = new Date(item['#date']);
         newDate.setDate(newDate.getDate() + 7) //leave NEW tag up for 1 week
         if (today > newDate)
           $('.download-quarterly').find('label').hide()
