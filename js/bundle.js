@@ -3953,30 +3953,32 @@ $( document ).ready(function() {
         .key(function(d) { return d['#region+name']; })
         .object(nationalData);
 
-      //group immunization data by country    
-      immunizationDataByCountry = d3.nest()
-        .key(function(d) { return d['#country+code']; })
-        .entries(immunizationData);
+      //group immunization data by country
+      if (immunizationData!=undefined) {
+        immunizationDataByCountry = d3.nest()
+          .key(function(d) { return d['#country+code']; })
+          .entries(immunizationData);
 
-      //format dates and set overall status
-      immunizationDataByCountry.forEach(function(country) {
-        var postponed = 'On Track';
-        var isPostponed = false;
-        country.values.forEach(function(campaign) {
-          var d = moment(campaign['#date+start'], ['YYYY-MM','MM/DD/YYYY']);
-          var date = new Date(d.year(), d.month(), d.date());
-          campaign['#date+start'] = (isNaN(date.getTime())) ? campaign['#date+start'] : getMonth(date.getMonth()) + ' ' + date.getFullYear();
-          if (campaign['#status+name'].toLowerCase().indexOf('unknown')>-1 && !isPostponed) postponed = 'Unknown';
-          if (campaign['#status+name'].toLowerCase().indexOf('postponed')>-1) {
-            isPostponed = true;
-            postponed = 'Postponed / May postpone';
-          }
-        });
+        //format dates and set overall status
+        immunizationDataByCountry.forEach(function(country) {
+          var postponed = 'On Track';
+          var isPostponed = false;
+          country.values.forEach(function(campaign) {
+            var d = moment(campaign['#date+start'], ['YYYY-MM','MM/DD/YYYY']);
+            var date = new Date(d.year(), d.month(), d.date());
+            campaign['#date+start'] = (isNaN(date.getTime())) ? campaign['#date+start'] : getMonth(date.getMonth()) + ' ' + date.getFullYear();
+            if (campaign['#status+name'].toLowerCase().indexOf('unknown')>-1 && !isPostponed) postponed = 'Unknown';
+            if (campaign['#status+name'].toLowerCase().indexOf('postponed')>-1) {
+              isPostponed = true;
+              postponed = 'Postponed / May postpone';
+            }
+          });
 
-        nationalData.forEach(function(item) {
-          if (item['#country+code'] == country.key) item['#immunization-campaigns'] = postponed;
+          nationalData.forEach(function(item) {
+            if (item['#country+code'] == country.key) item['#immunization-campaigns'] = postponed;
+          });
         });
-      });
+      }
 
       //console.log(nationalData)
       //console.log(covidTrendData)
