@@ -556,7 +556,7 @@ function createRankingChart() {
       indicator = '#vaccination+postponed+num';
       break;
     case '#food-prices':
-      indicator = '#indicator+foodbasket+change+pct';
+      indicator = '#indicator+foodbasket+change+pct+val';
       break;
     default:
       indicator = currentIndicator.id;
@@ -2690,14 +2690,15 @@ function updateGlobalLayer() {
   var expressionMarkers = ['match', ['get', 'ISO_3']];
   nationalData.forEach(function(d) {
     if (regionMatch(d['#region+name'])) {
-      var val = d[currentIndicator.id];
+      var val = (currentIndicator.id=='#indicator+foodbasket+change+pct') ? d['#indicator+foodbasket+change+category'] : d[currentIndicator.id];
       var color = colorDefault;
       
       if (currentIndicator.id=='#affected+infected+new+weekly') {
         color = (val==null) ? colorNoData : colorScale(val);
       }
       else if (currentIndicator.id=='#indicator+foodbasket+change+pct') {
-        if (val<0) val = 0; //hotfix for negative values
+        val = d['#indicator+foodbasket+change+category'];
+        //if (val<0) val = 0; //hotfix for negative values
         color = (val==null) ? colorNoData : colorScale(val);
       }
       else if (currentIndicator.id=='#severity+inform+type' || currentIndicator.id=='#impact+type') {
@@ -2778,7 +2779,8 @@ function getGlobalLegendScale() {
     scale = d3.scaleQuantize().domain([0, max]).range(colorRange);
   }
   else if (currentIndicator.id=='#indicator+foodbasket+change+pct') {
-    scale = d3.scaleQuantize().domain([min, max]).range(colorRange);
+    //scale = d3.scaleQuantize().domain([min, max]).range(colorRange);
+    scale = d3.scaleOrdinal().domain(foodBasketScale).range(colorRange);
   }
   else if (currentIndicator.id=='#impact+type') {
     scale = d3.scaleOrdinal().domain(['Fully open', 'Partially open', 'Closed due to COVID-19', 'Academic break']).range(schoolClosureColorRange);
@@ -3779,6 +3781,7 @@ var populationColorRange = ['#FFE281','#FDB96D','#FA9059','#F27253','#E9554D'];
 var accessColorRange = ['#79B89A','#F6B98E','#C74B4F'];
 var oxfordColorRange = ['#ffffd9','#c7e9b4','#41b6c4','#225ea8','#172976'];
 var schoolClosureColorRange = ['#D8EEBF','#FFF5C2','#F6BDB9','#CCCCCC'];
+var foodBasketScale = ['Negative (<0%)', 'Normal (0-3%)', 'Moderate (3-10%)', 'High (10-25%)', 'Severe (>25%)'];
 var colorDefault = '#F2F2EF';
 var colorNoData = '#FFF';
 var regionBoundaryData, regionalData, worldData, nationalData, subnationalData, subnationalDataByCountry, immunizationData, timeseriesData, covidTrendData, dataByCountry, countriesByRegion, colorScale, viewportWidth, viewportHeight, currentRegion = '';
@@ -3879,6 +3882,23 @@ $( document ).ready(function() {
 
         //calculate and inject PIN percentage
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || item['#population']=='') ? '' : item['#affected+inneed']/item['#population'];
+
+        //determine food basket category
+        let foodBasketPct = +item['#indicator+foodbasket+change+pct']*100;
+        let foodBasketCategory = '';
+        if (foodBasketPct<=0)
+          foodBasketCategory = foodBasketScale[0];
+        else if (foodBasketPct>0 && foodBasketPct<=3)
+          foodBasketCategory = foodBasketScale[1];
+        else if (foodBasketPct>3 && foodBasketPct<=10)
+          foodBasketCategory = foodBasketScale[2];
+        else if (foodBasketPct>10 && foodBasketPct<=25)
+          foodBasketCategory = foodBasketScale[3];
+        else if (foodBasketPct>25)
+          foodBasketCategory = foodBasketScale[4];
+        else
+          foodBasketCategory = null;
+        item['#indicator+foodbasket+change+category'] = foodBasketCategory;
         
         //store covid trend data
         var covidByCountry = covidTrendData[item['#country+code']];
