@@ -3849,7 +3849,6 @@ $( document ).ready(function() {
       //parse national data
       nationalData.forEach(function(item) {
         //normalize country names
-        if (item['#country+name']=='State of Palestine') item['#country+name'] = 'occupied Palestinian territory';
         if (item['#country+name']=='Bolivia (Plurinational State of)') item['#country+name'] = 'Bolivia';
 
         //hardcode CBPF val for Turkey
@@ -3901,10 +3900,10 @@ $( document ).ready(function() {
           'name': item['#country+name'],
           'code': item['#country+code']
         });
-        globalCountryList.sort(function(a,b) {
-          return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
-        });
       });
+
+      //sort by country name
+      globalCountryList.sort((a,b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : ((b.name.toLowerCase() > a.name.toLowerCase()) ? -1 : 0));
 
       //group national data by country -- drives country panel    
       dataByCountry = d3.nest()
@@ -4022,9 +4021,8 @@ $( document ).ready(function() {
       .selectAll('option')
       .data(globalCountryList)
       .enter().append('option')
-        .text(function(d) { 
-          var name = (d.name=='oPt') ? 'Occupied Palestinian Territory' : d.name;
-          return name; 
+        .text(function(d) {
+          return d.name; 
         })
         .attr('value', function (d) { return d.code; });
 
