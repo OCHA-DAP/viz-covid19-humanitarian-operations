@@ -3773,11 +3773,13 @@ var currentIndicator = {};
 var currentCountryIndicator = {};
 var currentCountry = {};
 
+mapboxgl.baseApiUrl='https://data.humdata.org/mapbox';
+mapboxgl.accessToken = 'cacheToken';
+
 $( document ).ready(function() {
   var prod = (window.location.href.indexOf('ocha-dap')>-1 || window.location.href.indexOf('data.humdata.org')>-1) ? true : false;
   //console.log(prod);
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoiaHVtZGF0YSIsImEiOiJja2hnbWs5NzkxMXh2MnNvcmF6dXIxMWE0In0.0GfmJoEJyWFQ5UzNxl2WgA';
   var tooltip = d3.select('.tooltip');
   var minWidth = 1000;
   viewportWidth = (window.innerWidth<minWidth) ? minWidth - $('.content-left').innerWidth() : window.innerWidth - $('.content-left').innerWidth();
@@ -3809,7 +3811,7 @@ $( document ).ready(function() {
 
     //load static map -- will only work for screens smaller than 1280
     if (viewportWidth<=1280) {
-      var staticURL = 'https://api.mapbox.com/styles/v1/humdata/ckyw4l9z9002f14p3cyt9g2t0/static/-25,0,'+zoomLevel+'/'+viewportWidth+'x'+viewportHeight+'?access_token='+mapboxgl.accessToken;
+      var staticURL = mapboxgl.baseApiUrl+'/styles/v1/humdata/cl2tdltqy000t16p838882gw8/static/-25,0,'+zoomLevel+'/'+viewportWidth+'x'+viewportHeight+'?access_token='+mapboxgl.accessToken;
       $('#static-map').css('background-image', 'url('+staticURL+')');
     }
 
