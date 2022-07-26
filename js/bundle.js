@@ -1081,6 +1081,7 @@ function generateSparklines(results,adm0_code,adm0_name,adm0_URL){
     $(targetHeader).html(headerHtml);
 
     var country_name = adm0_name.replace(/\s+/g, '-').toLowerCase();
+    country_name = country_name.replace(/ü/g, 'u');
     $(targetHeader).find('.source a').attr('href', 'https://data.humdata.org/dataset/wfp-food-prices-for-'+country_name);
 
     var html='<div class="chart-container">';
