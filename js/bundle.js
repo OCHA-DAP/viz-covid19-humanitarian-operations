@@ -3029,7 +3029,7 @@ function initCountryLayer() {
     if (f.properties.ADM0_REF=='State of Palestine' || f.properties.ADM0_REF=='Venezuela (Bolivarian Republic of)') f.properties.ADM0_REF = currentCountry.name;
     if (f.properties.ADM0_PCODE!=undefined && f.properties.ADM0_REF==currentCountry.name) {
       map.getCanvas().style.cursor = 'pointer';
-      createCountryMapTooltip(f.properties.ADM1_REF);
+      createCountryMapTooltip(f.properties.ADM1_PCODE);
       tooltip
         .addTo(map)
         .setLngLat(e.lngLat);
@@ -3631,9 +3631,9 @@ function setTooltipPosition(point) {
 }
 
 
-function createCountryMapTooltip(adm1_name) {
+function createCountryMapTooltip(adm1_code) {
   var adm1 = subnationalData.filter(function(c) {
-    if (c['#adm1+name']==adm1_name && c['#country+code']==currentCountry.code)
+    if (c['#adm1+code']==adm1_code && c['#country+code']==currentCountry.code)
       return c;
   });
 
@@ -3649,7 +3649,7 @@ function createCountryMapTooltip(adm1_name) {
     else {
       val = 'No Data';
     }
-    var content = '<h2>' + adm1_name + '</h2>' + currentCountryIndicator.name + ':<div class="stat">' + val + '</div>';
+    var content = '<h2>' + adm1[0]['#adm1+name'] + '</h2>' + currentCountryIndicator.name + ':<div class="stat">' + val + '</div>';
 
     tooltip.setHTML(content);
   }
