@@ -1553,6 +1553,7 @@ a:visited {
 
 .download-link {
   padding: 0 20px;
+  margin-bottom: 20px;
   text-transform: uppercase; }
   .download-link a {
     display: flex;
