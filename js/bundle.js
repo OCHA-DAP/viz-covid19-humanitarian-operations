@@ -2337,6 +2337,12 @@ function deepLinkView() {
     else 
       $('.comparison-panel').hide();
   }
+  //deep link to tabbed view
+  if (location.indexOf('?tab=')>-1) {
+    let view = location.split('tab=')[1];
+    let selectedTab = $(`.tab-menubar .tab-button[data-id="${view}"]`);
+    selectedTab.click();
+  }
 }
 
 
@@ -4038,6 +4044,8 @@ $( document ).ready(function() {
       else {
         $('#chart-view').hide();
       }
+      let location = ($(this).data('id')==undefined) ? window.location.pathname : window.location.pathname + '?tab=' + $(this).data('id');
+      window.history.replaceState(null, null, location);
       vizTrack($(this).data('id'), currentIndicator.name);
     });
 
