@@ -3868,7 +3868,6 @@ $( document ).ready(function() {
           item['#population'] = 12440000;
         } 
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || item['#population']=='') ? '' : item['#affected+inneed']/item['#population'];
-        console.log(item['#country+code'], item['#affected+inneed+pct'] )
 
         //determine food basket category
         let foodBasketPct = +item['#indicator+foodbasket+change+pct']*100;
