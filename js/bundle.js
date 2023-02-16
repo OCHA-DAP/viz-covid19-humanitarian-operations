@@ -3863,7 +3863,12 @@ $( document ).ready(function() {
         if (item['#country+code']=='TUR') item['#value+cbpf+covid+funding+total+usd'] = 23000000;
 
         //calculate and inject PIN percentage
+        //hardcode south sudan total population to match HNO 12.44M
+        if (item['#country+code']=='SSD') {
+          item['#population'] = 12440000;
+        } 
         item['#affected+inneed+pct'] = (item['#affected+inneed']=='' || item['#population']=='') ? '' : item['#affected+inneed']/item['#population'];
+        console.log(item['#country+code'], item['#affected+inneed+pct'] )
 
         //determine food basket category
         let foodBasketPct = +item['#indicator+foodbasket+change+pct']*100;
