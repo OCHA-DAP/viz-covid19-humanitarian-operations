@@ -326,6 +326,17 @@ function createTimeSeries(array, div) {
   });
   var dateArray = [...dateSet];
 
+  //minimize dates
+  let shortDateArray = [];
+  let count = 0;
+  for (i in dateArray) {
+    if (count==4) {
+      shortDateArray.push(dateArray[i]);
+      count = 0;
+    }
+    count++;
+  }
+
 	var chart = c3.generate({
     size: {
       width: chartWidth,
@@ -361,8 +372,8 @@ function createTimeSeries(array, div) {
 				type: 'timeseries',
 				tick: {
           outer: false,
-          values: dateArray,
-          format: function(d, i) {
+          values: shortDateArray,
+          format: function(d) {
             var date = chartDateFormat(d);
             date = (d.getMonth()%3==0) ? date : '';
             return date;
@@ -588,6 +599,7 @@ function createRankingChart() {
 
   //format data
   rankingData = formatRankingData(indicator, d3.select('#vaccineSortingSelect').node().value);
+  console.log('rankingData',rankingData)
 
   var valueMax = d3.max(rankingData, function(d) { return +d.value; });
   valueFormat = d3.format(',.0f');
@@ -3649,7 +3661,7 @@ function createCountryMapTooltip(adm1_code) {
     if (val!=undefined && val!='' && !isNaN(val)) {
       if (currentCountryIndicator.id.indexOf('pct')>-1) val = (val>1) ? percentFormat(1) : percentFormat(val);
       if (currentCountryIndicator.id=='#population' || currentCountryIndicator.id=='#affected+food+ipc+p3plus+num' || currentCountryIndicator.id=='#affected+ch+food+p3plus+num') val = shortenNumFormat(val);
-      if (currentCountryIndicator.id=='#affected+idps+ind') val = numFormat(val);
+      if (currentCountryIndicator.id=='#affected+idps+ind' || currentCountryIndicator.id=='#loc+count+health') val = numFormat(val);
     }
     else {
       val = 'No Data';
@@ -3804,10 +3816,11 @@ $( document ).ready(function() {
     //set content sizes based on viewport
     $('.secondary-panel').height(viewportHeight-40);
     $('.content').width(viewportWidth + $('.content-left').innerWidth());
-    $('.content').height(viewportHeight);
+    $('.content').height(viewportHeight - $('.alert-message').outerHeight());
     $('.content-right').width(viewportWidth);
-    $('#chart-view').height(viewportHeight-$('.tab-menubar').outerHeight()-30);
-    $('.country-panel .panel-content').height(viewportHeight - $('.country-panel .panel-content').position().top);
+    $('#chart-view').height(viewportHeight - $('.tab-menubar').outerHeight() - 30);
+    $('.country-panel').height($('.content').height() - 50);
+    $('.country-panel .panel-content').height($('.country-panel').height() - $('.country-panel .panel-content').position().top + 50);
     $('.map-legend.global, .map-legend.country').css('max-height', viewportHeight - 200);
     if (viewportHeight<696) {
       zoomLevel = 1.4;
